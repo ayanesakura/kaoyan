@@ -1,16 +1,20 @@
 page {
   background: #f5f5f5;
+  box-sizing: border-box;
 }
 
 .container {
-  padding: 20rpx;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .card {
   background: #fff;
   border-radius: 12rpx;
+  margin: 20rpx;
   padding: 30rpx;
-  margin-bottom: 30rpx;
+  box-sizing: border-box;
+  width: calc(100% - 40rpx);
 }
 
 .section-title {
@@ -56,8 +60,9 @@ page {
 }
 
 .tips {
-  margin: 30rpx 0;
-  padding: 0 20rpx;
+  margin: 20rpx;
+  width: calc(100% - 40rpx);
+  box-sizing: border-box;
 }
 
 .tip-item {
@@ -92,9 +97,11 @@ page {
   background: #87CEEB;
   color: #fff;
   font-size: 32rpx;
-  margin: 40rpx 30rpx;
+  margin: 40rpx 20rpx;
   padding: 20rpx 0;
   border-radius: 44rpx;
+  width: calc(100% - 40rpx);
+  box-sizing: border-box;
 }
 
 .school-select {

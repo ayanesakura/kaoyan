@@ -165,6 +165,24 @@ Page({
     });
   },
 
+  onTargetSchoolInput(e) {
+    this.setData({
+      'formData.targetSchool': e.detail.value
+    });
+  },
+
+  onTargetMajorInput(e) {
+    this.setData({
+      'formData.targetMajor': e.detail.value
+    });
+  },
+
+  onTargetCityInput(e) {
+    this.setData({
+      'formData.targetCity': e.detail.value
+    });
+  },
+
   onSubmit() {
     const formData = this.data.formData;
     
