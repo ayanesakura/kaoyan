@@ -181,8 +181,13 @@
       <text class="close" bindtap="closeCollegePicker">×</text>
     </view>
     <view class="picker-body">
+      <view class="school-column">
+        <view class="column-item selected">
+          {{formData.school}}
+        </view>
+      </view>
       <view class="college-list">
-        <view class="college-item {{selectedCollege === item.name ? 'selected' : ''}}"
+        <view class="column-item {{selectedCollege === item.name ? 'selected' : ''}}"
               wx:for="{{collegeList}}"
               wx:key="name"
               bindtap="onCollegeSelect"
@@ -191,7 +196,7 @@
         </view>
       </view>
       <view class="major-list">
-        <view class="major-item"
+        <view class="column-item"
               wx:for="{{majorList}}"
               wx:key="*this"
               bindtap="onMajorSelect"
