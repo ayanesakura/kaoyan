@@ -1,0 +1,12 @@
+<!--pages/main/main.wxml-->
+<view class="container">
+  <view class="welcome">
+    <text>欢迎来到主页</text>
+  </view>
+  
+  <!-- 显示用户信息 -->
+  <view class="user-info">
+    <image class="avatar" src="{{avatarUrl}}" mode="aspectFit"></image>
+    <text class="nickname">{{nickName}}</text>
+  </view>
+</view>

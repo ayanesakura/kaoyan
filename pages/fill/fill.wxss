@@ -1,0 +1,113 @@
+page {
+  background: #f5f5f5;
+}
+
+.container {
+  padding: 20rpx;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.section-title {
+  font-size: 34rpx;
+  font-weight: 500;
+  margin-bottom: 20rpx;
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #eee;
+  position: relative;
+}
+
+.form-item:last-child {
+  border-bottom: none;
+}
+
+.required::before {
+  content: '*';
+  color: #e6614f;
+  margin-right: 4rpx;
+}
+
+.label {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.input {
+  flex: 1;
+  font-size: 28rpx;
+  text-align: right;
+  margin-right: 10rpx;
+  color: #999;
+}
+
+.arrow {
+  width: 32rpx;
+  height: 32rpx;
+}
+
+.tips {
+  margin: 30rpx 0;
+  padding: 0 20rpx;
+}
+
+.tip-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  font-size: 26rpx;
+  color: #999;
+}
+
+.tip-icon {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 10rpx;
+}
+
+.submit-btn {
+  background: #87CEEB;
+  color: #fff;
+  font-size: 32rpx;
+  margin: 40rpx 30rpx;
+  padding: 20rpx 0;
+  border-radius: 44rpx;
+}
+
+.school-select {
+  position: absolute;
+  top: 88rpx;
+  left: -30rpx;
+  right: -30rpx;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  z-index: 1000;
+  max-height: 400rpx;
+  overflow-y: auto;
+  border-radius: 0 0 12rpx 12rpx;
+  border: 1rpx solid #eee;
+}
+
+.school-item {
+  padding: 24rpx 30rpx;
+  font-size: 28rpx;
+  color: #333;
+  border-bottom: 1rpx solid #eee;
+}
+
+.school-item:last-child {
+  border-bottom: none;
+}
+
+.school-item:active {
+  background: #f5f5f5;
+}

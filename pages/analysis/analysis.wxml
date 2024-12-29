@@ -1,0 +1,4 @@
+<view class="container">
+  <view class="title">分析结果</view>
+  <!-- 这里添加分析内容 -->
+</view> 

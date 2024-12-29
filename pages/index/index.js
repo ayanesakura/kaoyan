@@ -1,49 +1,38 @@
 // index.js
-const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
+const app = getApp()
 
 Page({
   data: {
-    motto: 'Hello World',
-    userInfo: {
-      avatarUrl: defaultAvatarUrl,
-      nickName: '',
-    },
-    hasUserInfo: false,
-    canIUseGetUserProfile: wx.canIUse('getUserProfile'),
-    canIUseNicknameComp: wx.canIUse('input.type.nickname'),
+    hasPhoneNumber: false
   },
-  bindViewTap() {
-    wx.navigateTo({
-      url: '../logs/logs'
+
+  onLoad() {
+    // 检查是否已有手机号
+    if (app.globalData.phoneNumber) {
+      this.setData({
+        hasPhoneNumber: true
+      })
+    }
+  },
+
+  // 获取手机号回调
+  getPhoneNumber(e) {
+    // 开发阶段直接进入主页
+    this.enterMainPage()
+    
+    /* 
+    // 实际上线时的代码
+    if (e.detail.errMsg === 'getPhoneNumber:ok') {
+      const { encryptedData, iv } = e.detail
+      // 处理手机号获取逻辑...
+    }
+    */
+  },
+
+  // 进入主页面
+  enterMainPage() {
+    wx.switchTab({
+      url: '/pages/fill/fill'
     })
-  },
-  onChooseAvatar(e) {
-    const { avatarUrl } = e.detail
-    const { nickName } = this.data.userInfo
-    this.setData({
-      "userInfo.avatarUrl": avatarUrl,
-      hasUserInfo: nickName && avatarUrl && avatarUrl !== defaultAvatarUrl,
-    })
-  },
-  onInputChange(e) {
-    const nickName = e.detail.value
-    const { avatarUrl } = this.data.userInfo
-    this.setData({
-      "userInfo.nickName": nickName,
-      hasUserInfo: nickName && avatarUrl && avatarUrl !== defaultAvatarUrl,
-    })
-  },
-  getUserProfile(e) {
-    // 推荐使用wx.getUserProfile获取用户信息，开发者每次通过该接口获取用户个人信息均需用户确认，开发者妥善保管用户快速填写的头像昵称，避免重复弹窗
-    wx.getUserProfile({
-      desc: '展示用户信息', // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
-      success: (res) => {
-        console.log(res)
-        this.setData({
-          userInfo: res.userInfo,
-          hasUserInfo: true
-        })
-      }
-    })
-  },
+  }
 })
