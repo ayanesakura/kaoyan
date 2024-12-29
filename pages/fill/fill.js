@@ -1,3 +1,5 @@
+const { getApiUrl } = require('../../config/api.js')
+
 Page({
   data: {
     formData: {
@@ -14,6 +16,7 @@ Page({
     },
     schoolList: [], // 学校搜索结果列表
     showSchoolSelect: false, // 控制下拉列表显示
+    isSearching: false, // 添加搜索状态
   },
 
   // 防抖函数
@@ -27,7 +30,7 @@ Page({
     }
   },
 
-  // 模拟搜索学校
+  // 搜索学校
   searchSchool: function(value) {
     if(!value) {
       this.setData({
@@ -37,16 +40,31 @@ Page({
       return;
     }
 
-    // 模拟数据
-    const mockResults = [
-      `${value}大学`,
-      `${value}大专`,
-      `${value}职业技术学院`
-    ];
+    this.setData({ isSearching: true });
 
-    this.setData({
-      schoolList: mockResults,
-      showSchoolSelect: true
+    // 调用接口搜索学校
+    wx.request({
+      url: getApiUrl('schoolSearch'),
+      data: { query: value },
+      success: (res) => {
+        // 处理返回的数据
+        const schools = (res.data || []).map(item => item.name);
+        
+        this.setData({
+          schoolList: schools,
+          showSchoolSelect: true
+        });
+      },
+      fail: (err) => {
+        console.error('搜索学校失败:', err);
+        wx.showToast({
+          title: '搜索失败，请重试',
+          icon: 'none'
+        });
+      },
+      complete: () => {
+        this.setData({ isSearching: false });
+      }
     });
   },
 

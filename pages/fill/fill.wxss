@@ -111,3 +111,17 @@ page {
 .school-item:active {
   background: #f5f5f5;
 }
+
+.loading {
+  padding: 20rpx;
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.empty {
+  padding: 20rpx;
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+}
