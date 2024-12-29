@@ -8,6 +8,7 @@ App({
   },
   globalData: {
     phoneNumber: null,
-    hasPhoneNumber: false
+    hasPhoneNumber: false,
+    analysisResult: null
   }
 })

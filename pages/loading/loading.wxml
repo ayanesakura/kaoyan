@@ -1,0 +1,14 @@
+<view class="container">
+  <view class="loading-box">
+    <view class="loading-dots">
+      <view class="dot"></view>
+      <view class="dot"></view>
+      <view class="dot"></view>
+    </view>
+    <view class="loading-text">正在生成你的专属分析报告...</view>
+    <view class="loading-tips">
+      加载出小程序，可能需要等待片刻。
+      如果加载时间过长，可能导致精度损失。
+    </view>
+  </view>
+</view> 

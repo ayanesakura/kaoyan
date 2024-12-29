@@ -219,11 +219,66 @@ Page({
       return;
     }
 
-    // TODO: 提交表单数据
-    wx.showToast({
-      title: '提交成功',
-      icon: 'success'
-    })
+    // 先跳转到loading页面
+    wx.navigateTo({
+      url: '/pages/loading/loading'
+    });
+
+    // 处理排名数据
+
+    // 准备请求数据
+    const requestData = {
+      current_school: formData.school,
+      current_major: formData.major,
+      grade: formData.grade,
+      rank: formData.rank,
+      good_major: formData.project,
+      target_school: formData.targetSchool || '',
+      target_city: formData.targetCity || '',
+      target_major: formData.targetMajor || '',
+      target_level: formData.schoolLevel
+    };
+
+    console.log('发送的数据：', requestData); // 添加日志
+
+    // 调用分析接口
+    wx.request({
+      url: getApiUrl('analyze'),
+      method: 'POST',
+      header: {
+        'content-type': 'application/json'
+      },
+      data: requestData,
+      success: (res) => {
+        console.log('接口返回：', res.data); // 添加日志
+        if(res.data.success) {
+          // 将分析结果存储到全局数据
+          getApp().globalData.analysisResult = res.data;
+          // 跳转到分析结果页面
+          wx.redirectTo({
+            url: '/pages/analysis/analysis'
+          });
+        } else {
+          wx.showToast({
+            title: res.data.message || '分析失败，请重试',
+            icon: 'none'
+          });
+          setTimeout(() => {
+            wx.navigateBack();
+          }, 1500);
+        }
+      },
+      fail: (err) => {
+        console.error('分析失败:', err); // 添加错误日志
+        wx.showToast({
+          title: '分析失败，请重试',
+          icon: 'none'
+        });
+        setTimeout(() => {
+          wx.navigateBack();
+        }, 1500);
+      }
+    });
   },
 
   // 显示学院专业选择器

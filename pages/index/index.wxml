@@ -1,24 +1,26 @@
 <!--index.wxml-->
 <scroll-view class="scrollarea" scroll-y type="list">
   <view class="container">
-    <view class="title">Hello,考研生</view>
-    <view class="desc">欢迎来到你的考研预测空间。在这里，可根据你的自身情况及考研意向，为你提供定制化的分析预测服务。</view>
-    
-    <!-- 获取手机号按钮 -->
-    <button 
-      wx:if="{{!hasPhoneNumber}}"
-      class="login-btn" 
-      open-type="getPhoneNumber" 
-      bindgetphonenumber="getPhoneNumber">
-      点击进入
-    </button>
+    <view class="header">
+      <text class="title">Hello,考研生</text>
+      <text class="subtitle">收集来到你的考研调剂空间。在这里，可以更好的白日梦你的白日梦。</text>
+      <text class="subtitle">这是考研宝典，为你提供更好的分析预测服务。</text>
+    </view>
 
-    <!-- 进入按钮 -->
-    <button 
-      wx:if="{{hasPhoneNumber}}"
-      class="login-btn" 
-      bindtap="enterMainPage">
-      点击进入
-    </button>
+    <button class="enter-btn" bindtap="showPrivacyPopup">点击进入</button>
+
+    <!-- 隐私协议弹窗 -->
+    <view class="privacy-popup" wx:if="{{showPrivacy}}">
+      <view class="privacy-content">
+        <view class="privacy-title">隐私权政策提示</view>
+        <view class="privacy-text">
+          请您在使用hello, 考研生小程序前点击右上角《隐私权政策》并仔细阅读。如您同意《隐私权政策》的全部内容，请点击"同意并使用"开始我们的产品和服务。
+        </view>
+        <view class="privacy-btns">
+          <button class="disagree-btn" bindtap="onDisagree">不同意</button>
+          <button class="agree-btn" bindtap="onAgree">同意并使用</button>
+        </view>
+      </view>
+    </view>
   </view>
 </scroll-view>

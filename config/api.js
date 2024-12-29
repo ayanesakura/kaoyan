@@ -17,6 +17,7 @@ const config = {
   apis: {
     schoolSearch: '/school/search',
     schoolStructure: '/school/school_structure',
+    analyze: '/analysis/analyze'
   },
 
 }

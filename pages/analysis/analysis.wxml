@@ -1,4 +1,6 @@
 <view class="container">
-  <view class="title">分析结果</view>
-  <!-- 这里添加分析内容 -->
+  <view class="analysis-card" wx:for="{{recommendations}}" wx:key="aspect">
+    <view class="card-title">{{item.aspect}}</view>
+    <view class="card-content">{{item.content}}</view>
+  </view>
 </view> 
