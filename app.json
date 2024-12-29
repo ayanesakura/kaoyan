@@ -19,12 +19,12 @@
     "borderStyle": "black",
     "list": [
       {
-        "pagePath": "pages/analysis/analysis",
-        "text": "分析"
-      },
-      {
         "pagePath": "pages/fill/fill",
         "text": "填写"
+      },
+      {
+        "pagePath": "pages/analysis/analysis",
+        "text": "分析"
       },
       {
         "pagePath": "pages/profile/profile",
