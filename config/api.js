@@ -15,8 +15,10 @@ const config = {
   
   // API endpoints
   apis: {
-    schoolSearch: '/school/search'
-  }
+    schoolSearch: '/school/search',
+    schoolStructure: '/school/school_structure',
+  },
+
 }
 
 // 获取完整的API URL

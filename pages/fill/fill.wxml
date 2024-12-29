@@ -27,8 +27,10 @@
     </view>
 
     <view class="form-item">
-      <text class="label required">选择你的院校和专业</text>
-      <input class="input" placeholder="请选择" bindinput="onMajorInput"/>
+      <text class="label required">选择你的学院和专业</text>
+      <view class="input {{formData.major ? 'input-selected' : ''}}" bindtap="showCollegeSelect">
+        {{formData.major || '请选择'}}
+      </view>
       <image class="arrow" src="/assets/icons/arrow.png" mode="aspectFit"/>
     </view>
 
@@ -168,4 +170,35 @@
   </view>
 
   <button class="submit-btn" bindtap="onSubmit">开始查询</button>
+</view>
+
+<!-- 学院专业选择器 -->
+<view class="college-picker" wx:if="{{showCollegePicker}}">
+  <view class="picker-mask" bindtap="closeCollegePicker"></view>
+  <view class="picker-content">
+    <view class="picker-header">
+      <text>选择学院专业</text>
+      <text class="close" bindtap="closeCollegePicker">×</text>
+    </view>
+    <view class="picker-body">
+      <view class="college-list">
+        <view class="college-item {{selectedCollege === item.name ? 'selected' : ''}}"
+              wx:for="{{collegeList}}"
+              wx:key="name"
+              bindtap="onCollegeSelect"
+              data-college="{{item.name}}">
+          {{item.name}}
+        </view>
+      </view>
+      <view class="major-list">
+        <view class="major-item"
+              wx:for="{{majorList}}"
+              wx:key="*this"
+              bindtap="onMajorSelect"
+              data-major="{{item}}">
+          {{item}}
+        </view>
+      </view>
+    </view>
+  </view>
 </view>

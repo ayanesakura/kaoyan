@@ -28,6 +28,11 @@ Page({
     rankIndex: null,
     if_first_try_index: null,
     subjectIndex: null, // 添加科目选择索引
+    collegeList: [], // 学院列表
+    majorList: [], // 当前选中学院的专业列表
+    showCollegePicker: false, // 控制选择器显示
+    selectedCollege: '', // 选中的学院
+    selectedMajor: '', // 选中的专业
   },
 
   // 修改防抖函数，保持this上下文
@@ -104,6 +109,24 @@ Page({
       'formData.school': school,
       showSchoolSelect: false,
       schoolList: []
+    });
+
+    // 获取学院专业数据
+    wx.request({
+      url: getApiUrl('schoolStructure') + '/' + encodeURIComponent(school),
+      success: (res) => {
+        this.setData({
+          collegeList: res.data.colleges || [],
+          'formData.major': '' // 清空已选专业
+        });
+      },
+      fail: (err) => {
+        console.error('获取学院专业失败:', err);
+        wx.showToast({
+          title: '获取学院专业失败',
+          icon: 'none'
+        });
+      }
     });
   },
 
@@ -201,5 +224,40 @@ Page({
       title: '提交成功',
       icon: 'success'
     })
+  },
+
+  // 显示学院专业选择器
+  showCollegeSelect() {
+    this.setData({
+      showCollegePicker: true
+    });
+  },
+
+  // 选择学院
+  onCollegeSelect(e) {
+    const college = e.currentTarget.dataset.college;
+    const majors = this.data.collegeList.find(item => item.name === college)?.majors || [];
+    
+    this.setData({
+      selectedCollege: college,
+      majorList: majors
+    });
+  },
+
+  // 选择专业
+  onMajorSelect(e) {
+    const major = e.currentTarget.dataset.major;
+    this.setData({
+      selectedMajor: major,
+      showCollegePicker: false,
+      'formData.major': `${this.data.selectedCollege} ${major}`
+    });
+  },
+
+  // 关闭选择器
+  closeCollegePicker() {
+    this.setData({
+      showCollegePicker: false
+    });
   }
 }) 
