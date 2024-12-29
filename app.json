@@ -1,8 +1,8 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/fill/fill",
     "pages/analysis/analysis",
+    "pages/fill/fill",
     "pages/loading/loading",
     "pages/profile/profile"
   ],
@@ -19,12 +19,12 @@
     "borderStyle": "black",
     "list": [
       {
-        "pagePath": "pages/fill/fill",
-        "text": "填写"
-      },
-      {
         "pagePath": "pages/analysis/analysis",
         "text": "分析"
+      },
+      {
+        "pagePath": "pages/fill/fill",
+        "text": "填写"
       },
       {
         "pagePath": "pages/profile/profile",

@@ -255,8 +255,8 @@ Page({
               if(res.data.success) {
                 // 将分析结果存储到全局数据
                 getApp().globalData.analysisResult = res.data;
-                // 使用switchTab跳转到分析结果页面
-                wx.switchTab({
+                // 先重置所有页面，再跳转到分析页面
+                wx.reLaunch({
                   url: '/pages/analysis/analysis',
                   success: () => {
                     console.log('跳转到分析页面成功');
