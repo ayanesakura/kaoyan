@@ -4,7 +4,10 @@
     
     <view class="form-item">
       <text class="label required">输入你的学校</text>
-      <input class="input" placeholder="请输入学校" bindinput="onSchoolInput" value="{{formData.school}}"/>
+      <input class="input {{formData.school ? 'input-selected' : ''}}" 
+             placeholder="请输入学校" 
+             bindinput="onSchoolInput"
+             value="{{formData.school}}"/>
       <image class="arrow" src="/assets/icons/arrow.png" mode="aspectFit"/>
       
       <!-- 移动下拉列表到这里 -->
@@ -46,11 +49,11 @@
     <view class="form-item">
       <text class="label required">选择你的当前排名</text>
       <picker 
-        bindchange="onGradeChange" 
+        bindchange="onRankChange" 
         value="{{rankIndex}}" 
         range="{{ranks}}"
         class="picker-wrapper">
-        <view class="input {{gradeIndex !== null ? 'input-selected' : ''}}">
+        <view class="input {{rankIndex !== null ? 'input-selected' : ''}}">
           {{rankIndex !== null ? ranks[rankIndex] : '请选择'}}
         </view>
       </picker>
@@ -79,7 +82,7 @@
         value="{{if_first_try_index}}" 
         range="{{if_first_try}}"
         class="picker-wrapper">
-        <view class="input {{gradeIndex !== null ? 'input-selected' : ''}}">
+        <view class="input {{if_first_try_index !== null ? 'input-selected' : ''}}">
           {{if_first_try_index !== null ? if_first_try[if_first_try_index] : '请选择'}}
         </view>
       </picker>
