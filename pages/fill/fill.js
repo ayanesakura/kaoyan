@@ -240,7 +240,7 @@ Page({
     wx.navigateTo({
       url: '/pages/loading/loading',
       success: () => {
-        console.log('跳转到loading页面成功'); // 添加日志
+        console.log('跳转到loading页面成功');
         // 在loading页面打开后再调用接口
         setTimeout(() => {
           wx.request({
@@ -255,9 +255,15 @@ Page({
               if(res.data.success) {
                 // 将分析结果存储到全局数据
                 getApp().globalData.analysisResult = res.data;
-                // 跳转到分析结果页面
-                wx.redirectTo({
-                  url: '/pages/analysis/analysis'
+                // 使用switchTab跳转到分析结果页面
+                wx.switchTab({
+                  url: '/pages/analysis/analysis',
+                  success: () => {
+                    console.log('跳转到分析页面成功');
+                  },
+                  fail: (err) => {
+                    console.error('跳转到分析页面失败:', err);
+                  }
                 });
               } else {
                 wx.showToast({
@@ -283,7 +289,7 @@ Page({
         }, 500);
       },
       fail: (err) => {
-        console.error('跳转到loading页面失败:', err); // 添加日志
+        console.error('跳转到loading页面失败:', err);
       }
     });
   },
