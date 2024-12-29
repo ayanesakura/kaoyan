@@ -3,6 +3,7 @@
     "pages/index/index",
     "pages/fill/fill",
     "pages/analysis/analysis",
+    "pages/loading/loading",
     "pages/profile/profile"
   ],
   "window": {

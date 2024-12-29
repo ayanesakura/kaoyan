@@ -8,7 +8,7 @@
              placeholder="请输入学校" 
              bindinput="onSchoolInput"
              value="{{formData.school}}"/>
-      <image class="arrow" src="/assets/icons/arrow.png" mode="aspectFit"/>
+    
       
       <!-- 移动下拉列表到这里 -->
       <view class="school-select" wx:if="{{showSchoolSelect}}">
@@ -31,7 +31,7 @@
       <view class="input {{formData.major ? 'input-selected' : ''}}" bindtap="showCollegeSelect">
         {{formData.major || '请选择'}}
       </view>
-      <image class="arrow" src="/assets/icons/arrow.png" mode="aspectFit"/>
+      
     </view>
 
     <view class="form-item">
@@ -45,7 +45,7 @@
           {{gradeIndex !== null ? grades[gradeIndex] : '请选择'}}
         </view>
       </picker>
-      <image class="arrow" src="/assets/icons/arrow.png" mode="aspectFit"/>
+      
     </view>
 
     <view class="form-item">
@@ -59,7 +59,7 @@
           {{rankIndex !== null ? ranks[rankIndex] : '请选择'}}
         </view>
       </picker>
-      <image class="arrow" src="/assets/icons/arrow.png" mode="aspectFit"/>
+      
     </view>
 
 
@@ -74,7 +74,7 @@
           {{subjectIndex !== null ? subjects[subjectIndex] : '请选择'}}
         </view>
       </picker>
-      <image class="arrow" src="/assets/icons/arrow.png" mode="aspectFit"/>
+      
     </view>
 
     <view class="form-item">
@@ -88,7 +88,7 @@
           {{if_first_try_index !== null ? if_first_try[if_first_try_index] : '请选择'}}
         </view>
       </picker>
-      <image class="arrow" src="/assets/icons/arrow.png" mode="aspectFit"/>
+      
     </view>
 
   </view>
@@ -102,7 +102,7 @@
              placeholder="请填写学校全称，多所院校请用逗号开" 
              bindinput="onTargetSchoolInput"
              value="{{formData.targetSchool}}"/>
-      <image class="arrow" src="/assets/icons/arrow.png" mode="aspectFit"/>
+      
     </view>
 
     <view class="form-item">
@@ -111,7 +111,7 @@
              placeholder="不同专业请用逗号开" 
              bindinput="onTargetMajorInput"
              value="{{formData.targetMajor}}"/>
-      <image class="arrow" src="/assets/icons/arrow.png" mode="aspectFit"/>
+      
     </view>
 
     <view class="form-item">
@@ -120,7 +120,7 @@
              placeholder="多城市请用逗号开" 
              bindinput="onTargetCityInput"
              value="{{formData.targetCity}}"/>
-      <image class="arrow" src="/assets/icons/arrow.png" mode="aspectFit"/>
+      
     </view>
 
     <view class="form-item">
@@ -134,34 +134,34 @@
           {{schoolLevelIndex !== null ? schoolLevels[schoolLevelIndex] : '请选择'}}
         </view>
       </picker>
-      <image class="arrow" src="/assets/icons/arrow.png" mode="aspectFit"/>
+      
     </view>
   </view>
 
   <view class="tips">
     <view class="tip-item">
-      <image class="tip-icon" src="/assets/icons/tip.png" mode="aspectFit"/>
+      
       <view class="tip-content">
         <text class="tip-title">如果您有明确的期望学院，无明确的期望专业时：</text>
         <text class="tip-desc">填写期望院校，专业/城市/学校程度可选填小范围。</text>
       </view>
     </view>
     <view class="tip-item">
-      <image class="tip-icon" src="/assets/icons/tip.png" mode="aspectFit"/>
+      
       <view class="tip-content">
         <text class="tip-title">如果您有明确的期望专业，无明确期望学校时：</text>
         <text class="tip-desc">填写期望专业，学校/城市/学校程度可选填小范围。</text>
       </view>
     </view>
     <view class="tip-item">
-      <image class="tip-icon" src="/assets/icons/tip.png" mode="aspectFit"/>
+      
       <view class="tip-content">
         <text class="tip-title">如果您有明确城市，其他无明确：</text>
         <text class="tip-desc">填写城市即可。</text>
       </view>
     </view>
     <view class="tip-item">
-      <image class="tip-icon" src="/assets/icons/tip.png" mode="aspectFit"/>
+      
       <view class="tip-content">
         <text class="tip-title">如果您想对比多个不同院校、不同专业：</text>
         <text class="tip-desc">如：上海交通大学计算机系 及 厦门大学会计系，请在目标院校1填写上海交通大学 计算机系专业。</text>
