@@ -17,15 +17,28 @@ Page({
     schoolList: [], // 学校搜索结果列表
     showSchoolSelect: false, // 控制下拉列表显示
     isSearching: false, // 添加搜索状态
+    schoolLevels: ['C9', '985', '211', '一本', '二本'],
+    schoolLevelIndex: null,
+    grades: ['大一', '大二', '大三', '大四'],
+    ranks: ['前10%', '前20%', '前50%', '我会加油的'],
+    if_first_try: ['是', '否'],
+    // 添加擅长科目选项
+    subjects: ['英语', '数学', '政治', '专业课'],
+    gradeIndex: null,
+    rankIndex: null,
+    if_first_try_index: null,
+    subjectIndex: null, // 添加科目选择索引
   },
 
-  // 防抖函数
+  // 修改防抖函数，保持this上下文
   debounce(fn, wait) {
     let timer = null;
+    const that = this;  // 保存this引用
     return function() {
       if(timer) clearTimeout(timer);
+      const args = arguments;
       timer = setTimeout(() => {
-        fn.apply(this, arguments);
+        fn.apply(that, args);  // 使用保存的this引用
       }, wait);
     }
   },
@@ -75,8 +88,13 @@ Page({
       'formData.school': value
     });
     
-    // 使用防抖处理搜索
-    this.debounce(this.searchSchool, 300)(value);
+    // 创建一个新的防抖函数实例
+    if (!this._debounceSearch) {
+      this._debounceSearch = this.debounce(this.searchSchool, 300);
+    }
+    
+    // 使用缓存的防抖函数
+    this._debounceSearch(value);
   },
 
   // 选择学校
@@ -95,21 +113,9 @@ Page({
     })
   },
 
-  onGradeInput(e) {
-    this.setData({
-      'formData.grade': e.detail.value
-    })
-  },
-
   onRankInput(e) {
     this.setData({
       'formData.rank': e.detail.value
-    })
-  },
-
-  onProjectInput(e) {
-    this.setData({
-      'formData.project': e.detail.value
     })
   },
 
@@ -119,17 +125,57 @@ Page({
     })
   },
 
+  onSchoolLevelChange(e) {
+    const index = e.detail.value;
+    this.setData({
+      schoolLevelIndex: index,
+      'formData.schoolLevel': this.data.schoolLevels[index]
+    });
+  },
+
+  onGradeChange(e) {
+    const index = e.detail.value;
+    this.setData({
+      gradeIndex: index,
+      'formData.grade': this.data.grades[index]
+    });
+  },
+
+  onRankChange(e) {
+    const index = e.detail.value;
+    this.setData({
+      rankIndex: index,
+      'formData.rank': this.data.ranks[index]
+    });
+  },
+
+  onIfFirstTryChange(e) {
+    const index = e.detail.value;
+    this.setData({
+      if_first_try_index: index,
+      'formData.firstTry': this.data.if_first_try[index]
+    });
+  },
+
+  onSubjectChange(e) {
+    const index = e.detail.value;
+    this.setData({
+      subjectIndex: index,
+      'formData.project': this.data.subjects[index]
+    });
+  },
+
   onSubmit() {
-    const formData = this.data.formData
+    const formData = this.data.formData;
     
-    // 表单验证
     if(!formData.school || !formData.major || !formData.grade || 
-       !formData.rank || !formData.project || !formData.firstTry) {
+       !formData.rank || !formData.project || !formData.firstTry ||
+       !formData.schoolLevel) {
       wx.showToast({
         title: '请填写必填项',
         icon: 'none'
-      })
-      return
+      });
+      return;
     }
 
     // TODO: 提交表单数据
