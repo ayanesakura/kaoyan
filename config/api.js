@@ -1,38 +1,73 @@
+// 环境配置
 const env = {
   dev: {
-    baseUrl: 'http://192.168.31.144:8000'
-  },
-  prod: {
-    baseUrl: 'https://kaoyan-service-135292-9-1330319089.sh.run.tcloudbase.com' // 生产环境地址
+    baseUrl: 'http://192.168.31.144:80'
   }
 }
 
 // 设置当前环境 (dev/prod)
 const currentEnv = 'prod'
 
-const config = {
-  baseUrl: env[currentEnv].baseUrl,
-  
-  // API endpoints
-  apis: {
-    schoolSearch: '/api/school_search',
-    schoolStructure: '/api/school_structure',
-    analyze: '/api/analyze'
-  },
-
+// 云托管配置
+const CLOUD_CONFIG = {
+  env: 'prod-4g46sjwd41c4097c',
+  service: 'kaoyan-service'
 }
 
-// 获取完整的API URL
-const getApiUrl = (apiName) => {
-  const api = config.apis[apiName]
+// API路径
+const API_PATHS = {
+  schoolSearch: '/api/school_search',
+  schoolStructure: '/api/school_structure',
+  analyze: '/api/analyze'
+}
+
+// 统一的服务调用方法
+function callService(path, method = 'POST', data = {}) {
+  if (currentEnv === 'prod') {
+    // 使用云托管服务
+    return wx.cloud.callContainer({
+      config: {
+        env: CLOUD_CONFIG.env
+      },
+      path: path,
+      method: method,
+      header: {
+        'X-WX-SERVICE': CLOUD_CONFIG.service,
+        'content-type': 'application/json'
+      },
+      data: data
+    })
+  } else {
+    // 使用本地开发服务
+    return new Promise((resolve, reject) => {
+      wx.request({
+        url: `${env[currentEnv].baseUrl}${path}`,
+        method: method,
+        header: {
+          'content-type': 'application/json'
+        },
+        data: data,
+        success: resolve,
+        fail: reject
+      })
+    })
+  }
+}
+
+// 获取完整的API URL (用于特殊情况)
+function getApiUrl(apiName) {
+  const api = API_PATHS[apiName]
   if (!api) {
     console.error(`API ${apiName} not found in config`)
     return ''
   }
-  return `${config.baseUrl}${api}`
+  return `${env[currentEnv].baseUrl}${api}`
 }
 
 module.exports = {
-  config,
+  currentEnv,
+  API_PATHS,
+  CLOUD_CONFIG,
+  callService,
   getApiUrl
 } 

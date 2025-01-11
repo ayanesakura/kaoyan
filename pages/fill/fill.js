@@ -1,4 +1,4 @@
-const { getApiUrl } = require('../../config/api.js')
+const { callService, API_PATHS } = require('../../config/api.js')
 
 Page({
   data: {
@@ -60,16 +60,8 @@ Page({
 
     this.setData({ isSearching: true });
 
-    // 调用接口搜索学校
-    requestWithRetry({
-      url: getApiUrl('schoolSearch'),
-      method: 'POST',
-      header: {
-        'content-type': 'application/json'
-      },
-      data: { 
-        "query": value
-      }
+    callService(API_PATHS.schoolSearch, 'POST', {
+      query: value
     })
     .then(res => {
       if(Array.isArray(res.data)) {
@@ -120,21 +112,21 @@ Page({
     });
 
     // 获取学院专业数据
-    wx.request({
-      url: getApiUrl('schoolStructure') + '/' + encodeURIComponent(school),
-      success: (res) => {
-        this.setData({
-          collegeList: res.data.colleges || [],
-          'formData.major': '' // 清空已选专业
-        });
-      },
-      fail: (err) => {
-        console.error('获取学院专业失败:', err);
-        wx.showToast({
-          title: '获取学院专业失败',
-          icon: 'none'
-        });
-      }
+    callService(API_PATHS.schoolStructure, 'POST', {
+      school_name: school
+    })
+    .then(res => {
+      this.setData({
+        collegeList: res.data.colleges || [],
+        'formData.major': '' // 清空已选专业
+      });
+    })
+    .catch(err => {
+      console.error('获取学院专业失败:', err);
+      wx.showToast({
+        title: '获取学院专业失败',
+        icon: 'none'
+      });
     });
   },
 
@@ -215,7 +207,7 @@ Page({
   },
 
   onSubmit() {
-    console.log('点击提交按钮'); // 添加日志
+    console.log('点击提交按钮');
     const formData = this.data.formData;
     
     if(!formData.school || !formData.major || !formData.grade || 
@@ -227,7 +219,6 @@ Page({
       });
       return;
     }
-
 
     // 准备请求数据
     const requestData = {
@@ -242,7 +233,7 @@ Page({
       target_level: formData.schoolLevel
     };
 
-    console.log('请求数据：', requestData); // 添加日志
+    console.log('请求数据：', requestData);
 
     // 先跳转到loading页面
     wx.navigateTo({
@@ -251,34 +242,27 @@ Page({
         console.log('跳转到loading页面成功');
         // 在loading页面打开后再调用接口
         setTimeout(() => {
-          requestWithRetry({
-            url: getApiUrl('analyze'),
-            method: 'POST',
-            header: {
-              'content-type': 'application/json'
-            },
-            data: requestData
-          })
-          .then(res => {
-            if(res.data.success) {
-              getApp().globalData.analysisResult = res.data;
-              wx.reLaunch({
-                url: '/pages/analysis/analysis'
+          callService(API_PATHS.analyze, 'POST', requestData)
+            .then(res => {
+              if(res.data.success) {
+                getApp().globalData.analysisResult = res.data;
+                wx.reLaunch({
+                  url: '/pages/analysis/analysis'
+                });
+              } else {
+                throw new Error(res.data.message || '分析失败');
+              }
+            })
+            .catch(err => {
+              console.error('分析失败:', err);
+              wx.showToast({
+                title: err.message || '分析失败，请重试',
+                icon: 'none'
               });
-            } else {
-              throw new Error(res.data.message || '分析失败');
-            }
-          })
-          .catch(err => {
-            console.error('分析失败:', err);
-            wx.showToast({
-              title: err.message || '分析失败，请重试',
-              icon: 'none'
+              setTimeout(() => {
+                wx.navigateBack();
+              }, 1500);
             });
-            setTimeout(() => {
-              wx.navigateBack();
-            }, 1500);
-          });
         }, 500);
       },
       fail: (err) => {
