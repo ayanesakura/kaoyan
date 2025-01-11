@@ -1,6 +1,6 @@
 const env = {
   dev: {
-    baseUrl: 'http://192.168.31.146:8000'
+    baseUrl: 'http://192.168.31.144:8000'
   },
   prod: {
     baseUrl: 'https://your-production-api.com' // 生产环境地址

@@ -61,28 +61,36 @@ Page({
     this.setData({ isSearching: true });
 
     // 调用接口搜索学校
-    wx.request({
+    requestWithRetry({
       url: getApiUrl('schoolSearch'),
-      data: { query: value },
-      success: (res) => {
-        // 处理返回的数据
-        const schools = (res.data || []).map(item => item.name);
-        
+      method: 'POST',
+      header: {
+        'content-type': 'application/json'
+      },
+      data: { 
+        "query": value
+      }
+    })
+    .then(res => {
+      if(Array.isArray(res.data)) {
+        const schools = res.data.map(item => item.name);
         this.setData({
           schoolList: schools,
           showSchoolSelect: true
         });
-      },
-      fail: (err) => {
-        console.error('搜索学校失败:', err);
-        wx.showToast({
-          title: '搜索失败，请重试',
-          icon: 'none'
-        });
-      },
-      complete: () => {
-        this.setData({ isSearching: false });
+      } else {
+        throw new Error('搜索返回数据格式错误');
       }
+    })
+    .catch(err => {
+      console.error('搜索学校失败:', err);
+      wx.showToast({
+        title: '搜索失败，请重试',
+        icon: 'none'
+      });
+    })
+    .finally(() => {
+      this.setData({ isSearching: false });
     });
   },
 
@@ -243,48 +251,33 @@ Page({
         console.log('跳转到loading页面成功');
         // 在loading页面打开后再调用接口
         setTimeout(() => {
-          wx.request({
+          requestWithRetry({
             url: getApiUrl('analyze'),
             method: 'POST',
             header: {
               'content-type': 'application/json'
             },
-            data: requestData,
-            success: (res) => {
-              console.log('接口返回：', res.data);
-              if(res.data.success) {
-                // 将分析结果存储到全局数据
-                getApp().globalData.analysisResult = res.data;
-                // 先重置所有页面，再跳转到分析页面
-                wx.reLaunch({
-                  url: '/pages/analysis/analysis',
-                  success: () => {
-                    console.log('跳转到分析页面成功');
-                  },
-                  fail: (err) => {
-                    console.error('跳转到分析页面失败:', err);
-                  }
-                });
-              } else {
-                wx.showToast({
-                  title: res.data.message || '分析失败，请重试',
-                  icon: 'none'
-                });
-                setTimeout(() => {
-                  wx.navigateBack();
-                }, 1500);
-              }
-            },
-            fail: (err) => {
-              console.error('分析失败:', err);
-              wx.showToast({
-                title: '分析失败，请重试',
-                icon: 'none'
+            data: requestData
+          })
+          .then(res => {
+            if(res.data.success) {
+              getApp().globalData.analysisResult = res.data;
+              wx.reLaunch({
+                url: '/pages/analysis/analysis'
               });
-              setTimeout(() => {
-                wx.navigateBack();
-              }, 1500);
+            } else {
+              throw new Error(res.data.message || '分析失败');
             }
+          })
+          .catch(err => {
+            console.error('分析失败:', err);
+            wx.showToast({
+              title: err.message || '分析失败，请重试',
+              icon: 'none'
+            });
+            setTimeout(() => {
+              wx.navigateBack();
+            }, 1500);
           });
         }, 500);
       },
@@ -329,3 +322,28 @@ Page({
     });
   }
 }) 
+
+// 在现有代码基础上添加请求重试函数
+const MAX_RETRY = 3; // 最大重试次数
+
+function requestWithRetry(options, retryCount = 0) {
+  return new Promise((resolve, reject) => {
+    wx.request({
+      ...options,
+      success: resolve,
+      fail: (err) => {
+        console.error(`请求失败(${retryCount + 1}次):`, err);
+        if (retryCount < MAX_RETRY) {
+          // 延迟重试
+          setTimeout(() => {
+            requestWithRetry(options, retryCount + 1)
+              .then(resolve)
+              .catch(reject);
+          }, 1000 * (retryCount + 1)); // 递增重试延迟
+        } else {
+          reject(err);
+        }
+      }
+    });
+  });
+} 
