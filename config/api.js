@@ -3,21 +3,21 @@ const env = {
     baseUrl: 'http://192.168.31.144:8000'
   },
   prod: {
-    baseUrl: 'https://your-production-api.com' // 生产环境地址
+    baseUrl: 'https://kaoyan-service-135292-9-1330319089.sh.run.tcloudbase.com' // 生产环境地址
   }
 }
 
 // 设置当前环境 (dev/prod)
-const currentEnv = 'dev'
+const currentEnv = 'prod'
 
 const config = {
   baseUrl: env[currentEnv].baseUrl,
   
   // API endpoints
   apis: {
-    schoolSearch: '/school/search',
-    schoolStructure: '/school/school_structure',
-    analyze: '/analysis/analyze'
+    schoolSearch: '/api/school_search',
+    schoolStructure: '/api/school_structure',
+    analyze: '/api/analyze'
   },
 
 }
