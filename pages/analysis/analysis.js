@@ -156,15 +156,16 @@ Page({
    * 获取科目显示名称
    */
   getSubjectDisplayName(school, subjectName) {
-    // 使用固定的科目名称映射
-    const subjectMap = {
-      '政治科一': '政治',
-      '外语科二': '外语',
-      '科三': '数学',
-      '科四': '专业课'
-    };
-    
-    return subjectMap[subjectName] || subjectName;
+    const subject = school.subjects.find(s => s.name === subjectName);
+    if (!subject) return subjectName;
+
+    // 如果value包含换行符，使用name
+    if (subject.value.includes('\n')) {
+      return subjectName;  // 直接返回原始的科目名称（如'外语科二'）
+    }
+
+    // 否则使用value
+    return subject.value || subjectName;
   },
 
   /**

@@ -35,8 +35,8 @@
       <view class="row-header">总分数线</view>
       <view class="row-header">- 政治</view>
       <view class="row-header">- 英语</view>
-      <view class="row-header">- 数学</view>
-      <view class="row-header">- 专业</view>
+      <view class="row-header">- 科三</view>
+      <view class="row-header">- 科四</view>
       <view class="row-header">就业情况</view>
       <view class="row-header">深造占比</view>
       <view class="row-header">考公占比</view>
