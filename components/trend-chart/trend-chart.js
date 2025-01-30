@@ -17,6 +17,10 @@ Component({
     title: {
       type: String,
       value: ''
+    },
+    unit: {
+      type: String,
+      value: '分'
     }
   },
 
@@ -102,7 +106,7 @@ Component({
           type: 'value',
           axisLabel: {
             fontSize: 11,
-            formatter: '{value}分'
+            formatter: `{value}${this.properties.unit}`
           },
           splitLine: {
             lineStyle: {
@@ -153,8 +157,8 @@ Component({
           trigger: 'axis',
           formatter: function(params) {
             const data = params[0];
-            return `${data.name}年: ${data.value}分`;
-          },
+            return `${data.name}年: ${data.value}${this.properties.unit}`;
+          }.bind(this),
           backgroundColor: 'rgba(255, 255, 255, 0.9)',
           borderColor: '#eee',
           borderWidth: 1,

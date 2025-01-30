@@ -12,7 +12,11 @@
       </view>
       <view class="trend-content {{showChart ? 'chart-mode' : ''}}">
         <block wx:if="{{showChart && chartData}}">
-          <trend-chart chart-data="{{chartData}}" title="{{trendTitle}}"></trend-chart>
+          <trend-chart 
+            chart-data="{{chartData}}" 
+            title="{{trendTitle}}"
+            unit="{{chartUnit}}"
+          ></trend-chart>
         </block>
         <block wx:else>
           <view class="trend-item" wx:for="{{trendData}}" wx:key="year">

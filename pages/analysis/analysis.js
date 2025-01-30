@@ -11,7 +11,8 @@ Page({
     trendData: [],
     currentSchool: null,
     showChart: false,
-    chartData: null
+    chartData: null,
+    chartUnit: '分'  // 添加默认单位
   },
 
   /**
@@ -74,6 +75,77 @@ Page({
   },
 
   /**
+   * 处理单个学校的报录比数据
+   */
+  processBlbRatio(blb) {
+    if (!blb || !Array.isArray(blb) || blb.length === 0) return '/';
+    
+    // 找到最新年份的数据
+    const latestData = blb.reduce((latest, current) => {
+      return (!latest || current.year > latest.year) ? current : latest;
+    }, null);
+    
+    // 如果没有最新数据或者没有报录比值，返回'/'
+    if (!latestData || !latestData.blb) return '/';
+    
+    // 获取当前年份
+    const currentYear = new Date().getFullYear();
+    // 设置数据有效期阈值（比如最近3年的数据）
+    const validThreshold = currentYear - 3;
+    
+    // 如果数据太旧，返回'/'
+    if (latestData.year < validThreshold) {
+      console.log('报录比数据过期:', latestData.year, '阈值:', validThreshold);
+      return '/';
+    }
+    
+    return latestData.blb;
+  },
+
+  /**
+   * 处理报录比趋势数据
+   */
+  processBlbData(blb) {
+    if (!blb || !Array.isArray(blb)) {
+      console.log('无效的报录比数据');
+      return null;
+    }
+    
+    // 按年份去重，保留最新的数据
+    const uniqueData = {};
+    blb.forEach(item => {
+      if (!uniqueData[item.year] || item.year > uniqueData[item.year].year) {
+        uniqueData[item.year] = item;
+      }
+    });
+    
+    // 转换为数组并按年份排序
+    const sortedData = Object.values(uniqueData).sort((a, b) => a.year - b.year);
+    
+    const years = [];
+    const values = [];
+    
+    sortedData.forEach(item => {
+      if (item.year) {
+        years.push(item.year);
+        // 将百分比字符串转换为数值
+        const value = item.blb ? parseFloat(item.blb.replace('%', '')) : null;
+        values.push(value);
+      }
+    });
+
+    console.log('处理后的报录比数据:', { years, values });
+    
+    // 确保有有效数据
+    if (years.length === 0 || values.every(v => v === null)) {
+      console.log('没有有效的报录比数据');
+      return null;
+    }
+    
+    return { years, values };
+  },
+
+  /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
@@ -92,6 +164,7 @@ Page({
           // 处理其他数据
           totalScore: data.fsx && data.fsx[0] ? 
             data.fsx[0].data.find(s => s.subject === '总分')?.score || '/' : '/',
+          blbRatio: this.processBlbRatio(data.blb),  // 添加报录比处理
           subjects: data.subjects || [],
           school: data.school_name,
           departments: data.departments || '/',
@@ -180,14 +253,14 @@ Page({
     let data = [];
     let showChart = false;
     let chartData = null;
+    let chartUnit = '分';  // 默认单位为分
 
     switch(type) {
       case 'blb':
         title = `${school.school_name} - 报录比趋势`;
-        data = (school.blb || []).map(item => ({
-          year: item.year,
-          value: item.blb
-        }));
+        showChart = true;
+        chartData = this.processBlbData(school.blb);
+        chartUnit = '%';  // 报录比使用百分比单位
         break;
       case 'score':
         title = `${school.school_name} - 总分数线趋势`;
@@ -235,7 +308,8 @@ Page({
     console.log('设置数据:', {
       showChart,
       chartData,
-      title
+      title,
+      chartUnit
     });
 
     // 如果是图表模式但没有数据，显示提示
@@ -253,7 +327,8 @@ Page({
       trendData: data,
       currentSchool: school,
       showChart,
-      chartData
+      chartData,
+      chartUnit  // 设置单位
     });
   },
 
