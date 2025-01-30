@@ -265,15 +265,19 @@ Page({
 
     // 准备请求数据
     const requestData = {
-      current_school: formData.school,
-      current_major: formData.major,
-      grade: formData.grade,
-      rank: formData.rank,
-      good_major: formData.project,
-      target_school: formData.targetSchool || '',
-      target_city: formData.targetCity || '',
-      target_major: formData.targetMajor || '',
-      target_level: formData.schoolLevel
+      user_info: {
+        school: formData.school,
+        major: formData.major,
+        grade: formData.grade,
+        is_first_time: formData.firstTry,
+        good_at_subject: formData.project
+      },
+      target_info: {
+        school: formData.targetSchool || '',
+        major: formData.targetMajor || '',
+        city: formData.targetCity || '',
+        school_level: formData.schoolLevel
+      }
     };
 
     console.log('请求数据：', requestData);
@@ -285,15 +289,17 @@ Page({
         console.log('跳转到loading页面成功');
         // 在loading页面打开后再调用接口
         setTimeout(() => {
-          callService(API_PATHS.analyze, 'POST', requestData)
+          callService(API_PATHS.chooseSchools, 'POST', requestData)
             .then(res => {
-              if(res.data.success) {
-                getApp().globalData.analysisResult = res.data;
+              if(Array.isArray(res.data)) {
+                getApp().globalData.analysisResult = {
+                  recommendations: res.data
+                };
                 wx.reLaunch({
                   url: '/pages/analysis/analysis'
                 });
               } else {
-                throw new Error(res.data.message || '分析失败');
+                throw new Error('返回数据格式错误');
               }
             })
             .catch(err => {

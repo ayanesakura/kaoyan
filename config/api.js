@@ -21,7 +21,8 @@ const API_PATHS = {
   analyze: '/api/analyze',
   majorSearch: '/api/query_school_majors_or_fxs',
   generalMajorSearch: '/api/query_majors_or_fxs',
-  citySearch: '/api/query_city'
+  citySearch: '/api/query_city',
+  chooseSchools: '/api/choose_schools'
 }
 
 // 统一的服务调用方法
