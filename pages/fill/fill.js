@@ -40,6 +40,12 @@ Page({
     collegeList: [], // 学院列表
     selectedCollege: '', // 选中的学院
     selectedMajor: '', // 选中的专业
+    citySearchResults: [],
+    provinceList: [],
+    cityList: [],
+    showCitySelect: false,
+    isCitySearching: false,
+    selectedProvince: '',
   },
 
   // 修改防抖函数，保持this上下文
@@ -229,9 +235,18 @@ Page({
   },
 
   onTargetCityInput(e) {
+    const value = e.detail.value;
     this.setData({
-      'formData.targetCity': e.detail.value
+      'formData.targetCity': value
     });
+
+    // 创建一个新的防抖函数实例
+    if (!this._debounceCitySearch) {
+      this._debounceCitySearch = this.debounce(this.searchCity, 300);
+    }
+    
+    // 使用缓存的防抖函数
+    this._debounceCitySearch(value);
   },
 
   onSubmit() {
@@ -501,6 +516,98 @@ Page({
       showMajorSelect: false,
       majorList: [],
       directionList: []
+    });
+  },
+
+  // 搜索城市
+  searchCity: function(value) {
+    if(!value) {
+      this.setData({
+        citySearchResults: [],
+        provinceList: [],
+        cityList: [],
+        showCitySelect: false
+      });
+      return;
+    }
+
+    this.setData({ isCitySearching: true });
+
+    callService(API_PATHS.citySearch, 'POST', {
+      query: value
+    })
+    .then(res => {
+      console.log('城市搜索接口返回:', res.data);
+      
+      if(Array.isArray(res.data)) {
+        // 按省份分组处理数据
+        const provinceMap = new Map();
+        res.data.forEach(item => {
+          if (!provinceMap.has(item.province)) {
+            provinceMap.set(item.province, []);
+          }
+          provinceMap.get(item.province).push(item.city);
+        });
+        
+        // 获取所有省份
+        const provinceList = Array.from(provinceMap.keys());
+        
+        this.setData({
+          citySearchResults: res.data,
+          provinceList: provinceList,
+          showCitySelect: true,
+          cityList: [], // 清空城市列表
+          selectedProvince: '' // 清空选中的省份
+        });
+      } else {
+        throw new Error('搜索返回数据格式错误');
+      }
+    })
+    .catch(err => {
+      console.error('搜索城市失败:', err);
+      wx.showToast({
+        title: '搜索失败，请重试',
+        icon: 'none'
+      });
+    })
+    .finally(() => {
+      this.setData({ isCitySearching: false });
+    });
+  },
+
+  // 选择省份
+  onSelectProvince: function(e) {
+    const province = e.currentTarget.dataset.province;
+    
+    // 查找该省份的所有城市
+    const cities = this.data.citySearchResults
+      .filter(item => item.province === province)
+      .map(item => item.city);
+    
+    this.setData({
+      selectedProvince: province,
+      cityList: cities
+    });
+  },
+
+  // 关闭城市选择器
+  closeCitySelect: function() {
+    this.setData({
+      showCitySelect: false,
+      provinceList: [],
+      cityList: []
+    });
+  },
+
+  // 选择城市
+  onSelectCity: function(e) {
+    const city = e.currentTarget.dataset.city;
+    
+    this.setData({
+      'formData.targetCity': city,
+      showCitySelect: false,
+      provinceList: [],
+      cityList: []
     });
   },
 }) 

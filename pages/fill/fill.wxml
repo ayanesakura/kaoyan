@@ -171,11 +171,46 @@
 
     <view class="form-item">
       <text class="label">期望城市</text>
-      <input class="input" 
+      <input class="input {{formData.targetCity ? 'input-selected' : ''}}" 
              placeholder="多城市请用逗号开" 
              bindinput="onTargetCityInput"
              value="{{formData.targetCity}}"/>
       
+      <!-- 城市搜索下拉框 -->
+      <view class="school-select" wx:if="{{showCitySelect}}">
+        <view class="loading" wx:if="{{isCitySearching}}">搜索中...</view>
+        <block wx:elif="{{!isCitySearching && provinceList.length > 0}}">
+          <view class="city-search-container">
+            <!-- 省份列表 -->
+            <view class="city-left-column">
+              <view class="city-item {{selectedProvince === item ? 'selected' : ''}}" 
+                    wx:for="{{provinceList}}" 
+                    wx:key="*this"
+                    bindtap="onSelectProvince"
+                    data-province="{{item}}">
+                {{item}}
+              </view>
+            </view>
+            
+            <!-- 城市列表 -->
+            <view class="city-right-column">
+              <view class="city-item" 
+                    wx:for="{{cityList}}" 
+                    wx:key="*this"
+                    bindtap="onSelectCity"
+                    data-city="{{item}}">
+                {{item}}
+              </view>
+              <view class="empty" wx:if="{{selectedProvince && cityList.length === 0}}">
+                该省份暂无相关城市
+              </view>
+            </view>
+          </view>
+        </block>
+        <view class="empty" wx:if="{{!isCitySearching && provinceList.length === 0}}">
+          未找到相关城市
+        </view>
+      </view>
     </view>
 
     <view class="form-item">

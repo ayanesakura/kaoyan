@@ -365,3 +365,44 @@ page {
 .column-item:last-child {
   border-bottom: none;
 }
+
+/* 城市搜索相关样式 */
+.city-search-container {
+  display: flex;
+  max-height: 400rpx;
+  border-top: 1rpx solid #eee;
+}
+
+.city-left-column,
+.city-right-column {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 400rpx;
+}
+
+.city-left-column {
+  border-right: 1rpx solid #eee;
+}
+
+.city-item {
+  padding: 24rpx 30rpx;
+  font-size: 28rpx;
+  color: #333;
+  border-bottom: 1rpx solid #eee;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.city-item:last-child {
+  border-bottom: none;
+}
+
+.city-item.selected {
+  background: #f5f5f5;
+  color: #87CEEB;
+}
+
+.city-item:active {
+  background: #f5f5f5;
+}
