@@ -154,6 +154,17 @@ Page({
       // 处理每个学校的数据
       const processedData = analysisResult.recommendations.map(item => {
         const data = item.data || item;  // 适配新的数据结构
+
+        // 处理学校名称和代码
+        const schoolDisplay = data.school_name ? 
+          (data.school_code ? `${data.school_name}\n(${data.school_code})` : data.school_name) : 
+          '/';
+
+        // 处理专业名称和代码
+        const majorDisplay = data.major ? 
+          (data.major_code ? `${data.major}\n(${data.major_code})` : data.major) : 
+          '/';
+
         return {
           ...data,
           // 预处理分数数据
@@ -164,12 +175,12 @@ Page({
           // 处理其他数据
           totalScore: data.fsx && data.fsx[0] ? 
             data.fsx[0].data.find(s => s.subject === '总分')?.score || '/' : '/',
-          blbRatio: this.processBlbRatio(data.blb),  // 添加报录比处理
-          subjects: data.subjects || [],
-          school: data.school_name,
+          blbRatio: this.processBlbRatio(data.blb),
+          school: schoolDisplay,  // 使用处理后的学校显示
           departments: data.departments || '/',
           probability: data.probability || '/',
-          major: data.major || '/',
+          major: majorDisplay,  // 使用处理后的专业显示
+          direction: data.direction || '/',
           employment_status: data.employment_status || '/',
           further_study_ratio: data.further_study_ratio || '/',
           civil_service_ratio: data.civil_service_ratio || '/',
