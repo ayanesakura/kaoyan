@@ -219,14 +219,6 @@ Page({
       'formData.targetMajor': value
     });
     
-    if (!this.data.formData.targetSchool) {
-      wx.showToast({
-        title: '请先选择目标学校',
-        icon: 'none'
-      });
-      return;
-    }
-    
     // 创建一个新的防抖函数实例
     if (!this._debounceMajorSearch) {
       this._debounceMajorSearch = this.debounce(this.searchMajor, 300);
@@ -404,34 +396,44 @@ Page({
 
     this.setData({ isMajorSearching: true });
 
-    const requestData = {
+    // 根据是否选择了目标学校决定使用哪个接口
+    const hasTargetSchool = !!this.data.formData.targetSchool;
+    const apiPath = hasTargetSchool ? API_PATHS.majorSearch : API_PATHS.generalMajorSearch;
+    const requestData = hasTargetSchool ? {
       school: this.data.formData.targetSchool,
+      query: value
+    } : {
       query: value
     };
     
-    console.log('专业搜索接口输入:', requestData);
+    console.log('专业搜索接口输入:', {
+      api: apiPath,
+      data: requestData
+    });
 
-    callService(API_PATHS.majorSearch, 'POST', requestData)
+    callService(apiPath, 'POST', requestData)
     .then(res => {
       console.log('专业搜索接口返回:', res.data);
       
       if(Array.isArray(res.data)) {
-        // 处理搜索结果，按专业分组
-        const majorMap = new Map();
-        res.data.forEach(item => {
-          if (!majorMap.has(item.major_name)) {
-            majorMap.set(item.major_name, []);
-          }
-          if (item.fx_name) {
-            majorMap.get(item.major_name).push(item.fx_name);
-          }
-        });
+        // 检查返回数据的具体结构
+        console.log('返回数据第一项:', res.data[0]);
+        console.log('返回数据major字段示例:', res.data.map(item => item.major).slice(0, 3));
         
-        // 转换为数组格式
-        const majorList = Array.from(majorMap.keys());
+        // 收集所有有效的专业名称
+        const validMajors = res.data
+          .map(item => item.major)
+          .filter(major => major && typeof major === 'string' && major.trim() !== '');
+          
+        console.log('有效的专业名称:', validMajors);
         
-        console.log('处理后的专业列表:', majorList);
-        console.log('当前showMajorSelect状态:', this.data.showMajorSelect);
+        // 使用Set去重
+        const majorSet = new Set(validMajors);
+        console.log('去重后的Set:', majorSet);
+        
+        // 转换为数组
+        const majorList = Array.from(majorSet);
+        console.log('最终的专业列表:', majorList);
         
         this.setData({
           majorSearchResults: res.data,
@@ -443,7 +445,8 @@ Page({
           console.log('更新后的状态:', {
             showMajorSelect: this.data.showMajorSelect,
             majorListLength: this.data.majorList.length,
-            majorSearchResultsLength: this.data.majorSearchResults.length
+            majorSearchResultsLength: this.data.majorSearchResults.length,
+            majorListContent: this.data.majorList
           });
         });
       } else {
@@ -459,11 +462,6 @@ Page({
     })
     .finally(() => {
       this.setData({ isMajorSearching: false });
-      // 检查搜索完成后的状态
-      console.log('搜索完成后的状态:', {
-        showMajorSelect: this.data.showMajorSelect,
-        isMajorSearching: this.data.isMajorSearching
-      });
     });
   },
 
@@ -479,24 +477,27 @@ Page({
   // 选择专业
   onSelectMajor: function(e) {
     const major = e.currentTarget.dataset.major;
+    
     // 查找该专业的所有方向
     const directions = this.data.majorSearchResults
-      .filter(item => item.major_name === major)
-      .map(item => item.fx_name)
+      .filter(item => item.major === major)
+      .map(item => item.fx)
       .filter(Boolean); // 过滤掉空值
     
     this.setData({
       selectedMajor: major,
       directionList: directions,
-      'formData.targetMajor': major // 如果用户不选择方向，就使用专业名
+      'formData.targetMajor': major // 直接使用专业名
     });
   },
 
   // 选择方向
   onSelectDirection: function(e) {
     const direction = e.currentTarget.dataset.direction;
+    const majorName = this.data.selectedMajor;
+    
     this.setData({
-      'formData.targetMajor': `${this.data.selectedMajor}(${direction})`,
+      'formData.targetMajor': `${majorName}(${direction})`, // 只显示专业名和方向
       showMajorSelect: false,
       majorList: [],
       directionList: []

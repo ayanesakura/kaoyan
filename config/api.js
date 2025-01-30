@@ -19,7 +19,8 @@ const API_PATHS = {
   schoolSearch: '/api/school_search',
   schoolStructure: '/api/school_structure',
   analyze: '/api/analyze',
-  majorSearch: '/api/query_school_majors_or_fxs'
+  majorSearch: '/api/query_school_majors_or_fxs',
+  generalMajorSearch: '/api/query_majors_or_fxs'
 }
 
 // 统一的服务调用方法
