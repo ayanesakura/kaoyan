@@ -17,6 +17,9 @@ Page({
     schoolList: [], // 学校搜索结果列表
     showSchoolSelect: false, // 控制下拉列表显示
     isSearching: false, // 添加搜索状态
+    targetSchoolList: [], // 目标学校搜索结果列表
+    showTargetSchoolSelect: false, // 控制目标学校下拉列表显示
+    isTargetSearching: false, // 目标学校搜索状态
     schoolLevels: ['C9', '985', '211', '一本', '二本'],
     schoolLevelIndex: null,
     grades: ['大一', '大二', '大三', '大四'],
@@ -188,10 +191,19 @@ Page({
     });
   },
 
-  onTargetSchoolInput(e) {
+  onTargetSchoolInput: function(e) {
+    const value = e.detail.value;
     this.setData({
-      'formData.targetSchool': e.detail.value
+      'formData.targetSchool': value
     });
+    
+    // 创建一个新的防抖函数实例
+    if (!this._debounceTargetSearch) {
+      this._debounceTargetSearch = this.debounce(this.searchTargetSchool, 300);
+    }
+    
+    // 使用缓存的防抖函数
+    this._debounceTargetSearch(value);
   },
 
   onTargetMajorInput(e) {
@@ -304,7 +316,55 @@ Page({
     this.setData({
       showCollegePicker: false
     });
-  }
+  },
+
+  // 搜索目标学校
+  searchTargetSchool: function(value) {
+    if(!value) {
+      this.setData({
+        targetSchoolList: [],
+        showTargetSchoolSelect: false
+      });
+      return;
+    }
+
+    this.setData({ isTargetSearching: true });
+
+    callService(API_PATHS.schoolSearch, 'POST', {
+      query: value
+    })
+    .then(res => {
+      if(Array.isArray(res.data)) {
+        const schools = res.data.map(item => item.name);
+        this.setData({
+          targetSchoolList: schools,
+          showTargetSchoolSelect: true
+        });
+      } else {
+        throw new Error('搜索返回数据格式错误');
+      }
+    })
+    .catch(err => {
+      console.error('搜索学校失败:', err);
+      wx.showToast({
+        title: '搜索失败，请重试',
+        icon: 'none'
+      });
+    })
+    .finally(() => {
+      this.setData({ isTargetSearching: false });
+    });
+  },
+
+  // 选择目标学校
+  onSelectTargetSchool: function(e) {
+    const school = e.currentTarget.dataset.school;
+    this.setData({
+      'formData.targetSchool': school,
+      showTargetSchoolSelect: false,
+      targetSchoolList: []
+    });
+  },
 }) 
 
 // 在现有代码基础上添加请求重试函数

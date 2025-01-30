@@ -98,11 +98,25 @@
     
     <view class="form-item">
       <text class="label">期望学校</text>
-      <input class="input" 
+      <input class="input {{formData.targetSchool ? 'input-selected' : ''}}" 
              placeholder="请填写学校全称，多所院校请用逗号开" 
              bindinput="onTargetSchoolInput"
              value="{{formData.targetSchool}}"/>
       
+      <!-- 目标学校下拉列表 -->
+      <view class="school-select" wx:if="{{showTargetSchoolSelect}}">
+        <view class="loading" wx:if="{{isTargetSearching}}">搜索中...</view>
+        <view class="school-item" 
+              wx:for="{{targetSchoolList}}" 
+              wx:key="index"
+              bindtap="onSelectTargetSchool"
+              data-school="{{item}}">
+          {{item}}
+        </view>
+        <view class="empty" wx:if="{{!isTargetSearching && targetSchoolList.length === 0}}">
+          未找到相关学校
+        </view>
+      </view>
     </view>
 
     <view class="form-item">
