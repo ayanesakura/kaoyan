@@ -8,7 +8,9 @@ Component({
       observer: function(newVal) {
         console.log('图表数据更新:', newVal);
         if (newVal && newVal.years && newVal.values) {
-          this.init();
+          this.setData({
+            pendingData: newVal
+          });
         }
       }
     },
@@ -21,7 +23,9 @@ Component({
   data: {
     ec: {
       lazyLoad: true
-    }
+    },
+    pendingData: null,
+    isReady: false
   },
 
   lifetimes: {
@@ -30,22 +34,21 @@ Component({
       this.ecComponent = this.selectComponent('#mychart');
       if (!this.ecComponent) {
         console.error('找不到图表组件实例');
+        return;
       }
-    },
-    
-    ready: function() {
-      console.log('图表组件准备就绪');
-      if (this.properties.chartData.years && this.properties.chartData.values) {
-        this.init();
-      }
+      this.setData({ isReady: true }, () => {
+        if (this.data.pendingData) {
+          this.init();
+        }
+      });
     }
   },
 
   methods: {
     init: function() {
       console.log('开始初始化图表');
-      if (!this.ecComponent) {
-        console.error('图表组件实例不存在');
+      if (!this.ecComponent || !this.data.isReady) {
+        console.log('组件未准备好，等待组件准备完成');
         return;
       }
 
@@ -65,7 +68,7 @@ Component({
     },
 
     getOption: function() {
-      const { years, values } = this.properties.chartData;
+      const { years, values } = this.data.pendingData || this.properties.chartData;
       return {
         title: {
           text: this.properties.title,
