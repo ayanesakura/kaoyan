@@ -284,6 +284,20 @@ Page({
       return;
     }
 
+    // 保存表单数据到全局
+    const app = getApp();
+    app.globalData.savedFormData = {
+      formData: { ...this.data.formData },
+      // 保存索引值
+      indices: {
+        schoolLevelIndex: this.data.schoolLevelIndex,
+        gradeIndex: this.data.gradeIndex,
+        rankIndex: this.data.rankIndex,
+        if_first_try_index: this.data.if_first_try_index,
+        subjectIndex: this.data.subjectIndex
+      }
+    };
+
     // 准备请求数据
     const requestData = {
       user_info: {
@@ -452,6 +466,83 @@ Page({
           duration: 3000
         });
       });
+  },
+
+  /**
+   * 生命周期函数--监听页面加载
+   */
+  onLoad: function(options) {
+    // 检查是否有保存的表单数据
+    const app = getApp();
+    const savedData = app.globalData.savedFormData;
+    
+    if (savedData) {
+      console.log('恢复保存的表单数据:', savedData);
+      
+      // 恢复表单数据
+      this.setData({
+        formData: { ...savedData.formData },
+        // 恢复索引值
+        schoolLevelIndex: savedData.indices.schoolLevelIndex,
+        gradeIndex: savedData.indices.gradeIndex,
+        rankIndex: savedData.indices.rankIndex,
+        if_first_try_index: savedData.indices.if_first_try_index,
+        subjectIndex: savedData.indices.subjectIndex
+      });
+
+      // 如果有学校数据，获取学院专业信息
+      if (savedData.formData.school) {
+        callService(API_PATHS.schoolStructure, 'POST', {
+          school_name: savedData.formData.school
+        })
+        .then(res => {
+          this.setData({
+            collegeList: res.data.colleges || []
+          });
+        })
+        .catch(err => {
+          console.error('获取学院专业失败:', err);
+        });
+      }
+    }
+  },
+
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow: function() {
+    // 如果是从分析页面返回，不清除数据
+    if (this.data.formData.school) {
+      return;
+    }
+    
+    // 否则重置表单
+    this.setData({
+      formData: {
+        school: '',
+        major: '',
+        grade: '',
+        rank: '',
+        project: '',
+        firstTry: '',
+        targetSchool: '',
+        targetMajor: '',
+        targetCity: '',
+        schoolLevel: ''
+      },
+      schoolLevelIndex: null,
+      gradeIndex: null,
+      rankIndex: null,
+      if_first_try_index: null,
+      subjectIndex: null,
+      collegeList: [],
+      selectedCollege: '',
+      selectedMajor: ''
+    });
+
+    // 清除全局保存的数据
+    const app = getApp();
+    app.globalData.savedFormData = null;
   },
 
   // 显示学院专业选择器

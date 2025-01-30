@@ -153,6 +153,21 @@ Page({
   },
 
   /**
+   * 获取科目显示名称
+   */
+  getSubjectDisplayName(school, subjectName) {
+    // 使用固定的科目名称映射
+    const subjectMap = {
+      '政治科一': '政治',
+      '外语科二': '外语',
+      '科三': '数学',
+      '科四': '专业课'
+    };
+    
+    return subjectMap[subjectName] || subjectName;
+  },
+
+  /**
    * 显示趋势数据
    */
   showTrend(e) {
@@ -167,51 +182,51 @@ Page({
 
     switch(type) {
       case 'blb':
-        title = `${school.school} - 报录比趋势`;
+        title = `${school.school_name} - 报录比趋势`;
         data = (school.blb || []).map(item => ({
           year: item.year,
           value: item.blb
         }));
         break;
       case 'score':
-        title = `${school.school} - 总分数线趋势`;
+        title = `${school.school_name} - 总分数线趋势`;
         showChart = true;
         chartData = this.processChartData(school.fsx, '总分');
         break;
       case 'english':
-        title = `${school.school} - ${school.subjects.find(s => s.name === '外语科二')?.value || '英语'}分数趋势`;
+        title = `${school.school_name} - ${this.getSubjectDisplayName(school, '外语科二')}分数趋势`;
         showChart = true;
         chartData = this.processChartData(school.fsx, '外语科二');
         break;
       case 'math':
-        title = `${school.school} - ${school.subjects.find(s => s.name === '科三')?.value || '数学'}分数趋势`;
+        title = `${school.school_name} - ${this.getSubjectDisplayName(school, '科三')}分数趋势`;
         showChart = true;
         chartData = this.processChartData(school.fsx, '科三');
         break;
       case 'major_subject':
-        title = `${school.school} - ${school.subjects.find(s => s.name === '科四')?.value || '专业课'}分数趋势`;
+        title = `${school.school_name} - ${this.getSubjectDisplayName(school, '科四')}分数趋势`;
         showChart = true;
         chartData = this.processChartData(school.fsx, '科四');
         break;
       case 'politics':
-        title = `${school.school} - ${school.subjects.find(s => s.name === '政治科一')?.value || '政治'}分数趋势`;
+        title = `${school.school_name} - ${this.getSubjectDisplayName(school, '政治科一')}分数趋势`;
         showChart = true;
         chartData = this.processChartData(school.fsx, '政治科一');
         break;
       case 'employment':
-        title = `${school.school} - 就业情况趋势`;
+        title = `${school.school_name} - 就业情况趋势`;
         data = school.employment_trend || [];
         break;
       case 'further':
-        title = `${school.school} - 深造占比趋势`;
+        title = `${school.school_name} - 深造占比趋势`;
         data = school.further_study_trend || [];
         break;
       case 'civil':
-        title = `${school.school} - 考公占比趋势`;
+        title = `${school.school_name} - 考公占比趋势`;
         data = school.civil_service_trend || [];
         break;
       case 'job':
-        title = `${school.school} - 就业占比趋势`;
+        title = `${school.school_name} - 就业占比趋势`;
         data = school.employment_ratio_trend || [];
         break;
     }
