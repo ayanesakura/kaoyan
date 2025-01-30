@@ -116,11 +116,41 @@ Page({
         }));
         break;
       case 'score':
-        title = `${school.school} - 分数线趋势`;
+        title = `${school.school} - 总分数线趋势`;
         data = (school.fsx || []).map(item => ({
           year: item.year,
           value: item.total
         }));
+        break;
+      case 'english':
+        title = `${school.school} - 英语分数趋势`;
+        data = (school.fsx || []).map(item => {
+          const englishScore = item.data.find(s => s.subject === '英语');
+          return {
+            year: item.year,
+            value: englishScore ? englishScore.score : '/'
+          };
+        });
+        break;
+      case 'math':
+        title = `${school.school} - 数学分数趋势`;
+        data = (school.fsx || []).map(item => {
+          const mathScore = item.data.find(s => s.subject === '数学');
+          return {
+            year: item.year,
+            value: mathScore ? mathScore.score : '/'
+          };
+        });
+        break;
+      case 'major_subject':
+        title = `${school.school} - 专业课分数趋势`;
+        data = (school.fsx || []).map(item => {
+          const majorScore = item.data.find(s => s.subject === '专业课');
+          return {
+            year: item.year,
+            value: majorScore ? majorScore.score : '/'
+          };
+        });
         break;
       case 'employment':
         title = `${school.school} - 就业情况趋势`;

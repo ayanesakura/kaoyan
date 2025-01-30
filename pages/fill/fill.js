@@ -282,42 +282,35 @@ Page({
 
     console.log('请求数据：', requestData);
 
-    // 先跳转到loading页面
-    wx.navigateTo({
-      url: '/pages/loading/loading',
-      success: () => {
-        console.log('跳转到loading页面成功');
-        // 在loading页面打开后再调用接口
-        setTimeout(() => {
-          callService(API_PATHS.chooseSchools, 'POST', requestData)
-            .then(res => {
-              if(Array.isArray(res.data)) {
-                getApp().globalData.analysisResult = {
-                  recommendations: res.data
-                };
-                wx.reLaunch({
-                  url: '/pages/analysis/analysis'
-                });
-              } else {
-                throw new Error('返回数据格式错误');
-              }
-            })
-            .catch(err => {
-              console.error('分析失败:', err);
-              wx.showToast({
-                title: err.message || '分析失败，请重试',
-                icon: 'none'
-              });
-              setTimeout(() => {
-                wx.navigateBack();
-              }, 1500);
-            });
-        }, 500);
-      },
-      fail: (err) => {
-        console.error('跳转到loading页面失败:', err);
-      }
+    // 显示加载提示
+    wx.showLoading({
+      title: '分析中...',
+      mask: true
     });
+
+    // 调用接口
+    callService(API_PATHS.chooseSchools, 'POST', requestData)
+      .then(res => {
+        if(Array.isArray(res.data)) {
+          getApp().globalData.analysisResult = {
+            recommendations: res.data
+          };
+          wx.hideLoading();
+          wx.reLaunch({
+            url: '/pages/analysis/analysis'
+          });
+        } else {
+          throw new Error('返回数据格式错误');
+        }
+      })
+      .catch(err => {
+        console.error('分析失败:', err);
+        wx.hideLoading();
+        wx.showToast({
+          title: err.message || '分析失败，请重试',
+          icon: 'none'
+        });
+      });
   },
 
   // 显示学院专业选择器

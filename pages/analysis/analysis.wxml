@@ -52,9 +52,18 @@
           {{item.totalScore}}
           <view class="mini-trend-btn" bindtap="showTrend" data-type="score" data-index="{{index}}">查看往年趋势</view>
         </view>
-        <view class="row-cell">{{item.englishScore}}</view>
-        <view class="row-cell">{{item.mathScore}}</view>
-        <view class="row-cell">{{item.majorScore}}</view>
+        <view class="row-cell has-btn">
+          {{item.englishScore}}
+          <view class="mini-trend-btn" bindtap="showTrend" data-type="english" data-index="{{index}}">查看往年趋势</view>
+        </view>
+        <view class="row-cell has-btn">
+          {{item.mathScore}}
+          <view class="mini-trend-btn" bindtap="showTrend" data-type="math" data-index="{{index}}">查看往年趋势</view>
+        </view>
+        <view class="row-cell has-btn">
+          {{item.majorScore}}
+          <view class="mini-trend-btn" bindtap="showTrend" data-type="major_subject" data-index="{{index}}">查看往年趋势</view>
+        </view>
         <view class="row-cell has-btn">
           {{item.employment_status}}
           <view class="mini-trend-btn" bindtap="showTrend" data-type="employment" data-index="{{index}}">查看往年趋势</view>
