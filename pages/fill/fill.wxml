@@ -208,7 +208,7 @@
           </view>
         </block>
         <view class="empty" wx:if="{{!isCitySearching && provinceList.length === 0}}">
-          未找到相关城市
+          未找到"{{formData.targetCity}}"相关的城市
         </view>
       </view>
     </view>

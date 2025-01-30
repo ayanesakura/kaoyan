@@ -539,6 +539,17 @@ Page({
     .then(res => {
       console.log('城市搜索接口返回:', res.data);
       
+      // 处理404的情况
+      if (res.data.code === 404) {
+        this.setData({
+          citySearchResults: [],
+          provinceList: [],
+          cityList: [],
+          showCitySelect: true
+        });
+        return;
+      }
+      
       if(Array.isArray(res.data)) {
         // 按省份分组处理数据
         const provinceMap = new Map();
@@ -565,9 +576,11 @@ Page({
     })
     .catch(err => {
       console.error('搜索城市失败:', err);
-      wx.showToast({
-        title: '搜索失败，请重试',
-        icon: 'none'
+      this.setData({
+        citySearchResults: [],
+        provinceList: [],
+        cityList: [],
+        showCitySelect: true
       });
     })
     .finally(() => {
