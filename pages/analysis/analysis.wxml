@@ -33,6 +33,7 @@
       <view class="row-header">专业</view>
       <view class="row-header">报录比</view>
       <view class="row-header">总分数线</view>
+      <view class="row-header">- 政治</view>
       <view class="row-header">- 英语</view>
       <view class="row-header">- 数学</view>
       <view class="row-header">- 专业</view>
@@ -56,6 +57,10 @@
         <view class="row-cell has-btn">
           {{item.totalScore}}
           <view class="mini-trend-btn" bindtap="showTrend" data-type="score" data-index="{{index}}">查看往年趋势</view>
+        </view>
+        <view class="row-cell has-btn">
+          {{item.politicsScore}}
+          <view class="mini-trend-btn" bindtap="showTrend" data-type="politics" data-index="{{index}}">查看往年趋势</view>
         </view>
         <view class="row-cell has-btn">
           {{item.englishScore}}

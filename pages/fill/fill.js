@@ -249,6 +249,27 @@ Page({
     this._debounceCitySearch(value);
   },
 
+  /**
+   * 处理请求数据，将空字符串转换为null
+   */
+  processRequestData(obj) {
+    if (!obj || typeof obj !== 'object') {
+      return obj;
+    }
+
+    const result = {};
+    for (const key in obj) {
+      if (obj[key] === '') {
+        result[key] = null;
+      } else if (typeof obj[key] === 'object') {
+        result[key] = this.processRequestData(obj[key]);
+      } else {
+        result[key] = obj[key];
+      }
+    }
+    return result;
+  },
+
   onSubmit() {
     console.log('点击提交按钮');
     const formData = this.data.formData;
@@ -280,7 +301,9 @@ Page({
       }
     };
 
-    console.log('请求数据：', requestData);
+    // 处理空字符串
+    const processedData = this.processRequestData(requestData);
+    console.log('处理后的请求数据：', processedData);
 
     // 显示加载提示
     wx.showLoading({
@@ -289,26 +312,144 @@ Page({
     });
 
     // 调用接口
-    callService(API_PATHS.chooseSchools, 'POST', requestData)
+    callService(API_PATHS.chooseSchools, 'POST', processedData)
       .then(res => {
-        if(Array.isArray(res.data)) {
-          getApp().globalData.analysisResult = {
-            recommendations: res.data
-          };
-          wx.hideLoading();
-          wx.reLaunch({
-            url: '/pages/analysis/analysis'
-          });
-        } else {
-          throw new Error('返回数据格式错误');
+        // 打印完整的返回数据结构
+        console.log('接口返回原始数据:', JSON.stringify(res, null, 2));
+        
+        // 详细的数据结构分析
+        console.log('数据结构分析:', {
+          resType: typeof res,
+          isNull: res === null,
+          isUndefined: res === undefined,
+          hasData: 'data' in res,
+          isArray: Array.isArray(res),
+          hasNestedData: res?.data?.data ? true : false,
+          nestedDataType: res?.data?.data ? typeof res.data.data : 'undefined',
+          isNestedDataArray: Array.isArray(res?.data?.data),
+          nestedDataLength: Array.isArray(res?.data?.data) ? res.data.data.length : 'not array'
+        });
+        
+        if (!res) {
+          console.error('返回数据为空');
+          throw new Error('返回数据为空');
         }
+
+        // 检查返回数据结构
+        if (typeof res !== 'object') {
+          console.error('返回数据类型错误:', {
+            expectedType: 'object',
+            actualType: typeof res,
+            value: res
+          });
+          throw new Error('返回数据类型错误');
+        }
+
+        // 获取学校数据数组
+        let schoolsData;
+        if (res.data && res.data.data && Array.isArray(res.data.data)) {
+          // 标准返回格式：{ code: 200, data: { data: [...] } }
+          console.log('返回数据是标准格式');
+          schoolsData = res.data.data;
+        } else if (res.data && Array.isArray(res.data)) {
+          // 直接返回数组的情况：{ code: 200, data: [...] }
+          console.log('返回数据是简单数组格式');
+          schoolsData = res.data;
+        } else if (Array.isArray(res)) {
+          // 直接是数组的情况
+          console.log('返回数据直接是数组');
+          schoolsData = res;
+        } else {
+          console.error('无法解析的数据格式:', {
+            res,
+            hasData: 'data' in res,
+            dataType: res.data ? typeof res.data : 'undefined',
+            hasNestedData: res.data && 'data' in res.data
+          });
+          throw new Error('返回数据格式错误: 无法解析');
+        }
+
+        // 检查学校数据数组
+        if (!Array.isArray(schoolsData)) {
+          console.error('schools数据不是数组:', {
+            dataType: typeof schoolsData,
+            data: schoolsData,
+            isArray: Array.isArray(schoolsData),
+            dataStructure: JSON.stringify(schoolsData, null, 2)
+          });
+          throw new Error('返回数据格式错误: schools不是数组');
+        }
+
+        // 检查数组中的每个元素
+        const requiredFields = ['school_name', 'major', 'departments', 'subjects'];
+        console.log('开始检查必要字段:', {
+          requiredFields,
+          dataLength: schoolsData.length,
+          firstItem: schoolsData[0]
+        });
+
+        schoolsData.forEach((item, index) => {
+          console.log(`检查第${index + 1}条数据:`, {
+            hasSchoolName: 'school_name' in item,
+            hasMajor: 'major' in item,
+            hasDepartments: 'departments' in item,
+            hasSubjects: 'subjects' in item,
+            item: item
+          });
+        });
+
+        const invalidItems = schoolsData.filter(item => {
+          const missingFields = requiredFields.filter(field => !item[field]);
+          if (missingFields.length > 0) {
+            console.log('发现无效数据项:', {
+              item,
+              missingFields
+            });
+          }
+          return missingFields.length > 0;
+        });
+
+        if (invalidItems.length > 0) {
+          console.error('部分数据缺少必要字段:', {
+            invalidItemsCount: invalidItems.length,
+            invalidItems: invalidItems,
+            missingFieldsDetail: invalidItems.map(item => ({
+              item,
+              missingFields: requiredFields.filter(field => !item[field])
+            }))
+          });
+          throw new Error('部分数据格式不正确');
+        }
+
+        // 存储分析结果
+        const app = getApp();
+        app.globalData.analysisResult = {
+          recommendations: schoolsData
+        };
+        
+        console.log('存储到全局数据:', {
+          recommendationsCount: schoolsData.length,
+          firstItem: schoolsData[0],
+          globalData: app.globalData.analysisResult
+        });
+
+        wx.hideLoading();
+        wx.reLaunch({
+          url: '/pages/analysis/analysis'
+        });
       })
       .catch(err => {
-        console.error('分析失败:', err);
+        console.error('分析失败:', {
+          error: err,
+          message: err.message,
+          stack: err.stack,
+          type: err.constructor.name
+        });
         wx.hideLoading();
         wx.showToast({
           title: err.message || '分析失败，请重试',
-          icon: 'none'
+          icon: 'none',
+          duration: 3000
         });
       });
   },
@@ -621,6 +762,92 @@ Page({
       provinceList: [],
       cityList: []
     });
+  },
+
+  /**
+   * 分析选校结果
+   */
+  async analyzeSchools() {
+    try {
+      wx.showLoading({
+        title: '分析中...',
+        mask: true
+      });
+
+      const formData = this.data.formData;
+      console.log('发送分析请求，表单数据:', formData);
+
+      const res = await wx.cloud.callFunction({
+        name: 'choose_schools',
+        data: formData
+      });
+
+      console.log('接口返回原始数据:', res);
+
+      if (!res || !res.result) {
+        console.error('接口返回数据为空:', res);
+        throw new Error('返回数据为空');
+      }
+
+      if (res.result.code !== 200) {
+        console.error('接口返回错误码:', res.result.code);
+        throw new Error('接口返回错误: ' + res.result.code);
+      }
+
+      if (!res.result.data) {
+        console.error('接口返回数据缺少data字段:', res.result);
+        throw new Error('返回数据格式错误');
+      }
+
+      // 验证关键数据字段
+      const data = res.result.data;
+      console.log('解析后的数据:', data);
+
+      if (!Array.isArray(data.fsx)) {
+        console.error('分数线数据格式错误:', data.fsx);
+        throw new Error('分数线数据格式错误');
+      }
+
+      // 验证必要字段
+      const requiredFields = ['school_name', 'major', 'departments', 'subjects'];
+      const missingFields = requiredFields.filter(field => !data[field]);
+      if (missingFields.length > 0) {
+        console.error('缺少必要字段:', missingFields);
+        throw new Error('数据缺少必要字段: ' + missingFields.join(', '));
+      }
+
+      // 验证分数数据格式
+      if (data.fsx.length > 0) {
+        const firstYear = data.fsx[0];
+        if (!firstYear.year || !Array.isArray(firstYear.data)) {
+          console.error('分数数据格式错误:', firstYear);
+          throw new Error('分数数据格式错误');
+        }
+      }
+
+      // 存储分析结果
+      const app = getApp();
+      app.globalData.analysisResult = {
+        recommendations: res.result.data
+      };
+      
+      console.log('存储到全局数据:', app.globalData.analysisResult);
+
+      // 跳转到分析页面
+      wx.navigateTo({
+        url: '/pages/analysis/analysis'
+      });
+
+    } catch (error) {
+      console.error('分析失败:', error);
+      wx.showToast({
+        title: '分析失败: ' + error.message,
+        icon: 'none',
+        duration: 3000
+      });
+    } finally {
+      wx.hideLoading();
+    }
   },
 }) 
 

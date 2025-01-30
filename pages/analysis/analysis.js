@@ -17,10 +17,10 @@ Page({
   /**
    * 处理单个学校的分数数据
    */
-  processScoreData(fsx, subject) {
+  processScoreData(fsx, subjectName) {
     if (!fsx || !fsx[0] || !fsx[0].data) return '/';
     const subjectData = fsx[0].data.find(function(s) {
-      return s.subject === subject;
+      return s.subject === subjectName;
     });
     return subjectData ? subjectData.score : '/';
   },
@@ -28,14 +28,22 @@ Page({
   /**
    * 处理趋势图表数据
    */
-  processChartData(fsx, dataType) {
+  processChartData(fsx, subjectName) {
     if (!fsx || !Array.isArray(fsx)) {
       console.log('无效的分数线数据');
       return null;
     }
     
-    // 按年份排序
-    const sortedData = [...fsx].sort((a, b) => a.year - b.year);
+    // 按年份去重，保留最新的数据
+    const uniqueData = {};
+    fsx.forEach(item => {
+      if (!uniqueData[item.year] || item.year > uniqueData[item.year].year) {
+        uniqueData[item.year] = item;
+      }
+    });
+    
+    // 转换为数组并按年份排序
+    const sortedData = Object.values(uniqueData).sort((a, b) => a.year - b.year);
     
     const years = [];
     const values = [];
@@ -45,11 +53,9 @@ Page({
         years.push(item.year);
         let value = null;
         
-        if (dataType === 'total') {
-          value = parseInt(item.total) || null;
-        } else if (item.data) {
-          const subjectData = item.data.find(s => s.subject === dataType);
-          value = subjectData ? (parseInt(subjectData.score) || null) : null;
+        if (item.data) {
+          const subjectData = item.data.find(s => s.subject === subjectName);
+          value = subjectData ? (parseFloat(subjectData.score) || null) : null;
         }
         
         values.push(value);
@@ -75,22 +81,26 @@ Page({
     if(analysisResult && analysisResult.recommendations) {
       // 处理每个学校的数据
       const processedData = analysisResult.recommendations.map(item => {
+        const data = item.data || item;  // 适配新的数据结构
         return {
-          ...item,
+          ...data,
           // 预处理分数数据
-          englishScore: this.processScoreData(item.fsx, '英语'),
-          mathScore: this.processScoreData(item.fsx, '数学'),
-          majorScore: this.processScoreData(item.fsx, '专业课'),
+          englishScore: this.processScoreData(data.fsx, '外语科二'),
+          mathScore: this.processScoreData(data.fsx, '科三'),
+          majorScore: this.processScoreData(data.fsx, '科四'),
+          politicsScore: this.processScoreData(data.fsx, '政治科一'),
           // 处理其他数据
-          totalScore: item.fsx && item.fsx[0] ? item.fsx[0].total : '/',
-          blbRatio: item.blb && item.blb[0] ? item.blb[0].blb : '/',
-          departments: item.departments || '/',
-          probability: item.probability || '/',
-          major: item.major || '/',
-          employment_status: item.employment_status || '/',
-          further_study_ratio: item.further_study_ratio || '/',
-          civil_service_ratio: item.civil_service_ratio || '/',
-          employment_ratio: item.employment_ratio || '/'
+          totalScore: data.fsx && data.fsx[0] ? 
+            data.fsx[0].data.find(s => s.subject === '总分')?.score || '/' : '/',
+          subjects: data.subjects || [],
+          school: data.school_name,
+          departments: data.departments || '/',
+          probability: data.probability || '/',
+          major: data.major || '/',
+          employment_status: data.employment_status || '/',
+          further_study_ratio: data.further_study_ratio || '/',
+          civil_service_ratio: data.civil_service_ratio || '/',
+          employment_ratio: data.employment_ratio || '/'
         };
       });
 
@@ -166,22 +176,27 @@ Page({
       case 'score':
         title = `${school.school} - 总分数线趋势`;
         showChart = true;
-        chartData = this.processChartData(school.fsx, 'total');
+        chartData = this.processChartData(school.fsx, '总分');
         break;
       case 'english':
-        title = `${school.school} - 英语分数趋势`;
+        title = `${school.school} - ${school.subjects.find(s => s.name === '外语科二')?.value || '英语'}分数趋势`;
         showChart = true;
-        chartData = this.processChartData(school.fsx, '英语');
+        chartData = this.processChartData(school.fsx, '外语科二');
         break;
       case 'math':
-        title = `${school.school} - 数学分数趋势`;
+        title = `${school.school} - ${school.subjects.find(s => s.name === '科三')?.value || '数学'}分数趋势`;
         showChart = true;
-        chartData = this.processChartData(school.fsx, '数学');
+        chartData = this.processChartData(school.fsx, '科三');
         break;
       case 'major_subject':
-        title = `${school.school} - 专业课分数趋势`;
+        title = `${school.school} - ${school.subjects.find(s => s.name === '科四')?.value || '专业课'}分数趋势`;
         showChart = true;
-        chartData = this.processChartData(school.fsx, '专业课');
+        chartData = this.processChartData(school.fsx, '科四');
+        break;
+      case 'politics':
+        title = `${school.school} - ${school.subjects.find(s => s.name === '政治科一')?.value || '政治'}分数趋势`;
+        showChart = true;
+        chartData = this.processChartData(school.fsx, '政治科一');
         break;
       case 'employment':
         title = `${school.school} - 就业情况趋势`;
