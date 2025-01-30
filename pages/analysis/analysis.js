@@ -5,7 +5,11 @@ Page({
    * 页面的初始数据
    */
   data: {
-    recommendations: []
+    recommendations: [],
+    showTrend: false,
+    trendTitle: '',
+    trendData: [],
+    currentSchool: null
   },
 
   /**
@@ -92,6 +96,68 @@ Page({
    */
   onReachBottom() {
 
+  },
+
+  /**
+   * 显示趋势数据
+   */
+  showTrend(e) {
+    const { type, index } = e.currentTarget.dataset;
+    const school = this.data.recommendations[index];
+    let title = '';
+    let data = [];
+
+    switch(type) {
+      case 'blb':
+        title = `${school.school} - 报录比趋势`;
+        data = (school.blb || []).map(item => ({
+          year: item.year,
+          value: item.blb
+        }));
+        break;
+      case 'score':
+        title = `${school.school} - 分数线趋势`;
+        data = (school.fsx || []).map(item => ({
+          year: item.year,
+          value: item.total
+        }));
+        break;
+      case 'employment':
+        title = `${school.school} - 就业情况趋势`;
+        data = school.employment_trend || [];
+        break;
+      case 'further':
+        title = `${school.school} - 深造占比趋势`;
+        data = school.further_study_trend || [];
+        break;
+      case 'civil':
+        title = `${school.school} - 考公占比趋势`;
+        data = school.civil_service_trend || [];
+        break;
+      case 'job':
+        title = `${school.school} - 就业占比趋势`;
+        data = school.employment_ratio_trend || [];
+        break;
+    }
+
+    this.setData({
+      showTrend: true,
+      trendTitle: title,
+      trendData: data,
+      currentSchool: school
+    });
+  },
+
+  /**
+   * 关闭趋势面板
+   */
+  closeTrend() {
+    this.setData({
+      showTrend: false,
+      trendTitle: '',
+      trendData: [],
+      currentSchool: null
+    });
   },
 
   /**

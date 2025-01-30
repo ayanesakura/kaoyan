@@ -2,6 +2,23 @@
   <view class="title">对比结果</view>
   <view class="subtitle">我们根据你的意向，结合大数据，生成排名前5的大学及专业</view>
   
+  <!-- 遮罩层和趋势展示区域 -->
+  <block wx:if="{{showTrend}}">
+    <view class="mask" bindtap="closeTrend"></view>
+    <view class="trend-panel">
+      <view class="trend-header">
+        <text class="trend-title">{{trendTitle}}</text>
+        <text class="close-btn" bindtap="closeTrend">×</text>
+      </view>
+      <view class="trend-content">
+        <view class="trend-item" wx:for="{{trendData}}" wx:key="year">
+          <text class="trend-year">{{item.year}}年</text>
+          <text class="trend-value">{{item.value}}</text>
+        </view>
+      </view>
+    </view>
+  </block>
+  
   <view class="comparison-table">
     <!-- 标签列 -->
     <view class="label-column">
@@ -27,18 +44,33 @@
         <view class="row-cell">{{item.departments}}</view>
         <view class="row-cell">{{item.probability}}</view>
         <view class="row-cell">{{item.major}}</view>
-        <view class="row-cell">{{item.blbRatio}}</view>
-        <view class="row-cell">{{item.totalScore}}</view>
+        <view class="row-cell has-btn">
+          {{item.blbRatio}}
+          <view class="mini-trend-btn" bindtap="showTrend" data-type="blb" data-index="{{index}}">查看往年趋势</view>
+        </view>
+        <view class="row-cell has-btn">
+          {{item.totalScore}}
+          <view class="mini-trend-btn" bindtap="showTrend" data-type="score" data-index="{{index}}">查看往年趋势</view>
+        </view>
         <view class="row-cell">{{item.englishScore}}</view>
         <view class="row-cell">{{item.mathScore}}</view>
         <view class="row-cell">{{item.majorScore}}</view>
-        <view class="row-cell">{{item.employment_status}}</view>
-        <view class="row-cell">{{item.further_study_ratio}}</view>
-        <view class="row-cell">{{item.civil_service_ratio}}</view>
-        <view class="row-cell">{{item.employment_ratio}}</view>
-        
-        <!-- 趋势按钮 -->
-        <view class="trend-btn">查看往年趋势</view>
+        <view class="row-cell has-btn">
+          {{item.employment_status}}
+          <view class="mini-trend-btn" bindtap="showTrend" data-type="employment" data-index="{{index}}">查看往年趋势</view>
+        </view>
+        <view class="row-cell has-btn">
+          {{item.further_study_ratio}}
+          <view class="mini-trend-btn" bindtap="showTrend" data-type="further" data-index="{{index}}">查看往年趋势</view>
+        </view>
+        <view class="row-cell has-btn">
+          {{item.civil_service_ratio}}
+          <view class="mini-trend-btn" bindtap="showTrend" data-type="civil" data-index="{{index}}">查看往年趋势</view>
+        </view>
+        <view class="row-cell has-btn">
+          {{item.employment_ratio}}
+          <view class="mini-trend-btn" bindtap="showTrend" data-type="job" data-index="{{index}}">查看往年趋势</view>
+        </view>
       </view>
     </scroll-view>
   </view>
