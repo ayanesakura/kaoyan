@@ -70,8 +70,14 @@
 
 .trend-content {
   padding: 20rpx 30rpx;
-  max-height: 400rpx;
+  max-height: 600rpx;
   overflow-y: auto;
+}
+
+.trend-content.chart-mode {
+  padding: 0;
+  height: 600rpx;
+  overflow: hidden;
 }
 
 .trend-item {

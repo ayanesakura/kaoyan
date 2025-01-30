@@ -9,7 +9,9 @@ Page({
     showTrend: false,
     trendTitle: '',
     trendData: [],
-    currentSchool: null
+    currentSchool: null,
+    showChart: false,
+    chartData: null
   },
 
   /**
@@ -21,6 +23,48 @@ Page({
       return s.subject === subject;
     });
     return subjectData ? subjectData.score : '/';
+  },
+
+  /**
+   * 处理趋势图表数据
+   */
+  processChartData(fsx, dataType) {
+    if (!fsx || !Array.isArray(fsx)) {
+      console.log('无效的分数线数据');
+      return null;
+    }
+    
+    // 按年份排序
+    const sortedData = [...fsx].sort((a, b) => a.year - b.year);
+    
+    const years = [];
+    const values = [];
+    
+    sortedData.forEach(item => {
+      if (item.year) {
+        years.push(item.year);
+        let value = null;
+        
+        if (dataType === 'total') {
+          value = parseInt(item.total) || null;
+        } else if (item.data) {
+          const subjectData = item.data.find(s => s.subject === dataType);
+          value = subjectData ? (parseInt(subjectData.score) || null) : null;
+        }
+        
+        values.push(value);
+      }
+    });
+
+    console.log('处理后的图表数据:', { years, values });
+    
+    // 确保有有效数据
+    if (years.length === 0 || values.every(v => v === null)) {
+      console.log('没有有效的趋势数据');
+      return null;
+    }
+    
+    return { years, values };
   },
 
   /**
@@ -103,9 +147,13 @@ Page({
    */
   showTrend(e) {
     const { type, index } = e.currentTarget.dataset;
+    console.log('显示趋势数据:', { type, index });
+    
     const school = this.data.recommendations[index];
     let title = '';
     let data = [];
+    let showChart = false;
+    let chartData = null;
 
     switch(type) {
       case 'blb':
@@ -117,40 +165,23 @@ Page({
         break;
       case 'score':
         title = `${school.school} - 总分数线趋势`;
-        data = (school.fsx || []).map(item => ({
-          year: item.year,
-          value: item.total
-        }));
+        showChart = true;
+        chartData = this.processChartData(school.fsx, 'total');
         break;
       case 'english':
         title = `${school.school} - 英语分数趋势`;
-        data = (school.fsx || []).map(item => {
-          const englishScore = item.data.find(s => s.subject === '英语');
-          return {
-            year: item.year,
-            value: englishScore ? englishScore.score : '/'
-          };
-        });
+        showChart = true;
+        chartData = this.processChartData(school.fsx, '英语');
         break;
       case 'math':
         title = `${school.school} - 数学分数趋势`;
-        data = (school.fsx || []).map(item => {
-          const mathScore = item.data.find(s => s.subject === '数学');
-          return {
-            year: item.year,
-            value: mathScore ? mathScore.score : '/'
-          };
-        });
+        showChart = true;
+        chartData = this.processChartData(school.fsx, '数学');
         break;
       case 'major_subject':
         title = `${school.school} - 专业课分数趋势`;
-        data = (school.fsx || []).map(item => {
-          const majorScore = item.data.find(s => s.subject === '专业课');
-          return {
-            year: item.year,
-            value: majorScore ? majorScore.score : '/'
-          };
-        });
+        showChart = true;
+        chartData = this.processChartData(school.fsx, '专业课');
         break;
       case 'employment':
         title = `${school.school} - 就业情况趋势`;
@@ -170,11 +201,28 @@ Page({
         break;
     }
 
+    console.log('设置数据:', {
+      showChart,
+      chartData,
+      title
+    });
+
+    // 如果是图表模式但没有数据，显示提示
+    if (showChart && !chartData) {
+      wx.showToast({
+        title: '暂无趋势数据',
+        icon: 'none'
+      });
+      return;
+    }
+
     this.setData({
       showTrend: true,
       trendTitle: title,
       trendData: data,
-      currentSchool: school
+      currentSchool: school,
+      showChart,
+      chartData
     });
   },
 
@@ -186,7 +234,9 @@ Page({
       showTrend: false,
       trendTitle: '',
       trendData: [],
-      currentSchool: null
+      currentSchool: null,
+      showChart: false,
+      chartData: null
     });
   },
 

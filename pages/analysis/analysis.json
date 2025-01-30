@@ -1,3 +1,5 @@
 {
-  "usingComponents": {}
+  "usingComponents": {
+    "trend-chart": "../../components/trend-chart/trend-chart"
+  }
 }

@@ -10,11 +10,16 @@
         <text class="trend-title">{{trendTitle}}</text>
         <text class="close-btn" bindtap="closeTrend">×</text>
       </view>
-      <view class="trend-content">
-        <view class="trend-item" wx:for="{{trendData}}" wx:key="year">
-          <text class="trend-year">{{item.year}}年</text>
-          <text class="trend-value">{{item.value}}</text>
-        </view>
+      <view class="trend-content {{showChart ? 'chart-mode' : ''}}">
+        <block wx:if="{{showChart && chartData}}">
+          <trend-chart chart-data="{{chartData}}" title="{{trendTitle}}"></trend-chart>
+        </block>
+        <block wx:else>
+          <view class="trend-item" wx:for="{{trendData}}" wx:key="year">
+            <text class="trend-year">{{item.year}}年</text>
+            <text class="trend-value">{{item.value}}</text>
+          </view>
+        </block>
       </view>
     </view>
   </block>
