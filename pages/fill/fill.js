@@ -20,6 +20,12 @@ Page({
     targetSchoolList: [], // 目标学校搜索结果列表
     showTargetSchoolSelect: false, // 控制目标学校下拉列表显示
     isTargetSearching: false, // 目标学校搜索状态
+    // 添加专业搜索相关状态
+    majorSearchResults: [], // 专业搜索原始结果
+    majorList: [], // 处理后的专业列表
+    directionList: [], // 当前选中专业的方向列表
+    showMajorSelect: false, // 控制专业选择下拉框显示
+    isMajorSearching: false, // 专业搜索状态
     schoolLevels: ['C9', '985', '211', '一本', '二本'],
     schoolLevelIndex: null,
     grades: ['大一', '大二', '大三', '大四'],
@@ -32,8 +38,6 @@ Page({
     if_first_try_index: null,
     subjectIndex: null, // 添加科目选择索引
     collegeList: [], // 学院列表
-    majorList: [], // 当前选中学院的专业列表
-    showCollegePicker: false, // 控制选择器显示
     selectedCollege: '', // 选中的学院
     selectedMajor: '', // 选中的专业
   },
@@ -206,10 +210,30 @@ Page({
     this._debounceTargetSearch(value);
   },
 
-  onTargetMajorInput(e) {
+  // 处理专业输入
+  onTargetMajorInput: function(e) {
+    const value = e.detail.value;
+    console.log('专业输入值:', value);
+    
     this.setData({
-      'formData.targetMajor': e.detail.value
+      'formData.targetMajor': value
     });
+    
+    if (!this.data.formData.targetSchool) {
+      wx.showToast({
+        title: '请先选择目标学校',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    // 创建一个新的防抖函数实例
+    if (!this._debounceMajorSearch) {
+      this._debounceMajorSearch = this.debounce(this.searchMajor, 300);
+    }
+    
+    // 使用缓存的防抖函数
+    this._debounceMajorSearch(value);
   },
 
   onTargetCityInput(e) {
@@ -363,6 +387,119 @@ Page({
       'formData.targetSchool': school,
       showTargetSchoolSelect: false,
       targetSchoolList: []
+    });
+  },
+
+  // 搜索专业
+  searchMajor: function(value) {
+    if(!value) {
+      this.setData({
+        majorSearchResults: [],
+        majorList: [],
+        directionList: [],
+        showMajorSelect: false
+      });
+      return;
+    }
+
+    this.setData({ isMajorSearching: true });
+
+    const requestData = {
+      school: this.data.formData.targetSchool,
+      query: value
+    };
+    
+    console.log('专业搜索接口输入:', requestData);
+
+    callService(API_PATHS.majorSearch, 'POST', requestData)
+    .then(res => {
+      console.log('专业搜索接口返回:', res.data);
+      
+      if(Array.isArray(res.data)) {
+        // 处理搜索结果，按专业分组
+        const majorMap = new Map();
+        res.data.forEach(item => {
+          if (!majorMap.has(item.major_name)) {
+            majorMap.set(item.major_name, []);
+          }
+          if (item.fx_name) {
+            majorMap.get(item.major_name).push(item.fx_name);
+          }
+        });
+        
+        // 转换为数组格式
+        const majorList = Array.from(majorMap.keys());
+        
+        console.log('处理后的专业列表:', majorList);
+        console.log('当前showMajorSelect状态:', this.data.showMajorSelect);
+        
+        this.setData({
+          majorSearchResults: res.data,
+          majorList: majorList,
+          showMajorSelect: true,
+          directionList: [] // 清空方向列表
+        }, () => {
+          // 在状态更新后检查
+          console.log('更新后的状态:', {
+            showMajorSelect: this.data.showMajorSelect,
+            majorListLength: this.data.majorList.length,
+            majorSearchResultsLength: this.data.majorSearchResults.length
+          });
+        });
+      } else {
+        throw new Error('搜索返回数据格式错误');
+      }
+    })
+    .catch(err => {
+      console.error('搜索专业失败:', err);
+      wx.showToast({
+        title: '搜索失败，请重试',
+        icon: 'none'
+      });
+    })
+    .finally(() => {
+      this.setData({ isMajorSearching: false });
+      // 检查搜索完成后的状态
+      console.log('搜索完成后的状态:', {
+        showMajorSelect: this.data.showMajorSelect,
+        isMajorSearching: this.data.isMajorSearching
+      });
+    });
+  },
+
+  // 关闭专业选择器
+  closeMajorSelect: function() {
+    this.setData({
+      showMajorSelect: false,
+      majorList: [],
+      directionList: []
+    });
+  },
+
+  // 选择专业
+  onSelectMajor: function(e) {
+    const major = e.currentTarget.dataset.major;
+    // 查找该专业的所有方向
+    const directions = this.data.majorSearchResults
+      .filter(item => item.major_name === major)
+      .map(item => item.fx_name)
+      .filter(Boolean); // 过滤掉空值
+    
+    this.setData({
+      selectedMajor: major,
+      directionList: directions,
+      'formData.targetMajor': major // 如果用户不选择方向，就使用专业名
+    });
+  },
+
+  // 选择方向
+  onSelectDirection: function(e) {
+    const direction = e.currentTarget.dataset.direction;
+    this.setData({
+      'formData.targetMajor': `${this.data.selectedMajor}(${direction})`,
+      showMajorSelect: false,
+      majorList: [],
+      directionList: []
     });
   },
 }) 
