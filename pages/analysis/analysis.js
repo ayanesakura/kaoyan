@@ -12,7 +12,9 @@ Page({
     currentSchool: null,
     showChart: false,
     chartData: null,
-    chartUnit: '分'  // 添加默认单位
+    chartUnit: '分',  // 添加默认单位
+    userInfo: {},
+    targetInfo: {}
   },
 
   /**
@@ -521,6 +523,29 @@ Page({
           title: '页面跳转失败',
           icon: 'none'
         });
+      }
+    });
+  },
+
+  // 开始AI分析
+  startAIAnalysis() {
+    const analysisData = {
+      user_info: {
+        school: this.data.userInfo.school,
+        major: `${this.data.userInfo.department} ${this.data.userInfo.major}`,
+        grade: this.data.userInfo.grade,
+        is_first_time: this.data.userInfo.is_first_time,
+        good_at_subject: this.data.userInfo.good_at_subject
+      },
+      target_info: {
+        school_level: this.data.targetInfo.school_level
+      }
+    };
+
+    wx.navigateTo({
+      url: '/pages/ai_analysis/ai_analysis',
+      success: (res) => {
+        res.eventChannel.emit('acceptAnalysisData', analysisData);
       }
     });
   }

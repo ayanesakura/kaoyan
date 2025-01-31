@@ -1,0 +1,5 @@
+<view class="container">
+  <view class="content">
+    <text class="analysis-text">{{content}}</text>
+  </view>
+</view> 

@@ -400,3 +400,26 @@
   margin-left: 10rpx;
   flex-shrink: 0;
 }
+
+.btn-container {
+  padding: 32rpx;
+  margin-bottom: 32rpx;
+}
+
+.ai-btn {
+  width: 100%;
+  height: 88rpx;
+  background: #87CEEB;
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 500;
+  border-radius: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 16rpx rgba(135, 206, 235, 0.3);
+}
+
+.ai-btn:active {
+  opacity: 0.9;
+}

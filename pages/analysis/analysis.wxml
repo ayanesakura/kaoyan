@@ -105,4 +105,9 @@
       </view>
     </scroll-view>
   </view>
+
+  <!-- AI分析按钮 -->
+  <view class="btn-container">
+    <button class="ai-btn" bindtap="startAIAnalysis">AI分析</button>
+  </view>
 </view> 

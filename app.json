@@ -5,7 +5,8 @@
     "pages/fill/fill",
     "pages/loading/loading",
     "pages/profile/profile",
-    "pages/directions/directions"
+    "pages/directions/directions",
+    "pages/ai_analysis/ai_analysis"
   ],
   "window": {
     "backgroundTextStyle": "light",
