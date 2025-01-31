@@ -234,8 +234,8 @@ Page({
       // 处理学校名称和代码
       const schoolDisplay = `${item.school_name}\n(${item.school_code})`;
 
-      // 处理专业名称和代码
-      const majorDisplay = `${item.major}\n(${item.major_code})`;
+      // 处理专业名称和代码 - 修改这里,不再合并显示
+      const majorDisplay = item.major;
 
       // 处理研究方向信息
       const directionInfo = item.directions[0];
@@ -250,7 +250,7 @@ Page({
         ...item,
         // 基本信息
         school: schoolDisplay,
-        major: majorDisplay,
+        major: majorDisplay, // 只保留专业名称
         departments: item.departments,
         
         // 研究方向相关信息

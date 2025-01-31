@@ -54,14 +54,10 @@
         <view class="row-cell">{{item.departments}}</view>
         <view class="row-cell">{{item.probability}}</view>
         <view class="cell major-cell" bindtap="showDirections" data-index="{{index}}">
-          <view class="cell-title">专业</view>
           <view class="cell-content">
             <view class="major-info">
               <text class="major-name">{{item.major}}</text>
-              <text class="major-code" wx:if="{{item.major_code}}">({{item.major_code}})</text>
-            </view>
-            <view class="department-info" wx:if="{{item.departments}}">
-              <text class="department-name">{{item.departments}}</text>
+              <text class="major-code">({{item.major_code}})</text>
             </view>
           </view>
           <view class="cell-arrow"></view>

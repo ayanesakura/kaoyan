@@ -12,42 +12,68 @@
     </view>
   </view>
 
-  <!-- 方向列表 -->
-  <view class="directions-list">
-    <view class="direction-card" wx:for="{{directions}}" wx:key="yjfxdm">
-      <!-- 方向基本信息 -->
-      <view class="direction-header">
-        <view class="direction-title">
-          <text class="direction-name">{{item.yjfxmc}}</text>
-          <text class="direction-code">({{item.yjfxdm}})</text>
-        </view>
-        <view class="direction-meta">
-          <text class="meta-item">{{item.ksfs}}</text>
-          <text class="meta-item">{{item.xwlx}}</text>
-          <text class="meta-item">{{item.zsrs}}</text>
-        </view>
+  <!-- Tab栏 -->
+  <scroll-view scroll-x enable-flex class="tabs-scroll">
+    <view class="tabs">
+      <view 
+        class="tab-item {{currentTab === index ? 'active' : ''}}" 
+        wx:for="{{directions}}" 
+        wx:key="yjfxdm"
+        bindtap="switchTab"
+        data-index="{{index}}">
+        <text class="tab-text">{{item.yjfxmc}}</text>
       </view>
+    </view>
+  </scroll-view>
 
-      <!-- 考试科目 -->
-      <view class="subjects-section">
-        <view class="section-title">考试科目</view>
-        <view class="subjects-list">
+  <!-- 内容区域 -->
+  <swiper 
+    class="content-swiper" 
+    current="{{currentTab}}" 
+    bindchange="swiperChange"
+    style="height: calc(100vh - 300rpx);">
+    <swiper-item wx:for="{{directions}}" wx:key="yjfxdm" class="swiper-item">
+      <scroll-view scroll-y class="direction-content">
+        <!-- 方向基本信息 -->
+        <view class="info-section">
+          <view class="info-item">
+            <text class="info-label">研究方向</text>
+            <text class="info-value">{{item.yjfxmc}} ({{item.yjfxdm}})</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">考试方式</text>
+            <text class="info-value">{{item.ksfs}}</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">学位类型</text>
+            <text class="info-value">{{item.xwlx}}</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">招生人数</text>
+            <text class="info-value">{{item.zsrs}}</text>
+          </view>
+        </view>
+
+        <!-- 考试科目 -->
+        <view class="subjects-section">
+          <view class="section-title">考试科目</view>
           <view class="subject-group" wx:for="{{item.subjects}}" wx:for-item="group" wx:key="index">
             <view class="group-title">科目组合 {{index + 1}}</view>
-            <view class="subject-item" wx:for="{{group}}" wx:for-item="subject" wx:key="code">
-              <text class="subject-name">{{subject.name}}</text>
-              <text class="subject-value">{{subject.value}}</text>
-              <text class="subject-code">({{subject.code}})</text>
+            <view class="subject-list">
+              <view class="subject-item" wx:for="{{group}}" wx:for-item="subject" wx:key="code">
+                <text class="subject-name">{{subject.name}}</text>
+                <text class="subject-value">{{subject.value}}</text>
+              </view>
             </view>
           </view>
         </view>
-      </view>
 
-      <!-- 备注信息 -->
-      <view class="remarks-section" wx:if="{{item.bz}}">
-        <view class="section-title">备注</view>
-        <text class="remarks-content">{{item.bz}}</text>
-      </view>
-    </view>
-  </view>
+        <!-- 备注信息 -->
+        <view class="remarks-section" wx:if="{{item.bz}}">
+          <view class="section-title">备注说明</view>
+          <text class="remarks-content">{{item.bz}}</text>
+        </view>
+      </scroll-view>
+    </swiper-item>
+  </swiper>
 </view> 
