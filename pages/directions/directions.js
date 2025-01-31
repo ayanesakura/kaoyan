@@ -131,6 +131,13 @@ Page({
     });
   },
 
+  // 返回上一页
+  navigateBack() {
+    wx.navigateBack({
+      delta: 1
+    })
+  },
+
   /**
    * 用户点击右上角分享
    */
