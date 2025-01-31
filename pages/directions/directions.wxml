@@ -1,19 +1,29 @@
 <view class="container">
   <!-- 顶部信息 -->
   <view class="header">
-    <view class="school-info">
-      <text class="school-name">{{school}}</text>
-      <text class="school-code">({{school_code}})</text>
-    </view>
-    <view class="major-info">
-      <text class="department">{{departments}}</text>
-      <text class="major-name">{{major}}</text>
-      <text class="major-code">({{major_code}})</text>
+    <view class="header-bg"></view>
+    <view class="header-content">
+      <view class="school-info">
+        <view class="school-main">
+          <text class="school-name">{{school}}</text>
+          <text class="school-code">{{school_code}}</text>
+        </view>
+        <view class="school-extra">
+          <text class="department">{{departments}}</text>
+        </view>
+      </view>
+      <view class="divider"></view>
+      <view class="major-info">
+        <view class="major-main">
+          <text class="major-name">{{major}}</text>
+          <text class="major-code">{{major_code}}</text>
+        </view>
+      </view>
     </view>
   </view>
 
   <!-- Tab栏 -->
-  <scroll-view scroll-x enable-flex class="tabs-scroll">
+  <scroll-view scroll-x enable-flex class="tabs-scroll" scroll-left="{{scrollLeft}}">
     <view class="tabs">
       <view 
         class="tab-item {{currentTab === index ? 'active' : ''}}" 
