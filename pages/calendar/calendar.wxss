@@ -54,6 +54,12 @@ page {
   object-fit: cover;
 }
 
+.share-icon {
+  width: 40rpx;
+  height: 40rpx;
+  opacity: 0.6;
+}
+
 /* 日历选择器 */
 .calendar-tabs {
   display: flex;
@@ -64,7 +70,6 @@ page {
   position: sticky;
   top: 0;
   z-index: 99;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
 }
 
 .tab {
@@ -319,6 +324,12 @@ page {
 .info-value.number {
   font-size: 30rpx;
   font-weight: 500;
+}
+
+.food-icon {
+  width: 44rpx;
+  height: 44rpx;
+  margin-bottom: 6rpx;
 }
 
 /* 运势描述 */

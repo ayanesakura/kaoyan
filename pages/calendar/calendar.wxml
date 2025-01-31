@@ -88,6 +88,7 @@
       </view>
       <view class="info-item">
         <text class="info-label">幸运食物</text>
+        <image class="food-icon" src="/assets/icons/cookie.png"></image>
         <text class="info-value">{{luckyFood}}</text>
       </view>
     </view>
