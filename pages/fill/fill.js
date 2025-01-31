@@ -395,7 +395,7 @@ Page({
         }
 
         // 检查数组中的每个元素
-        const requiredFields = ['school_name', 'major', 'departments', 'subjects'];
+        const requiredFields = ['school_name', 'major', 'departments'];
         console.log('开始检查必要字段:', {
           requiredFields,
           dataLength: schoolsData.length,

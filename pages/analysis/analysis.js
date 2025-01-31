@@ -146,52 +146,154 @@ Page({
   },
 
   /**
+   * 验证数据是否有效
+   */
+  validateData(item) {
+    // 检查必要字段
+    const requiredFields = [
+      'school_name',
+      'school_code',
+      'major',
+      'major_code',
+      'departments'
+    ];
+
+    const missingFields = requiredFields.filter(field => !item[field]);
+    
+    if (missingFields.length > 0) {
+      console.error('缺少必要字段:', missingFields);
+      return false;
+    }
+
+    // 检查directions数组
+    if (!Array.isArray(item.directions) || item.directions.length === 0) {
+      console.error('directions字段无效');
+      return false;
+    }
+
+    // 检查第一个direction的必要字段
+    const direction = item.directions[0];
+    const requiredDirectionFields = [
+      'yjfxmc',
+      'yjfxdm',
+      'ksfs',
+      'xwlx',
+      'zsrs',
+      'subjects'
+    ];
+
+    const missingDirectionFields = requiredDirectionFields.filter(field => !direction[field]);
+    
+    if (missingDirectionFields.length > 0) {
+      console.error('direction缺少必要字段:', missingDirectionFields);
+      return false;
+    }
+
+    // 检查subjects数组
+    if (!Array.isArray(direction.subjects) || direction.subjects.length === 0 || 
+        !Array.isArray(direction.subjects[0]) || direction.subjects[0].length === 0) {
+      console.error('subjects字段无效');
+      return false;
+    }
+
+    return true;
+  },
+
+  /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
     const analysisResult = getApp().globalData.analysisResult;
-    if(analysisResult && analysisResult.recommendations) {
-      // 处理每个学校的数据
-      const processedData = analysisResult.recommendations.map(item => {
-        const data = item.data || item;  // 适配新的数据结构
-
-        // 处理学校名称和代码
-        const schoolDisplay = data.school_name ? 
-          (data.school_code ? `${data.school_name}\n(${data.school_code})` : data.school_name) : 
-          '/';
-
-        // 处理专业名称和代码
-        const majorDisplay = data.major ? 
-          (data.major_code ? `${data.major}\n(${data.major_code})` : data.major) : 
-          '/';
-
-        return {
-          ...data,
-          // 预处理分数数据
-          englishScore: this.processScoreData(data.fsx, '外语科二'),
-          mathScore: this.processScoreData(data.fsx, '科三'),
-          majorScore: this.processScoreData(data.fsx, '科四'),
-          politicsScore: this.processScoreData(data.fsx, '政治科一'),
-          // 处理其他数据
-          totalScore: data.fsx && data.fsx[0] ? 
-            data.fsx[0].data.find(s => s.subject === '总分')?.score || '/' : '/',
-          blbRatio: this.processBlbRatio(data.blb),
-          school: schoolDisplay,  // 使用处理后的学校显示
-          departments: data.departments || '/',
-          probability: data.probability || '/',
-          major: majorDisplay,  // 使用处理后的专业显示
-          direction: data.direction || '/',
-          employment_status: data.employment_status || '/',
-          further_study_ratio: data.further_study_ratio || '/',
-          civil_service_ratio: data.civil_service_ratio || '/',
-          employment_ratio: data.employment_ratio || '/'
-        };
+    if (!analysisResult || !analysisResult.recommendations) {
+      console.error('接口返回数据格式错误:', analysisResult);
+      wx.showToast({
+        title: '数据加载失败',
+        icon: 'none'
       });
-
-      this.setData({
-        recommendations: processedData
-      });
+      return;
     }
+
+    const schoolsData = analysisResult.recommendations;
+    if (!Array.isArray(schoolsData)) {
+      console.error('recommendations不是数组:', schoolsData);
+      wx.showToast({
+        title: '数据格式错误',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 处理每个学校的数据
+    const processedData = schoolsData.map(item => {
+      // 验证数据有效性
+      if (!this.validateData(item)) {
+        console.error('数据验证失败:', item);
+        return null;
+      }
+
+      // 处理学校名称和代码
+      const schoolDisplay = `${item.school_name}\n(${item.school_code})`;
+
+      // 处理专业名称和代码
+      const majorDisplay = `${item.major}\n(${item.major_code})`;
+
+      // 处理研究方向信息
+      const directionInfo = item.directions[0];
+      const directionDisplay = `${directionInfo.yjfxmc}\n(${directionInfo.yjfxdm})`;
+
+      // 处理考试科目（显示第一个方向的第一组考试科目）
+      const subjectsDisplay = directionInfo.subjects[0]
+        .map(s => `${s.value}(${s.code})`)
+        .join('、');
+
+      return {
+        ...item,
+        // 基本信息
+        school: schoolDisplay,
+        major: majorDisplay,
+        departments: item.departments,
+        
+        // 研究方向相关信息
+        direction: directionDisplay,
+        ksfs: directionInfo.ksfs,
+        xwlx: directionInfo.xwlx,
+        zsrs: directionInfo.zsrs,
+        zybz: directionInfo.bz || '/',
+        
+        // 考试科目
+        subjectsDisplay,
+        directions: item.directions,
+
+        // 预处理分数数据
+        englishScore: this.processScoreData(item.fsx, '外语科二'),
+        mathScore: this.processScoreData(item.fsx, '科三'),
+        majorScore: this.processScoreData(item.fsx, '科四'),
+        politicsScore: this.processScoreData(item.fsx, '政治科一'),
+        totalScore: item.fsx && item.fsx[0] ? 
+          item.fsx[0].data.find(s => s.subject === '总分')?.score || '/' : '/',
+
+        // 处理报录比数据
+        blbRatio: this.processBlbRatio(item.blb),
+
+        // 就业相关信息（处理空数组情况）
+        employment_status: item.jy && item.jy[0]?.status || '/',
+        further_study_ratio: item.jy && item.jy[0]?.further_study_ratio || '/',
+        civil_service_ratio: item.jy && item.jy[0]?.civil_service_ratio || '/',
+        employment_ratio: item.jy && item.jy[0]?.employment_ratio || '/'
+      };
+    }).filter(item => item !== null); // 过滤掉无效的数据
+
+    if (processedData.length === 0) {
+      wx.showToast({
+        title: '没有有效的数据',
+        icon: 'none'
+      });
+      return;
+    }
+
+    this.setData({
+      recommendations: processedData
+    });
   },
 
   /**
@@ -240,16 +342,20 @@ Page({
    * 获取科目显示名称
    */
   getSubjectDisplayName(school, subjectName) {
-    const subject = school.subjects.find(s => s.name === subjectName);
+    // 从第一个方向的第一组考试科目中获取科目信息
+    if (!school.directions || !school.directions[0] || !school.directions[0].subjects || !school.directions[0].subjects[0]) {
+      return subjectName;
+    }
+
+    const subject = school.directions[0].subjects[0].find(s => s.name === subjectName);
     if (!subject) return subjectName;
 
     // 如果value包含换行符，使用name
-    if (subject.value.includes('\n')) {
-      return subjectName;  // 直接返回原始的科目名称（如'外语科二'）
+    if (subject.value && subject.value.includes('\n')) {
+      return subject.name;
     }
 
-    // 否则使用value
-    return subject.value || subjectName;
+    return `${subject.value}(${subject.code})`;
   },
 
   /**
@@ -260,6 +366,7 @@ Page({
     console.log('显示趋势数据:', { type, index });
     
     const school = this.data.recommendations[index];
+    const schoolName = school.school.split('\n')[0];  // 只使用学校名称，不包含代码
     let title = '';
     let data = [];
     let showChart = false;
@@ -268,51 +375,60 @@ Page({
 
     switch(type) {
       case 'blb':
-        title = `${school.school_name} - 报录比趋势`;
+        title = `${schoolName} - 报录比趋势`;
         showChart = true;
         chartData = this.processBlbData(school.blb);
         chartUnit = '%';  // 报录比使用百分比单位
         break;
       case 'score':
-        title = `${school.school_name} - 总分数线趋势`;
+        title = `${schoolName} - 总分数线趋势`;
         showChart = true;
         chartData = this.processChartData(school.fsx, '总分');
         break;
       case 'english':
-        title = `${school.school_name} - ${this.getSubjectDisplayName(school, '外语科二')}分数趋势`;
+        title = `${schoolName} - ${this.getSubjectDisplayName(school, '外语科二')}分数趋势`;
         showChart = true;
         chartData = this.processChartData(school.fsx, '外语科二');
         break;
       case 'math':
-        title = `${school.school_name} - ${this.getSubjectDisplayName(school, '科三')}分数趋势`;
+        title = `${schoolName} - ${this.getSubjectDisplayName(school, '科三')}分数趋势`;
         showChart = true;
         chartData = this.processChartData(school.fsx, '科三');
         break;
       case 'major_subject':
-        title = `${school.school_name} - ${this.getSubjectDisplayName(school, '科四')}分数趋势`;
+        title = `${schoolName} - ${this.getSubjectDisplayName(school, '科四')}分数趋势`;
         showChart = true;
         chartData = this.processChartData(school.fsx, '科四');
         break;
       case 'politics':
-        title = `${school.school_name} - ${this.getSubjectDisplayName(school, '政治科一')}分数趋势`;
+        title = `${schoolName} - ${this.getSubjectDisplayName(school, '政治科一')}分数趋势`;
         showChart = true;
         chartData = this.processChartData(school.fsx, '政治科一');
         break;
       case 'employment':
-        title = `${school.school_name} - 就业情况趋势`;
-        data = school.employment_trend || [];
+        title = `${schoolName} - 就业情况趋势`;
+        data = school.jy || [];
         break;
       case 'further':
-        title = `${school.school_name} - 深造占比趋势`;
-        data = school.further_study_trend || [];
+        title = `${schoolName} - 深造占比趋势`;
+        data = school.jy ? school.jy.map(item => ({
+          year: item.year,
+          value: item.further_study_ratio
+        })) : [];
         break;
       case 'civil':
-        title = `${school.school_name} - 考公占比趋势`;
-        data = school.civil_service_trend || [];
+        title = `${schoolName} - 考公占比趋势`;
+        data = school.jy ? school.jy.map(item => ({
+          year: item.year,
+          value: item.civil_service_ratio
+        })) : [];
         break;
       case 'job':
-        title = `${school.school_name} - 就业占比趋势`;
-        data = school.employment_ratio_trend || [];
+        title = `${schoolName} - 就业占比趋势`;
+        data = school.jy ? school.jy.map(item => ({
+          year: item.year,
+          value: item.employment_ratio
+        })) : [];
         break;
     }
 
