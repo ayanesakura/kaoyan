@@ -2,11 +2,15 @@
   "pages": [
     "pages/index/index",
     "pages/analysis/analysis",
-    "pages/fill/fill",
-    "pages/loading/loading",
+    "pages/calendar/calendar",
     "pages/profile/profile",
-    "pages/directions/directions",
-    "pages/ai_analysis/ai_analysis"
+    "pages/settings/settings",
+    "pages/about/about",
+    "pages/history/history",
+    "pages/favorites/favorites",
+    "pages/compare/compare",
+    "pages/score-calculator/score-calculator",
+    "pages/timeline/timeline"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -18,15 +22,19 @@
     "color": "#999999",
     "selectedColor": "#87CEEB",
     "backgroundColor": "#ffffff",
-    "borderStyle": "black",
+    "borderStyle": "white",
     "list": [
       {
-        "pagePath": "pages/fill/fill",
+        "pagePath": "pages/index/index",
         "text": "填写"
       },
       {
         "pagePath": "pages/analysis/analysis",
         "text": "分析"
+      },
+      {
+        "pagePath": "pages/calendar/calendar",
+        "text": "日历"
       },
       {
         "pagePath": "pages/profile/profile",
