@@ -1,2 +1,106 @@
 <!--pages/profile/profile.wxml-->
-<text>pages/profile/profile.wxml</text>
+<view class="container">
+  <!-- 顶部设置按钮 -->
+  <view class="settings-btn" bindtap="navigateTo" data-url="/pages/settings/settings">
+    <image class="settings-icon" src="/assets/icons/settings.png"></image>
+  </view>
+
+  <!-- 用户信息区域 -->
+  <view class="profile-header">
+    <view class="avatar-container">
+      <image class="avatar" src="{{userInfo.avatarUrl || '/assets/images/default-avatar.png'}}" mode="aspectFill"></image>
+    </view>
+    <text class="username">{{userInfo.nickName || '未登录'}}</text>
+    <text class="school" wx:if="{{userInfo.school}}">{{userInfo.school}} · {{userInfo.major}}</text>
+    <button class="login-btn" wx:if="{{!userInfo.nickName}}" bindtap="login">登录/注册</button>
+  </view>
+
+  <!-- 数据分析 -->
+  <view class="section">
+    <text class="section-title">数据分析</text>
+    <view class="menu-list">
+      <view class="menu-item" bindtap="navigateTo" data-url="/pages/history/history">
+        <view class="menu-icon-box">
+          <image class="menu-icon" src="/assets/icons/history.png"></image>
+        </view>
+        <view class="menu-info">
+          <text class="menu-text">历史记录</text>
+          <text class="menu-desc">查看历史分析结果</text>
+        </view>
+      </view>
+      <view class="menu-item" bindtap="navigateTo" data-url="/pages/favorites/favorites">
+        <view class="menu-icon-box">
+          <image class="menu-icon" src="/assets/icons/star.png"></image>
+        </view>
+        <view class="menu-info">
+          <text class="menu-text">收藏院校</text>
+          <text class="menu-desc">已收藏的院校和专业</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 实用工具 -->
+  <view class="section">
+    <text class="section-title">实用工具</text>
+    <view class="menu-list">
+      <view class="menu-item" bindtap="navigateTo" data-url="/pages/compare/compare">
+        <view class="menu-icon-box">
+          <image class="menu-icon" src="/assets/icons/compare.png"></image>
+        </view>
+        <view class="menu-info">
+          <text class="menu-text">院校对比</text>
+          <text class="menu-desc">对比分析多所院校数据</text>
+        </view>
+      </view>
+      <view class="menu-item" bindtap="navigateTo" data-url="/pages/score-calculator/score-calculator">
+        <view class="menu-icon-box">
+          <image class="menu-icon" src="/assets/icons/calculator.png"></image>
+        </view>
+        <view class="menu-info">
+          <text class="menu-text">分数计算</text>
+          <text class="menu-desc">计算加权分和预估分数</text>
+        </view>
+      </view>
+      <view class="menu-item" bindtap="navigateTo" data-url="/pages/timeline/timeline">
+        <view class="menu-icon-box">
+          <image class="menu-icon" src="/assets/icons/timeline.png"></image>
+        </view>
+        <view class="menu-info">
+          <text class="menu-text">备考时间轴</text>
+          <text class="menu-desc">规划你的备考进度</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 其他 -->
+  <view class="section">
+    <text class="section-title">其他</text>
+    <view class="menu-list">
+      <view class="menu-item" bindtap="feedback">
+        <view class="menu-icon-box">
+          <image class="menu-icon" src="/assets/icons/feedback.png"></image>
+        </view>
+        <view class="menu-info">
+          <text class="menu-text">意见反馈</text>
+          <text class="menu-desc">帮助我们改进产品</text>
+        </view>
+      </view>
+      <view class="menu-item" bindtap="navigateTo" data-url="/pages/about/about">
+        <view class="menu-icon-box">
+          <image class="menu-icon" src="/assets/icons/about.png"></image>
+        </view>
+        <view class="menu-info">
+          <text class="menu-text">关于我们</text>
+          <text class="menu-desc">了解更多信息</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 版本信息 -->
+  <view class="version-info">
+    <text class="version-text">当前版本 1.0.0</text>
+  </view>
+</view>

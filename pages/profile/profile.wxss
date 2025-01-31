@@ -1,1 +1,171 @@
 /* pages/profile/profile.wxss */
+.container {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding: 0;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 设置按钮 */
+.settings-btn {
+  position: absolute;
+  right: 32rpx;
+  top: 32rpx;
+  z-index: 1;
+}
+
+.settings-icon {
+  width: 40rpx;
+  height: 40rpx;
+  opacity: 0.6;
+}
+
+/* 用户信息区域 */
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 24rpx 24rpx 32rpx;
+  background: #fff;
+  padding: 40rpx 32rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  width: calc(100% - 48rpx);
+  box-sizing: border-box;
+}
+
+.avatar-container {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  overflow: hidden;
+  margin-bottom: 16rpx;
+  background: #f5f5f5;
+  border: 4rpx solid rgba(135, 206, 235, 0.2);
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.username {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.school {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 24rpx;
+}
+
+.login-btn {
+  background: #87CEEB;
+  color: #fff;
+  font-size: 28rpx;
+  padding: 12rpx 48rpx;
+  border-radius: 32rpx;
+  border: none;
+  font-weight: 500;
+}
+
+/* 分区样式 */
+.section {
+  width: calc(100% - 48rpx);
+  margin: 0 24rpx 24rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20rpx;
+  padding-left: 16rpx;
+  border-left: 4rpx solid #87CEEB;
+}
+
+/* 菜单列表 */
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  border-radius: 12rpx;
+  background: rgba(135, 206, 235, 0.05);
+}
+
+.menu-icon-box {
+  width: 80rpx;
+  height: 80rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.menu-icon {
+  width: 40rpx;
+  height: 40rpx;
+  opacity: 0.8;
+}
+
+.menu-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-text {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 4rpx;
+}
+
+.menu-desc {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 版本信息 */
+.version-info {
+  width: 100%;
+  text-align: center;
+  padding: 32rpx;
+  box-sizing: border-box;
+}
+
+.version-text {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 点击效果 */
+.menu-item:active {
+  background: rgba(135, 206, 235, 0.1);
+}
+
+.login-btn:active {
+  opacity: 0.9;
+}

@@ -5,14 +5,15 @@ Page({
    * 页面的初始数据
    */
   data: {
-
+    userInfo: {}
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-
+    // 获取用户信息
+    this.getUserInfo();
   },
 
   /**
@@ -62,5 +63,52 @@ Page({
    */
   onShareAppMessage() {
 
+  },
+
+  // 获取用户信息
+  getUserInfo() {
+    const userInfo = wx.getStorageSync('userInfo');
+    if (userInfo) {
+      this.setData({
+        userInfo
+      });
+    }
+  },
+
+  // 登录
+  login() {
+    wx.getUserProfile({
+      desc: '用于完善用户资料',
+      success: (res) => {
+        const userInfo = res.userInfo;
+        wx.setStorageSync('userInfo', userInfo);
+        this.setData({
+          userInfo
+        });
+      }
+    });
+  },
+
+  // 页面跳转
+  navigateTo(e) {
+    const url = e.currentTarget.dataset.url;
+    wx.navigateTo({
+      url,
+      fail: () => {
+        wx.showToast({
+          title: '功能开发中',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 意见反馈
+  feedback() {
+    wx.showModal({
+      title: '意见反馈',
+      content: '如有问题或建议，请发送邮件至：\nfeedback@example.com',
+      showCancel: false
+    });
   }
 })
