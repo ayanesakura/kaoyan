@@ -481,5 +481,47 @@ Page({
       title: '考研院校分析结果',
       path: '/pages/fill/fill'
     };
+  },
+
+  /**
+   * 显示专业方向详情
+   */
+  showDirections(e) {
+    const index = e.currentTarget.dataset.index;
+    const school = this.data.recommendations[index];
+    
+    console.log('点击专业，准备跳转:', {
+      index,
+      school
+    });
+    
+    // 准备要传递的数据
+    const params = {
+      school: school.school_name,
+      school_code: school.school_code,
+      major: school.major,
+      major_code: school.major_code,
+      departments: school.departments,
+      directions: JSON.stringify(school.directions)
+    };
+    
+    // 构建查询字符串
+    const query = Object.keys(params)
+      .map(key => `${key}=${encodeURIComponent(params[key])}`)
+      .join('&');
+    
+    console.log('跳转参数:', query);
+    
+    // 跳转到方向详情页
+    wx.navigateTo({
+      url: `/pages/directions/directions?${query}`,
+      fail: (err) => {
+        console.error('跳转失败:', err);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none'
+        });
+      }
+    });
   }
 })

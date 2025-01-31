@@ -1,0 +1,161 @@
+.container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+}
+
+/* 顶部信息样式 */
+.header {
+  background-color: white;
+  padding: 30rpx;
+  border-radius: 10rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.school-info {
+  margin-bottom: 20rpx;
+}
+
+.school-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.school-code {
+  font-size: 28rpx;
+  color: #666;
+  margin-left: 10rpx;
+}
+
+.major-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.department {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.major-name {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.major-code {
+  font-size: 28rpx;
+  color: #666;
+  margin-left: 10rpx;
+}
+
+/* 方向卡片样式 */
+.direction-card {
+  background-color: white;
+  border-radius: 10rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.direction-header {
+  margin-bottom: 30rpx;
+}
+
+.direction-title {
+  margin-bottom: 20rpx;
+}
+
+.direction-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.direction-code {
+  font-size: 28rpx;
+  color: #666;
+  margin-left: 10rpx;
+}
+
+.direction-meta {
+  display: flex;
+  gap: 20rpx;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  font-size: 26rpx;
+  color: #4a90e2;
+  background-color: rgba(74, 144, 226, 0.1);
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+/* 考试科目部分 */
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  padding-left: 20rpx;
+  border-left: 6rpx solid #4a90e2;
+}
+
+.subjects-list {
+  margin-bottom: 30rpx;
+}
+
+.subject-group {
+  margin-bottom: 30rpx;
+  background-color: #f9f9f9;
+  padding: 20rpx;
+  border-radius: 8rpx;
+}
+
+.group-title {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 15rpx;
+}
+
+.subject-item {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 10rpx;
+  padding: 10rpx;
+  background-color: white;
+  border-radius: 6rpx;
+}
+
+.subject-name {
+  font-size: 28rpx;
+  color: #333;
+  min-width: 120rpx;
+}
+
+.subject-value {
+  font-size: 28rpx;
+  color: #666;
+  flex: 1;
+}
+
+.subject-code {
+  font-size: 26rpx;
+  color: #999;
+}
+
+/* 备注部分 */
+.remarks-section {
+  border-top: 1rpx solid #eee;
+  padding-top: 30rpx;
+}
+
+.remarks-content {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+} 

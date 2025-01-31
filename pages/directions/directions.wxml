@@ -1,0 +1,53 @@
+<view class="container">
+  <!-- 顶部信息 -->
+  <view class="header">
+    <view class="school-info">
+      <text class="school-name">{{school}}</text>
+      <text class="school-code">({{school_code}})</text>
+    </view>
+    <view class="major-info">
+      <text class="department">{{departments}}</text>
+      <text class="major-name">{{major}}</text>
+      <text class="major-code">({{major_code}})</text>
+    </view>
+  </view>
+
+  <!-- 方向列表 -->
+  <view class="directions-list">
+    <view class="direction-card" wx:for="{{directions}}" wx:key="yjfxdm">
+      <!-- 方向基本信息 -->
+      <view class="direction-header">
+        <view class="direction-title">
+          <text class="direction-name">{{item.yjfxmc}}</text>
+          <text class="direction-code">({{item.yjfxdm}})</text>
+        </view>
+        <view class="direction-meta">
+          <text class="meta-item">{{item.ksfs}}</text>
+          <text class="meta-item">{{item.xwlx}}</text>
+          <text class="meta-item">{{item.zsrs}}</text>
+        </view>
+      </view>
+
+      <!-- 考试科目 -->
+      <view class="subjects-section">
+        <view class="section-title">考试科目</view>
+        <view class="subjects-list">
+          <view class="subject-group" wx:for="{{item.subjects}}" wx:for-item="group" wx:key="index">
+            <view class="group-title">科目组合 {{index + 1}}</view>
+            <view class="subject-item" wx:for="{{group}}" wx:for-item="subject" wx:key="code">
+              <text class="subject-name">{{subject.name}}</text>
+              <text class="subject-value">{{subject.value}}</text>
+              <text class="subject-code">({{subject.code}})</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 备注信息 -->
+      <view class="remarks-section" wx:if="{{item.bz}}">
+        <view class="section-title">备注</view>
+        <text class="remarks-content">{{item.bz}}</text>
+      </view>
+    </view>
+  </view>
+</view> 

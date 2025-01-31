@@ -35,7 +35,6 @@
       <view class="row-header">学院</view>
       <view class="row-header">考上概率</view>
       <view class="row-header">专业</view>
-      <view class="row-header">研究方向</view>
       <view class="row-header">报录比</view>
       <view class="row-header">总分数线</view>
       <view class="row-header">- 政治</view>
@@ -51,11 +50,22 @@
     <!-- 学校信息列 -->
     <scroll-view scroll-x="true" class="school-columns">
       <view class="school-column" wx:for="{{recommendations}}" wx:key="index">
-        <view class="row-cell">{{item.school || '-'}}</view>
+        <view class="row-cell">{{item.school}}</view>
         <view class="row-cell">{{item.departments}}</view>
         <view class="row-cell">{{item.probability}}</view>
-        <view class="row-cell">{{item.major}}</view>
-        <view class="row-cell">{{item.direction}}</view>
+        <view class="cell major-cell" bindtap="showDirections" data-index="{{index}}">
+          <view class="cell-title">专业</view>
+          <view class="cell-content">
+            <view class="major-info">
+              <text class="major-name">{{item.major}}</text>
+              <text class="major-code" wx:if="{{item.major_code}}">({{item.major_code}})</text>
+            </view>
+            <view class="department-info" wx:if="{{item.departments}}">
+              <text class="department-name">{{item.departments}}</text>
+            </view>
+          </view>
+          <view class="cell-arrow"></view>
+        </view>
         <view class="row-cell has-btn">
           {{item.blbRatio}}
           <view class="mini-trend-btn" bindtap="showTrend" data-type="blb" data-index="{{index}}">查看往年趋势</view>
