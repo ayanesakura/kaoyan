@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/fill/fill",
     "pages/analysis/analysis",
     "pages/calendar/calendar",
     "pages/profile/profile",
@@ -25,7 +26,7 @@
     "borderStyle": "white",
     "list": [
       {
-        "pagePath": "pages/index/index",
+        "pagePath": "pages/fill/fill",
         "text": "填写"
       },
       {

@@ -93,31 +93,10 @@ Page({
     console.log('更新运势数据:', selectedDate.fullDate)
   },
 
-  // 分享功能
-  onShare() {
-    wx.showShareMenu({
-      withShareTicket: true,
-      menus: ['shareAppMessage', 'shareTimeline']
-    })
-  },
-
   // 查看更多
   showMore() {
     wx.navigateTo({
       url: '/pages/weather/weather'
     })
-  },
-
-  onShareAppMessage() {
-    return {
-      title: '考研日历 - 你的专属学习助手',
-      path: '/pages/calendar/calendar'
-    }
-  },
-
-  onShareTimeline() {
-    return {
-      title: '考研日历 - 你的专属学习助手'
-    }
   }
 }) 
