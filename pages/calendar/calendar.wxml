@@ -5,7 +5,7 @@
       <text class="nav-title">考研日历</text>
     </view>
     <view class="nav-right">
-      <view class="avatar-box">
+      <view class="avatar-box" bindtap="onAvatarClick">
         <image class="avatar" src="{{userInfo.avatarUrl || '/assets/images/default-avatar.png'}}" mode="aspectFill"></image>
       </view>
       <view class="share-btn" bindtap="onShare">
@@ -14,107 +14,129 @@
     </view>
   </view>
 
-  <!-- 日历选择器 -->
-  <view class="calendar-tabs">
-    <view class="tab {{currentView === 'day' ? 'active' : ''}}" bindtap="switchView" data-view="day">日</view>
-    <view class="tab {{currentView === 'week' ? 'active' : ''}}" bindtap="switchView" data-view="week">周</view>
-    <view class="tab {{currentView === 'month' ? 'active' : ''}}" bindtap="switchView" data-view="month">月</view>
-    <view class="tab {{currentView === 'year' ? 'active' : ''}}" bindtap="switchView" data-view="year">年</view>
+  <!-- 未填写信息提示 -->
+  <view class="info-required" wx:if="{{!hasRequiredInfo}}">
+    <view class="info-required-content">
+      <text class="info-required-title">完善信息获取运势</text>
+      <text class="info-required-desc">需要填写生日、MBTI、昵称和性别才能查看运势</text>
+      <button class="info-required-btn" bindtap="onFillInfo">去填写</button>
+    </view>
   </view>
 
-  <!-- 日期选择器 -->
-  <scroll-view class="date-scroll" scroll-x enable-flex scroll-into-view="date-{{currentDateIndex}}" scroll-with-animation>
-    <view class="date-list">
-      <view id="date-{{index}}" class="date-item {{index === currentDateIndex ? 'active' : ''}}" 
-            wx:for="{{dates}}" wx:key="index" bindtap="selectDate" data-index="{{index}}">
-        <text class="weekday">{{item.weekday}}</text>
-        <text class="date">{{item.date}}</text>
+  <!-- 运势内容区域 -->
+  <scroll-view class="fortune-content" scroll-y wx:else>
+    <!-- 日历选择器 -->
+    <view class="calendar-header">
+      <view class="calendar-tabs">
+        <view class="tab {{currentView === 'day' ? 'active' : ''}}" bindtap="switchView" data-view="day">日</view>
+        <view class="tab {{currentView === 'week' ? 'active' : ''}}" bindtap="switchView" data-view="week">周</view>
+        <view class="tab {{currentView === 'month' ? 'active' : ''}}" bindtap="switchView" data-view="month">月</view>
+        <view class="tab {{currentView === 'year' ? 'active' : ''}}" bindtap="switchView" data-view="year">年</view>
       </view>
+      <scroll-view class="date-scroll" scroll-x enable-flex scroll-into-view="date-{{currentDateIndex}}" scroll-with-animation>
+        <view class="date-list">
+          <view id="date-{{index}}" class="date-item {{index === currentDateIndex ? 'active' : ''}}" 
+                wx:for="{{dates}}" wx:key="index" bindtap="selectDate" data-index="{{index}}">
+            <text class="weekday">{{item.weekday}}</text>
+            <text class="date">{{item.date}}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 运势指标 -->
+    <view class="fortune-metrics">
+      <view class="metric-item" wx:for="{{fortuneMetrics}}" wx:key="name">
+        <view class="metric-header">
+          <text class="metric-name">{{item.name}}</text>
+          <text class="metric-score">{{item.score}}</text>
+        </view>
+        <view class="metric-bar">
+          <view class="bar-fill" style="width: {{item.score}}%;"></view>
+        </view>
+        <text class="metric-desc">{{item.description}}</text>
+      </view>
+    </view>
+
+    <!-- 幸运信息 -->
+    <view class="lucky-info">
+      <view class="lucky-item">
+        <text class="lucky-label">今日幸运色</text>
+        <view class="lucky-value">
+          <view class="color-box" style="background: {{luckyColor.value}}"></view>
+          <text class="color-name">{{luckyColor.value}}</text>
+        </view>
+        <text class="lucky-desc">{{luckyColor.description}}</text>
+      </view>
+      <view class="lucky-item">
+        <text class="lucky-label">今日幸运数字</text>
+        <text class="lucky-value number">{{luckyNumber.value}}</text>
+        <text class="lucky-desc">{{luckyNumber.description}}</text>
+      </view>
+      <view class="lucky-item">
+        <text class="lucky-label">今日幸运方向</text>
+        <text class="lucky-value">{{luckyDirection.value}}</text>
+        <text class="lucky-desc">{{luckyDirection.description}}</text>
+      </view>
+    </view>
+
+    <!-- 宜忌提示 -->
+    <view class="fortune-tips">
+      <view class="tips-section">
+        <text class="tips-title">今日宜</text>
+        <view class="tips-list">
+          <text class="tip-item" wx:for="{{todayDo}}" wx:key="*this">{{item}}</text>
+        </view>
+      </view>
+      <view class="tips-section">
+        <text class="tips-title">今日忌</text>
+        <view class="tips-list">
+          <text class="tip-item" wx:for="{{todayDont}}" wx:key="*this">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 运势总结 -->
+    <view class="fortune-summary">
+      <text class="summary-text">{{summary}}</text>
     </view>
   </scroll-view>
 
-  <!-- 综合运势 -->
-  <view class="fortune-overview">
-    <view class="score-circle">
-      <view class="circle-progress"></view>
-      <view class="circle-content">
-        <text class="score">{{overallScore}}</text>
-        <text class="label">综合分数</text>
+  <!-- 用户信息填写弹窗 -->
+  <view class="info-modal" wx:if="{{showInfoModal}}">
+    <view class="modal-mask" bindtap="closeInfoModal"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">完善个人信息</text>
+        <text class="modal-close" bindtap="closeInfoModal">×</text>
       </view>
-    </view>
-    <view class="fortune-metrics">
-      <view class="metric-item">
-        <view class="metric-bar">
-          <view class="bar-fill" style="height: {{loveScore}}%;"></view>
+      <view class="modal-body">
+        <view class="form-item">
+          <text class="form-label">昵称</text>
+          <input class="form-input" placeholder="请输入昵称" value="{{userForm.signature}}" bindinput="onSignatureInput"/>
         </view>
-        <text class="metric-value">{{loveScore}}</text>
-        <text class="metric-label">爱情</text>
-      </view>
-      <view class="metric-item">
-        <view class="metric-bar">
-          <view class="bar-fill" style="height: {{wealthScore}}%;"></view>
+        <view class="form-item">
+          <text class="form-label">生日</text>
+          <picker mode="date" value="{{userForm.birthday}}" bindchange="onBirthdayChange">
+            <view class="picker-text">{{userForm.birthday || '请选择生日'}}</view>
+          </picker>
         </view>
-        <text class="metric-value">{{wealthScore}}</text>
-        <text class="metric-label">财富</text>
-      </view>
-      <view class="metric-item">
-        <view class="metric-bar">
-          <view class="bar-fill" style="height: {{careerScore}}%;"></view>
+        <view class="form-item">
+          <text class="form-label">性别</text>
+          <picker mode="selector" range="{{genderOptions}}" value="{{genderIndex}}" bindchange="onGenderChange">
+            <view class="picker-text">{{userForm.gender || '请选择性别'}}</view>
+          </picker>
         </view>
-        <text class="metric-value">{{careerScore}}</text>
-        <text class="metric-label">事业</text>
-      </view>
-      <view class="metric-item">
-        <view class="metric-bar">
-          <view class="bar-fill" style="height: {{studyScore}}%;"></view>
+        <view class="form-item">
+          <text class="form-label">MBTI</text>
+          <picker mode="selector" range="{{mbtiOptions}}" value="{{mbtiIndex}}" bindchange="onMbtiChange">
+            <view class="picker-text">{{userForm.mbti || '请选择MBTI'}}</view>
+          </picker>
         </view>
-        <text class="metric-value">{{studyScore}}</text>
-        <text class="metric-label">学习</text>
+      </view>
+      <view class="modal-footer">
+        <button class="submit-btn" bindtap="submitUserInfo">确定</button>
       </view>
     </view>
-  </view>
-
-  <!-- 运势信息卡片 -->
-  <view class="fortune-info">
-    <view class="info-row">
-      <view class="info-item">
-        <text class="info-label">幸运色</text>
-        <view class="color-box" style="background: {{luckyColor}}"></view>
-        <text class="info-value">{{luckyColorName}}</text>
-      </view>
-      <view class="info-item">
-        <text class="info-label">幸运数字</text>
-        <text class="info-value number">{{luckyNumbers}}</text>
-      </view>
-      <view class="info-item">
-        <text class="info-label">幸运食物</text>
-        <image class="food-icon" src="/assets/icons/cookie.png"></image>
-        <text class="info-value">{{luckyFood}}</text>
-      </view>
-    </view>
-  </view>
-
-  <!-- 运势描述 -->
-  <view class="fortune-detail">
-    <text class="detail-text">{{fortuneDescription}}</text>
-  </view>
-
-  <!-- 建议和避免 -->
-  <view class="suggestions">
-    <view class="suggestion-box">
-      <text class="suggestion-title">建议</text>
-      <text class="suggestion-content">{{suggestions}}</text>
-    </view>
-    <view class="suggestion-box">
-      <text class="suggestion-title">避免</text>
-      <text class="suggestion-content">{{avoidance}}</text>
-    </view>
-  </view>
-
-  <!-- 底部时间信息 -->
-  <view class="bottom-info">
-    <text class="time">{{currentTime}}</text>
-    <text class="phase">{{moonPhase}}</text>
-    <text class="more" bindtap="showMore">更多天气 ></text>
   </view>
 </view> 

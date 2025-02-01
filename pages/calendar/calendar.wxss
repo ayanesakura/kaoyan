@@ -2,6 +2,7 @@
 page {
   background: #f5f5f5;
   width: 100%;
+  height: 100vh;
 }
 
 .container {
@@ -10,15 +11,18 @@ page {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 顶部导航 */
 .nav-bar {
+  padding: 12rpx 24rpx;
+  background: #fff;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12rpx 24rpx;
-  background: transparent;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
   position: fixed;
   top: 0;
   left: 0;
@@ -31,7 +35,9 @@ page {
 }
 
 .nav-title {
-  display: none;
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
 }
 
 .nav-right {
@@ -45,7 +51,7 @@ page {
   height: 56rpx;
   border-radius: 28rpx;
   overflow: hidden;
-  border: 2rpx solid rgba(255, 255, 255, 0.2);
+  border: 2rpx solid rgba(0, 0, 0, 0.1);
 }
 
 .avatar {
@@ -60,55 +66,92 @@ page {
   opacity: 0.6;
 }
 
-/* 日历选择器 */
-.calendar-tabs {
+/* 未填写信息提示 */
+.info-required {
+  flex: 1;
   display: flex;
-  justify-content: space-around;
-  padding: 16rpx 32rpx;
+  align-items: center;
+  justify-content: center;
   background: #fff;
-  margin-bottom: 2rpx;
+  margin-top: 88rpx;
+}
+
+.info-required-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx;
+}
+
+.info-required-title {
+  font-size: 36rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.info-required-desc {
+  font-size: 28rpx;
+  color: #999;
+  margin-bottom: 40rpx;
+  text-align: center;
+}
+
+.info-required-btn {
+  background: #87CEEB;
+  color: #fff;
+  font-size: 32rpx;
+  padding: 20rpx 60rpx;
+  border-radius: 40rpx;
+  border: none;
+}
+
+/* 运势内容区域 */
+.fortune-content {
+  flex: 1;
+  margin-top: 88rpx;
+  height: calc(100vh - 88rpx);
+  background: #f5f5f5;
+}
+
+/* 日历头部 */
+.calendar-header {
+  background: #fff;
+  padding: 20rpx 0;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
-  z-index: 99;
+  z-index: 10;
+}
+
+.calendar-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 32rpx;
+  margin-bottom: 20rpx;
 }
 
 .tab {
-  padding: 12rpx 32rpx;
   font-size: 28rpx;
   color: #666;
-  position: relative;
+  padding: 8rpx 24rpx;
+  border-radius: 28rpx;
   transition: all 0.3s ease;
 }
 
 .tab.active {
-  color: #87CEEB;
-  font-weight: 500;
-}
-
-.tab.active::after {
-  content: '';
-  position: absolute;
-  bottom: -4rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 32rpx;
-  height: 4rpx;
+  color: #fff;
   background: #87CEEB;
-  border-radius: 2rpx;
-  transition: all 0.3s ease;
 }
 
-/* 日期选择器 */
 .date-scroll {
-  background: #fff;
-  padding: 16rpx 0;
   white-space: nowrap;
-  margin-bottom: 2rpx;
+  padding: 0 20rpx;
 }
 
 .date-list {
   display: inline-flex;
-  padding: 0 16rpx;
+  padding: 10rpx 0;
 }
 
 .date-item {
@@ -116,14 +159,14 @@ page {
   flex-direction: column;
   align-items: center;
   padding: 12rpx 24rpx;
-  margin: 0 4rpx;
+  margin: 0 8rpx;
   border-radius: 12rpx;
+  background: #f5f5f5;
   transition: all 0.3s ease;
 }
 
 .date-item.active {
   background: #87CEEB;
-  transform: scale(1.05);
 }
 
 .date-item.active .weekday,
@@ -143,280 +186,256 @@ page {
   font-weight: 500;
 }
 
-/* 综合运势 */
-.fortune-overview {
-  width: 100%;
-  margin: 0;
-  padding: 24rpx 0;
-  background: #fff;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-  display: flex;
-  align-items: center;
-  box-sizing: border-box;
-}
-
-.score-circle {
-  width: 160rpx;
-  height: 160rpx;
-  position: relative;
-  margin: 0 40rpx 0 24rpx;
-  flex-shrink: 0;
-}
-
-.circle-progress {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  position: absolute;
-  background: conic-gradient(
-    from 0deg,
-    #87CEEB 0%,
-    #87CEEB calc({{overallScore}} * 1%),
-    transparent calc({{overallScore}} * 1%),
-    transparent 100%
-  );
-  mask: radial-gradient(transparent 60%, black 60%);
-  -webkit-mask: radial-gradient(transparent 60%, black 60%);
-}
-
-.circle-progress::before {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: radial-gradient(circle at center, transparent 62%, #E8F6FF 62%);
-  background-size: 8rpx 8rpx;
-  opacity: 0.5;
-}
-
-.circle-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.score {
-  font-size: 48rpx;
-  font-weight: 600;
-  color: #333;
-  line-height: 1;
-}
-
-.label {
-  font-size: 24rpx;
-  color: #666;
-  margin-top: 8rpx;
-}
-
+/* 运势指标 */
 .fortune-metrics {
-  flex: 1;
-  display: flex;
-  justify-content: space-between;
-  height: 160rpx;
-  padding-right: 24rpx;
-  width: calc(100% - 224rpx); /* 160rpx + 40rpx + 24rpx */
+  padding: 24rpx;
 }
 
 .metric-item {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.metric-header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  flex: 1;
-  position: relative;
-  padding: 0 8rpx;
+  margin-bottom: 16rpx;
 }
 
-.metric-bar {
-  width: 12rpx;
-  height: 100rpx;
-  background: #F5F5F5;
-  border-radius: 6rpx;
-  overflow: hidden;
-  margin-bottom: 12rpx;
-  position: relative;
-}
-
-.bar-fill {
-  width: 100%;
-  background: linear-gradient(to top, #FF7B9C, #FFA5BC);
-  position: absolute;
-  bottom: 0;
-  border-radius: 4rpx;
-  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.metric-item:nth-child(2) .bar-fill {
-  background: linear-gradient(to top, #FFB258, #FFD4A0);
-}
-
-.metric-item:nth-child(3) .bar-fill {
-  background: linear-gradient(to top, #7C8CFF, #A5B0FF);
-}
-
-.metric-item:nth-child(4) .bar-fill {
-  background: linear-gradient(to top, #4CD9C3, #89E8DA);
-}
-
-.metric-value {
+.metric-name {
   font-size: 28rpx;
   color: #333;
   font-weight: 500;
-  margin-bottom: 4rpx;
 }
 
-.metric-label {
-  font-size: 24rpx;
-  color: #666;
-  white-space: nowrap;
+.metric-score {
+  font-size: 32rpx;
+  color: #87CEEB;
+  font-weight: 600;
 }
 
-/* 运势信息卡片 */
-.fortune-info {
-  margin: 2rpx 0;
-  padding: 24rpx;
-  background: #fff;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-  width: 100%;
-  box-sizing: border-box;
+.metric-bar {
+  height: 8rpx;
+  background: #f0f0f0;
+  border-radius: 4rpx;
+  overflow: hidden;
+  margin-bottom: 16rpx;
 }
 
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 24rpx;
+.bar-fill {
+  height: 100%;
+  background: #87CEEB;
+  border-radius: 4rpx;
+  transition: width 0.6s ease;
 }
 
-.info-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-}
-
-.info-label {
-  font-size: 22rpx;
-  color: #999;
-  margin-bottom: 10rpx;
-}
-
-.color-box {
-  width: 44rpx;
-  height: 44rpx;
-  border-radius: 6rpx;
-  margin-bottom: 6rpx;
-  transition: transform 0.3s ease;
-}
-
-.color-box:active {
-  transform: scale(1.1);
-}
-
-.info-value {
-  font-size: 26rpx;
-  color: #333;
-}
-
-.info-value.number {
-  font-size: 30rpx;
-  font-weight: 500;
-}
-
-.food-icon {
-  width: 44rpx;
-  height: 44rpx;
-  margin-bottom: 6rpx;
-}
-
-/* 运势描述 */
-.fortune-detail {
-  margin: 2rpx 0;
-  padding: 24rpx;
-  background: #fff;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.detail-text {
+.metric-desc {
   font-size: 26rpx;
   color: #666;
   line-height: 1.6;
 }
 
-/* 建议和避免 */
-.suggestions {
-  margin: 2rpx 0;
-  display: flex;
-  width: 100%;
-  box-sizing: border-box;
+/* 幸运信息 */
+.lucky-info {
+  padding: 0 24rpx 24rpx;
 }
 
-.suggestion-box {
-  flex: 1;
-  padding: 24rpx;
+.lucky-item {
   background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-  width: 50%;
-  box-sizing: border-box;
 }
 
-.suggestion-box:first-child {
-  margin-right: 1rpx;
-}
-
-.suggestion-box:last-child {
-  margin-left: 1rpx;
-}
-
-.suggestion-title {
-  font-size: 26rpx;
-  font-weight: 500;
+.lucky-label {
+  font-size: 28rpx;
   color: #333;
-  margin-bottom: 12rpx;
+  font-weight: 500;
+  margin-bottom: 16rpx;
   display: block;
 }
 
-.suggestion-content {
-  font-size: 24rpx;
+.lucky-value {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.color-box {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 8rpx;
+  margin-right: 12rpx;
+}
+
+.color-name {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.lucky-value.number {
+  font-size: 32rpx;
+  color: #87CEEB;
+  font-weight: 600;
+}
+
+.lucky-desc {
+  font-size: 26rpx;
   color: #666;
   line-height: 1.6;
 }
 
-/* 底部时间信息 */
-.bottom-info {
-  margin: 2rpx 0;
-  padding: 24rpx;
+/* 宜忌提示 */
+.fortune-tips {
+  padding: 0 24rpx 24rpx;
+}
+
+.tips-section {
   background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.tips-title {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.tip-item {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+  padding: 16rpx;
+  background: #f8f8f8;
+  border-radius: 8rpx;
+}
+
+/* 运势总结 */
+.fortune-summary {
+  padding: 0 24rpx 24rpx;
+}
+
+.fortune-summary {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.summary-text {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* 用户信息填写弹窗 */
+.info-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.modal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 40rpx;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40rpx;
+}
+
+.modal-title {
+  font-size: 36rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+.modal-close {
+  font-size: 40rpx;
+  color: #999;
+  padding: 20rpx;
+}
+
+.modal-body {
+  margin-bottom: 40rpx;
+}
+
+.form-item {
+  margin-bottom: 32rpx;
+}
+
+.form-label {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.form-input {
   width: 100%;
+  height: 88rpx;
+  background: #f5f5f5;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
   box-sizing: border-box;
 }
 
-.time {
-  font-size: 24rpx;
-  color: #666;
+.picker-text {
+  width: 100%;
+  height: 88rpx;
+  background: #f5f5f5;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  line-height: 88rpx;
+  color: #333;
 }
 
-.phase {
-  font-size: 24rpx;
-  color: #666;
-}
-
-.more {
-  font-size: 24rpx;
-  color: #87CEEB;
-  transition: all 0.3s ease;
-}
-
-.more:active {
-  opacity: 0.8;
-  transform: translateX(4rpx);
+.submit-btn {
+  width: 100%;
+  height: 88rpx;
+  background: #87CEEB;
+  color: #fff;
+  font-size: 32rpx;
+  border-radius: 44rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border: none;
 } 

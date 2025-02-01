@@ -23,13 +23,22 @@ const API_PATHS = {
   generalMajorSearch: '/api/query_majors_or_fxs',
   citySearch: '/api/query_city',
   chooseSchools: '/api/choose_schools',
-  aiAnalysis: '/api/ai_ana'
+  aiAnalysis: '/api/ai_ana',
+  kyys: '/api/kyys'
 }
 
 // 统一的服务调用方法
 function callService(path, method = 'POST', data = {}) {
+  console.log('调用服务:', {
+    path,
+    method,
+    data,
+    currentEnv,
+    baseUrl: env[currentEnv].baseUrl
+  });
+
   if (currentEnv === 'prod') {
-    // 使用云托管服务
+    console.log('使用云托管服务');
     return wx.cloud.callContainer({
       config: {
         env: CLOUD_CONFIG.env
@@ -43,17 +52,26 @@ function callService(path, method = 'POST', data = {}) {
       data: data
     })
   } else {
-    // 使用本地开发服务
+    console.log('使用本地开发服务');
+    const url = `${env[currentEnv].baseUrl}${path}`;
+    console.log('完整请求URL:', url);
+    
     return new Promise((resolve, reject) => {
       wx.request({
-        url: `${env[currentEnv].baseUrl}${path}`,
+        url: url,
         method: method,
         header: {
           'content-type': 'application/json'
         },
         data: data,
-        success: resolve,
-        fail: reject
+        success: (res) => {
+          console.log('请求成功:', res);
+          resolve(res);
+        },
+        fail: (err) => {
+          console.error('请求失败:', err);
+          reject(err);
+        }
       })
     })
   }
