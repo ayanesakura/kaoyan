@@ -33,8 +33,7 @@ function callService(path, method = 'POST', data = {}) {
     path,
     method,
     data,
-    currentEnv,
-    baseUrl: env[currentEnv].baseUrl
+    currentEnv
   });
 
   if (currentEnv === 'prod') {
@@ -84,6 +83,11 @@ function getApiUrl(apiName) {
     console.error(`API ${apiName} not found in config`)
     return ''
   }
+  
+  if (currentEnv === 'prod') {
+    return api
+  }
+  
   return `${env[currentEnv].baseUrl}${api}`
 }
 

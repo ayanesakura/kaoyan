@@ -1,5 +1,6 @@
 {
   "usingComponents": {
-    "trend-chart": "../../components/trend-chart/trend-chart"
+    "trend-chart": "../../components/trend-chart/trend-chart",
+    "ec-canvas": "../../components/ec-canvas/ec-canvas"
   }
 }

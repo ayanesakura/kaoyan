@@ -298,21 +298,40 @@ Page({
       }
     };
 
+    // 准备用户信息
+    const userInfo = {
+      school: formData.school,
+      major: formData.major,
+      grade: formData.grade,
+      is_first_time: formData.firstTry,
+      good_at_subject: formData.project
+    };
+
+    // 准备目标信息
+    const targetInfo = {
+      school: formData.targetSchool || '',
+      major: formData.targetMajor || '',
+      city: formData.targetCity || '',
+      school_level: formData.schoolLevel
+    };
+
+    // 保存到globalData
+    app.globalData.userInfo = userInfo;
+    app.globalData.targetInfo = targetInfo;
+
+    // 保存到本地存储
+    try {
+      wx.setStorageSync('userInfo', userInfo);
+      wx.setStorageSync('targetInfo', targetInfo);
+      console.log('用户信息和目标信息已保存到本地存储');
+    } catch (e) {
+      console.error('保存到本地存储失败:', e);
+    }
+
     // 准备请求数据
     const requestData = {
-      user_info: {
-        school: formData.school,
-        major: formData.major,
-        grade: formData.grade,
-        is_first_time: formData.firstTry,
-        good_at_subject: formData.project
-      },
-      target_info: {
-        school: formData.targetSchool || '',
-        major: formData.targetMajor || '',
-        city: formData.targetCity || '',
-        school_level: formData.schoolLevel
-      }
+      user_info: userInfo,
+      target_info: targetInfo
     };
 
     // 处理空字符串

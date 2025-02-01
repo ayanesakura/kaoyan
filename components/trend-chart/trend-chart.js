@@ -10,6 +10,10 @@ Component({
         if (newVal && newVal.years && newVal.values) {
           this.setData({
             pendingData: newVal
+          }, () => {
+            if (this.data.isReady) {
+              this.init();
+            }
           });
         }
       }
@@ -35,16 +39,18 @@ Component({
   lifetimes: {
     attached: function() {
       console.log('图表组件已挂载');
-      this.ecComponent = this.selectComponent('#mychart');
-      if (!this.ecComponent) {
-        console.error('找不到图表组件实例');
-        return;
-      }
-      this.setData({ isReady: true }, () => {
-        if (this.data.pendingData) {
-          this.init();
+      setTimeout(() => {
+        this.ecComponent = this.selectComponent('#mychart');
+        if (!this.ecComponent) {
+          console.error('找不到图表组件实例');
+          return;
         }
-      });
+        this.setData({ isReady: true }, () => {
+          if (this.data.pendingData) {
+            this.init();
+          }
+        });
+      }, 100);
     }
   },
 
@@ -58,13 +64,24 @@ Component({
 
       this.ecComponent.init((canvas, width, height, dpr) => {
         console.log('图表画布初始化:', { width, height, dpr });
+        
+        if (height === 0) {
+          height = 600;
+        }
+        
         const chart = echarts.init(canvas, null, {
           width: width,
           height: height,
           devicePixelRatio: dpr
         });
+        
         const option = this.getOption();
         console.log('图表配置:', option);
+        
+        option.animation = true;
+        option.animationDuration = 1000;
+        option.animationEasing = 'cubicOut';
+        
         chart.setOption(option);
         this.chart = chart;
         return chart;

@@ -11,7 +11,9 @@
     "pages/favorites/favorites",
     "pages/compare/compare",
     "pages/score-calculator/score-calculator",
-    "pages/timeline/timeline"
+    "pages/timeline/timeline",
+    "pages/directions/directions",
+    "pages/ai_analysis/ai_analysis"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -47,6 +49,9 @@
     "scope.phoneNumber": {
       "desc": "您的手机号将用于账号登录"
     }
+  },
+  "usingComponents": {
+    "ec-canvas": "/components/ec-canvas/ec-canvas"
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

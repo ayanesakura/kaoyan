@@ -205,7 +205,39 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-    const analysisResult = getApp().globalData.analysisResult;
+    const app = getApp();
+    const analysisResult = app.globalData.analysisResult;
+    let userInfo = app.globalData.userInfo;
+    let targetInfo = app.globalData.targetInfo;
+
+    console.log('从globalData获取的用户信息:', userInfo);
+    console.log('从globalData获取的目标信息:', targetInfo);
+
+    // 如果globalData中没有数据，尝试从本地存储获取
+    if (!userInfo) {
+      try {
+        userInfo = wx.getStorageSync('userInfo');
+        console.log('从本地存储获取的用户信息:', userInfo);
+      } catch (e) {
+        console.error('从本地存储获取用户信息失败:', e);
+      }
+    }
+
+    if (!targetInfo) {
+      try {
+        targetInfo = wx.getStorageSync('targetInfo');
+        console.log('从本地存储获取的目标信息:', targetInfo);
+      } catch (e) {
+        console.error('从本地存储获取目标信息失败:', e);
+      }
+    }
+
+    // 保存用户信息和目标信息
+    this.setData({
+      userInfo,
+      targetInfo
+    });
+
     if (!analysisResult || !analysisResult.recommendations) {
       console.error('接口返回数据格式错误:', analysisResult);
       wx.showToast({
@@ -504,7 +536,7 @@ Page({
       major: school.major,
       major_code: school.major_code,
       departments: school.departments,
-      directions: JSON.stringify(school.directions)
+      directions: encodeURIComponent(JSON.stringify(school.directions))
     };
     
     // 构建查询字符串
@@ -529,10 +561,35 @@ Page({
 
   // 开始AI分析
   startAIAnalysis() {
+    console.log('开始AI分析，用户信息:', this.data.userInfo);
+    console.log('目标信息:', this.data.targetInfo);
+
+    if (!this.data.userInfo || !this.data.targetInfo) {
+      console.error('缺少必要信息:', {
+        userInfo: this.data.userInfo,
+        targetInfo: this.data.targetInfo
+      });
+      
+      wx.showToast({
+        title: '请先完善个人信息',
+        icon: 'none',
+        duration: 2000
+      });
+      
+      // 延迟后跳转到填写页面
+      setTimeout(() => {
+        wx.switchTab({
+          url: '/pages/fill/fill'
+        });
+      }, 2000);
+      
+      return;
+    }
+
     const analysisData = {
       user_info: {
         school: this.data.userInfo.school,
-        major: `${this.data.userInfo.department} ${this.data.userInfo.major}`,
+        major: this.data.userInfo.major,
         grade: this.data.userInfo.grade,
         is_first_time: this.data.userInfo.is_first_time,
         good_at_subject: this.data.userInfo.good_at_subject
@@ -542,10 +599,43 @@ Page({
       }
     };
 
+    console.log('准备发送的分析数据:', analysisData);
+
+    // 验证数据完整性
+    const requiredUserFields = ['school', 'major', 'grade', 'is_first_time', 'good_at_subject'];
+    const missingUserFields = requiredUserFields.filter(field => !analysisData.user_info[field]);
+    
+    if (missingUserFields.length > 0) {
+      console.error('用户信息不完整，缺少字段:', missingUserFields);
+      wx.showToast({
+        title: '请完善个人信息',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+
+    if (!analysisData.target_info.school_level) {
+      console.error('目标信息不完整，缺少school_level字段');
+      wx.showToast({
+        title: '请设置目标院校层次',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+
     wx.navigateTo({
       url: '/pages/ai_analysis/ai_analysis',
       success: (res) => {
         res.eventChannel.emit('acceptAnalysisData', analysisData);
+      },
+      fail: (err) => {
+        console.error('跳转失败:', err);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none'
+        });
       }
     });
   }

@@ -14,7 +14,7 @@ Page({
     console.log('方向页面收到参数:', options);
     
     try {
-      // 解析基本信息并进行URL解码
+      // 解析基本信息
       const {
         school,
         school_code,
@@ -24,10 +24,16 @@ Page({
         directions
       } = options;
       
-      // 先对directions进行URL解码,再解析JSON
+      // 先对directions进行一次URL解码,再解析JSON
       const decodedDirections = decodeURIComponent(directions);
-      const directionsData = JSON.parse(decodedDirections);
+      console.log('第一次解码后的directions:', decodedDirections);
       
+      // 如果还是URL编码的状态，再解码一次
+      const finalDecodedDirections = decodedDirections.startsWith('%') ? 
+        decodeURIComponent(decodedDirections) : decodedDirections;
+      console.log('最终解码后的directions:', finalDecodedDirections);
+      
+      const directionsData = JSON.parse(finalDecodedDirections);
       console.log('解析后的方向数据:', directionsData);
       
       // 更新页面数据,其他字段也需要URL解码
