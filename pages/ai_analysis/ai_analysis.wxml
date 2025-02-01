@@ -1,5 +1,5 @@
 <view class="container">
   <view class="content">
-    <text class="analysis-text">{{content}}</text>
+    <rich-text nodes="{{parsedContent}}" class="analysis-text"></rich-text>
   </view>
 </view> 

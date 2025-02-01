@@ -17,4 +17,134 @@
   color: #333;
   line-height: 1.8;
   white-space: pre-wrap;
+}
+
+/* Markdown样式 */
+.h1 {
+  font-size: 40rpx;
+  font-weight: bold;
+  margin: 40rpx 0 24rpx;
+  color: #1a1a1a;
+  line-height: 1.4;
+}
+
+.h2 {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin: 36rpx 0 20rpx;
+  color: #1a1a1a;
+  line-height: 1.4;
+}
+
+.h3 {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin: 32rpx 0 16rpx;
+  color: #1a1a1a;
+  line-height: 1.4;
+}
+
+.p {
+  margin: 24rpx 0;
+  line-height: 1.8;
+  color: #333;
+  text-align: justify;
+}
+
+.p-extra-margin {
+  margin: 48rpx 0;
+  line-height: 1.8;
+  color: #333;
+  text-align: justify;
+}
+
+.ul {
+  margin: 24rpx 0;
+  padding-left: 40rpx;
+  list-style: disc outside;
+}
+
+.ol {
+  margin: 24rpx 0;
+  padding-left: 40rpx;
+  list-style: decimal outside;
+  counter-reset: none;
+}
+
+.li {
+  margin: 16rpx 0;
+  padding-left: 8rpx;
+  line-height: 1.6;
+  color: #333;
+  display: list-item;
+  position: relative;
+}
+
+.ul .li::before {
+  content: "•";
+  color: #666;
+  position: absolute;
+  left: -24rpx;
+}
+
+.ol .li {
+  list-style: inherit;
+}
+
+.ol .li::before {
+  content: attr(value) ".";
+  color: #666;
+  position: absolute;
+  left: -32rpx;
+}
+
+.bold {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.blockquote {
+  margin: 24rpx 0;
+  padding: 16rpx 32rpx;
+  border-left: 8rpx solid #87CEEB;
+  background: #f8f9fa;
+  color: #666;
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+
+.code {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  background: #f5f5f5;
+  padding: 4rpx 8rpx;
+  border-radius: 4rpx;
+  font-size: 24rpx;
+  color: #333;
+}
+
+/* 嵌套列表样式 */
+.ul .ul,
+.ol .ol,
+.ul .ol,
+.ol .ul {
+  margin: 12rpx 0;
+  padding-left: 40rpx;
+}
+
+/* 确保段落中的行内元素对齐 */
+.p strong,
+.p em,
+.p code {
+  vertical-align: baseline;
+}
+
+/* 优化列表项内的行内元素 */
+.li strong,
+.li em,
+.li code {
+  vertical-align: baseline;
 } 
