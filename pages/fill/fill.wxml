@@ -153,31 +153,8 @@
   <view class="card">
     <view class="section-title">目标院校</view>
     
-    <view class="form-item">
-      <text class="label">期望学校</text>
-      <input class="input {{formData.targetSchool ? 'input-selected' : ''}}" 
-             placeholder="请填写学校全称，多所院校请用逗号开" 
-             bindinput="onTargetSchoolInput"
-             value="{{formData.targetSchool}}"/>
-      
-      <!-- 目标学校下拉列表 -->
-      <view class="school-select" wx:if="{{showTargetSchoolSelect}}">
-        <view class="loading" wx:if="{{isTargetSearching}}">搜索中...</view>
-        <view class="school-item" 
-              wx:for="{{targetSchoolList}}" 
-              wx:key="index"
-              bindtap="onSelectTargetSchool"
-              data-school="{{item}}">
-          {{item}}
-        </view>
-        <view class="empty" wx:if="{{!isTargetSearching && targetSchoolList.length === 0}}">
-          未找到相关学校
-        </view>
-      </view>
-    </view>
-
     <view class="form-item-tags">
-      <text class="label">期望专业</text>
+      <text class="label required">期望专业</text>
       <input class="input {{formData.targetMajor.length > 0 ? 'input-selected' : ''}}" 
              placeholder="点击输入搜索专业" 
              bindinput="onTargetMajorInput"
@@ -190,45 +167,45 @@
           <text class="tag-delete" bindtap="onDeleteMajor" data-index="{{index}}">×</text>
         </view>
       </view>
-    </view>
 
-    <!-- 专业搜索选择器 -->
-    <view class="college-picker" wx:if="{{showMajorSelect}}">
-      <view class="picker-mask" bindtap="closeMajorSelect"></view>
-      <view class="picker-content">
-        <view class="picker-header">
-          <text>选择专业方向</text>
-          <text class="close" bindtap="closeMajorSelect">×</text>
-        </view>
-        <view class="picker-body">
-          <view class="loading-container" wx:if="{{isMajorSearching}}">
-            <view class="loading">搜索中...</view>
+      <!-- 专业搜索选择器 -->
+      <view class="college-picker" wx:if="{{showMajorSelect}}">
+        <view class="picker-mask" bindtap="closeMajorSelect"></view>
+        <view class="picker-content">
+          <view class="picker-header">
+            <text>选择专业方向</text>
+            <text class="close" bindtap="closeMajorSelect">×</text>
           </view>
-          <block wx:elif="{{!isMajorSearching && majorList.length > 0}}">
-            <!-- 专业列表 -->
-            <view class="major-column">
-              <view class="column-item {{selectedMajor === item ? 'selected' : ''}}" 
-                    wx:for="{{majorList}}" 
-                    wx:key="*this"
-                    bindtap="onSelectMajor"
-                    data-major="{{item}}">
-                {{item}}
-              </view>
+          <view class="picker-body">
+            <view class="loading-container" wx:if="{{isMajorSearching}}">
+              <view class="loading">搜索中...</view>
             </view>
-            
-            <!-- 方向列表 -->
-            <view class="direction-column">
-              <view class="column-item" 
-                    wx:for="{{directionList}}" 
-                    wx:key="*this"
-                    bindtap="onSelectDirection"
-                    data-direction="{{item}}">
-                {{item}}
+            <block wx:elif="{{!isMajorSearching && majorList.length > 0}}">
+              <!-- 专业列表 -->
+              <view class="major-column">
+                <view class="column-item {{selectedMajor === item ? 'selected' : ''}}" 
+                      wx:for="{{majorList}}" 
+                      wx:key="*this"
+                      bindtap="onSelectMajor"
+                      data-major="{{item}}">
+                  {{item}}
+                </view>
               </view>
+              
+              <!-- 方向列表 -->
+              <view class="direction-column">
+                <view class="column-item" 
+                      wx:for="{{directionList}}" 
+                      wx:key="*this"
+                      bindtap="onSelectDirection"
+                      data-direction="{{item}}">
+                  {{item}}
+                </view>
+              </view>
+            </block>
+            <view class="empty-container" wx:if="{{!isMajorSearching && majorList.length === 0}}">
+              <view class="empty">未找到相关专业</view>
             </view>
-          </block>
-          <view class="empty-container" wx:if="{{!isMajorSearching && majorList.length === 0}}">
-            <view class="empty">未找到相关专业</view>
           </view>
         </view>
       </view>
@@ -281,23 +258,30 @@
           </view>
         </block>
         <view class="empty" wx:if="{{!isCitySearching && provinceList.length === 0}}">
-          未找到"{{formData.targetCity}}"相关的城市
+          未找到相关的城市
         </view>
       </view>
     </view>
 
-    <view class="form-item">
-      <text class="label required">学校层次</text>
+    <view class="form-item-tags">
+      <text class="label">学校层次</text>
       <picker 
         bindchange="onSchoolLevelChange" 
-        value="{{schoolLevelIndex}}" 
-        range="{{schoolLevels}}"
+        value="{{-1}}" 
+        range="{{schoolLevelOptions}}"
         class="picker-wrapper">
-        <view class="input {{schoolLevelIndex !== null ? 'input-selected' : ''}}">
-          {{schoolLevelIndex !== null ? schoolLevels[schoolLevelIndex] : '请选择'}}
+        <view class="input">
+          点击选择学校层次
         </view>
       </picker>
       
+      <!-- 已选学校层次展示区域 -->
+      <view class="selected-tags" wx:if="{{selectedSchoolLevels.length > 0}}">
+        <view class="tag" wx:for="{{selectedSchoolLevels}}" wx:key="*this">
+          <text>{{item}}</text>
+          <text class="tag-delete" bindtap="onDeleteSchoolLevel" data-index="{{index}}">×</text>
+        </view>
+      </view>
     </view>
   </view>
 

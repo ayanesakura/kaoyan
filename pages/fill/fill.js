@@ -9,10 +9,9 @@ Page({
       rank: '',
       project: '',
       firstTry: '',
-      targetSchool: '',
       targetMajor: [],
       targetCity: [],
-      schoolLevel: '',
+      schoolLevels: [], // 改为复数名称，表示多选
       cet: '',
       hometown: ''
     },
@@ -28,8 +27,8 @@ Page({
     directionList: [], // 当前选中专业的方向列表
     showMajorSelect: false, // 控制专业选择下拉框显示
     isMajorSearching: false, // 专业搜索状态
-    schoolLevels: ['C9', '985', '211', '一本', '二本'],
-    schoolLevelIndex: null,
+    schoolLevelOptions: ['C9', '985', '211', '一本', '二本'],
+    selectedSchoolLevels: [], // 新增：已选择的学校层级
     grades: ['大一', '大二', '大三', '大四'],
     ranks: ['前10%', '前20%', '前50%', '我会加油的'],
     if_first_try: ['是', '否'],
@@ -173,11 +172,26 @@ Page({
     })
   },
 
+  // 修改学校层级选择处理函数
   onSchoolLevelChange(e) {
-    const index = e.detail.value;
+    const value = e.detail.value;
+    const level = this.data.schoolLevelOptions[value];
+    
+    // 检查是否已经选择
+    const index = this.data.selectedSchoolLevels.indexOf(level);
+    let newSelectedLevels = [...this.data.selectedSchoolLevels];
+    
+    if (index === -1) {
+      // 如果未选择，添加到选中列表
+      newSelectedLevels.push(level);
+    } else {
+      // 如果已选择，从列表中移除
+      newSelectedLevels.splice(index, 1);
+    }
+    
     this.setData({
-      schoolLevelIndex: index,
-      'formData.schoolLevel': this.data.schoolLevels[index]
+      selectedSchoolLevels: newSelectedLevels,
+      'formData.schoolLevels': newSelectedLevels
     });
   },
 
@@ -287,7 +301,7 @@ Page({
     
     if(!formData.school || !formData.major || !formData.grade || 
        !formData.rank || !formData.project || !formData.firstTry ||
-       !formData.schoolLevel || !formData.cet || !formData.hometown) {
+       !formData.cet || !formData.hometown || formData.targetMajor.length === 0) {
       wx.showToast({
         title: '请填写必填项',
         icon: 'none'
@@ -301,7 +315,6 @@ Page({
       formData: { ...this.data.formData },
       // 保存索引值
       indices: {
-        schoolLevelIndex: this.data.schoolLevelIndex,
         gradeIndex: this.data.gradeIndex,
         rankIndex: this.data.rankIndex,
         if_first_try_index: this.data.if_first_try_index,
@@ -323,10 +336,9 @@ Page({
 
     // 准备目标信息
     const targetInfo = {
-      school: formData.targetSchool || '',
       major: formData.targetMajor.join(',') || '',
       city: formData.targetCity.join(',') || '',
-      school_level: formData.schoolLevel
+      school_level: formData.schoolLevels.join(',') || ''
     };
 
     // 保存到globalData
@@ -516,7 +528,6 @@ Page({
       this.setData({
         formData: { ...savedData.formData },
         // 恢复索引值
-        schoolLevelIndex: savedData.indices.schoolLevelIndex,
         gradeIndex: savedData.indices.gradeIndex,
         rankIndex: savedData.indices.rankIndex,
         if_first_try_index: savedData.indices.if_first_try_index,
@@ -556,14 +567,12 @@ Page({
         rank: '',
         project: '',
         firstTry: '',
-        targetSchool: '',
         targetMajor: [], // 确保是空数组
         targetCity: [], // 确保是空数组
-        schoolLevel: '',
+        schoolLevels: [], // 确保是空数组
         cet: '',
         hometown: ''
       },
-      schoolLevelIndex: null,
       gradeIndex: null,
       rankIndex: null,
       if_first_try_index: null,
@@ -1133,6 +1142,18 @@ Page({
       showHometownSelect: false,
       hometownProvinceList: [],
       hometownCityList: []
+    });
+  },
+
+  // 删除已选择的学校层级
+  onDeleteSchoolLevel(e) {
+    const index = e.currentTarget.dataset.index;
+    const newSelectedLevels = [...this.data.selectedSchoolLevels];
+    newSelectedLevels.splice(index, 1);
+    
+    this.setData({
+      selectedSchoolLevels: newSelectedLevels,
+      'formData.schoolLevels': newSelectedLevels
     });
   },
 }) 
