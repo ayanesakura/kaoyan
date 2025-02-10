@@ -12,7 +12,9 @@ Page({
       targetSchool: '',
       targetMajor: '',
       targetCity: '',
-      schoolLevel: ''
+      schoolLevel: '',
+      cet: '',
+      hometown: ''
     },
     schoolList: [], // 学校搜索结果列表
     showSchoolSelect: false, // 控制下拉列表显示
@@ -46,6 +48,14 @@ Page({
     showCitySelect: false,
     isCitySearching: false,
     selectedProvince: '',
+    cetOptions: ['CET4', 'CET6', '均未通过'],
+    cetIndex: null,
+    hometownSearchResults: [],
+    hometownProvinceList: [],
+    hometownCityList: [],
+    showHometownSelect: false,
+    isHometownSearching: false,
+    selectedHometownProvince: '',
   },
 
   // 修改防抖函数，保持this上下文
@@ -276,7 +286,7 @@ Page({
     
     if(!formData.school || !formData.major || !formData.grade || 
        !formData.rank || !formData.project || !formData.firstTry ||
-       !formData.schoolLevel) {
+       !formData.schoolLevel || !formData.cet || !formData.hometown) {
       wx.showToast({
         title: '请填写必填项',
         icon: 'none'
@@ -294,7 +304,8 @@ Page({
         gradeIndex: this.data.gradeIndex,
         rankIndex: this.data.rankIndex,
         if_first_try_index: this.data.if_first_try_index,
-        subjectIndex: this.data.subjectIndex
+        subjectIndex: this.data.subjectIndex,
+        cetIndex: this.data.cetIndex
       }
     };
 
@@ -304,7 +315,9 @@ Page({
       major: formData.major,
       grade: formData.grade,
       is_first_time: formData.firstTry,
-      good_at_subject: formData.project
+      good_at_subject: formData.project,
+      cet: formData.cet,
+      hometown: formData.hometown
     };
 
     // 准备目标信息
@@ -547,7 +560,9 @@ Page({
         targetSchool: '',
         targetMajor: '',
         targetCity: '',
-        schoolLevel: ''
+        schoolLevel: '',
+        cet: '',
+        hometown: ''
       },
       schoolLevelIndex: null,
       gradeIndex: null,
@@ -556,7 +571,9 @@ Page({
       subjectIndex: null,
       collegeList: [],
       selectedCollege: '',
-      selectedMajor: ''
+      selectedMajor: '',
+      cetIndex: null,
+      selectedHometownProvince: '',
     });
 
     // 清除全局保存的数据
@@ -958,6 +975,136 @@ Page({
     } finally {
       wx.hideLoading();
     }
+  },
+
+  // 处理四六级选择
+  onCETChange(e) {
+    const index = e.detail.value;
+    this.setData({
+      cetIndex: index,
+      'formData.cet': this.data.cetOptions[index]
+    });
+  },
+
+  // 处理家乡输入
+  onHometownInput(e) {
+    const value = e.detail.value;
+    this.setData({
+      'formData.hometown': value
+    });
+
+    // 创建一个新的防抖函数实例
+    if (!this._debounceHometownSearch) {
+      this._debounceHometownSearch = this.debounce(this.searchHometown, 300);
+    }
+    
+    // 使用缓存的防抖函数
+    this._debounceHometownSearch(value);
+  },
+
+  // 搜索家乡城市
+  searchHometown: function(value) {
+    if(!value) {
+      this.setData({
+        hometownSearchResults: [],
+        hometownProvinceList: [],
+        hometownCityList: [],
+        showHometownSelect: false
+      });
+      return;
+    }
+
+    this.setData({ isHometownSearching: true });
+
+    callService(API_PATHS.citySearch, 'POST', {
+      query: value
+    })
+    .then(res => {
+      console.log('城市搜索接口返回:', res.data);
+      
+      // 处理404的情况
+      if (res.data.code === 404) {
+        this.setData({
+          hometownSearchResults: [],
+          hometownProvinceList: [],
+          hometownCityList: [],
+          showHometownSelect: true
+        });
+        return;
+      }
+      
+      if(Array.isArray(res.data)) {
+        // 按省份分组处理数据
+        const provinceMap = new Map();
+        res.data.forEach(item => {
+          if (!provinceMap.has(item.province)) {
+            provinceMap.set(item.province, []);
+          }
+          provinceMap.get(item.province).push(item.city);
+        });
+        
+        // 获取所有省份
+        const provinceList = Array.from(provinceMap.keys());
+        
+        this.setData({
+          hometownSearchResults: res.data,
+          hometownProvinceList: provinceList,
+          showHometownSelect: true,
+          hometownCityList: [], // 清空城市列表
+          selectedHometownProvince: '' // 清空选中的省份
+        });
+      } else {
+        throw new Error('搜索返回数据格式错误');
+      }
+    })
+    .catch(err => {
+      console.error('搜索城市失败:', err);
+      this.setData({
+        hometownSearchResults: [],
+        hometownProvinceList: [],
+        hometownCityList: [],
+        showHometownSelect: true
+      });
+    })
+    .finally(() => {
+      this.setData({ isHometownSearching: false });
+    });
+  },
+
+  // 选择家乡省份
+  onSelectHometownProvince: function(e) {
+    const province = e.currentTarget.dataset.province;
+    
+    // 查找该省份的所有城市
+    const cities = this.data.hometownSearchResults
+      .filter(item => item.province === province)
+      .map(item => item.city);
+    
+    this.setData({
+      selectedHometownProvince: province,
+      hometownCityList: cities
+    });
+  },
+
+  // 关闭家乡选择器
+  closeHometownSelect: function() {
+    this.setData({
+      showHometownSelect: false,
+      hometownProvinceList: [],
+      hometownCityList: []
+    });
+  },
+
+  // 选择家乡城市
+  onSelectHometownCity: function(e) {
+    const city = e.currentTarget.dataset.city;
+    
+    this.setData({
+      'formData.hometown': city,
+      showHometownSelect: false,
+      hometownProvinceList: [],
+      hometownCityList: []
+    });
   },
 }) 
 

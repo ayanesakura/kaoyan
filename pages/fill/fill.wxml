@@ -91,6 +91,63 @@
       
     </view>
 
+    <view class="form-item">
+      <text class="label required">四六级情况</text>
+      <picker 
+        bindchange="onCETChange" 
+        value="{{cetIndex}}" 
+        range="{{cetOptions}}"
+        class="picker-wrapper">
+        <view class="input {{cetIndex !== null ? 'input-selected' : ''}}">
+          {{cetIndex !== null ? cetOptions[cetIndex] : '请选择'}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label required">家乡</text>
+      <input class="input {{formData.hometown ? 'input-selected' : ''}}" 
+             placeholder="请输入家乡城市" 
+             bindinput="onHometownInput"
+             value="{{formData.hometown}}"/>
+      
+      <!-- 家乡城市搜索下拉框 -->
+      <view class="school-select" wx:if="{{showHometownSelect}}">
+        <view class="loading" wx:if="{{isHometownSearching}}">搜索中...</view>
+        <block wx:elif="{{!isHometownSearching && hometownProvinceList.length > 0}}">
+          <view class="city-search-container">
+            <!-- 省份列表 -->
+            <view class="city-left-column">
+              <view class="city-item {{selectedHometownProvince === item ? 'selected' : ''}}" 
+                    wx:for="{{hometownProvinceList}}" 
+                    wx:key="*this"
+                    bindtap="onSelectHometownProvince"
+                    data-province="{{item}}">
+                {{item}}
+              </view>
+            </view>
+            
+            <!-- 城市列表 -->
+            <view class="city-right-column">
+              <view class="city-item" 
+                    wx:for="{{hometownCityList}}" 
+                    wx:key="*this"
+                    bindtap="onSelectHometownCity"
+                    data-city="{{item}}">
+                {{item}}
+              </view>
+              <view class="empty" wx:if="{{selectedHometownProvince && hometownCityList.length === 0}}">
+                该省份暂无相关城市
+              </view>
+            </view>
+          </view>
+        </block>
+        <view class="empty" wx:if="{{!isHometownSearching && hometownProvinceList.length === 0}}">
+          未找到"{{formData.hometown}}"相关的城市
+        </view>
+      </view>
+    </view>
+
   </view>
 
   <view class="card">
