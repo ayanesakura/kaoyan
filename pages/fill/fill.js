@@ -10,8 +10,8 @@ Page({
       project: '',
       firstTry: '',
       targetSchool: '',
-      targetMajor: '',
-      targetCity: '',
+      targetMajor: [],
+      targetCity: [],
       schoolLevel: '',
       cet: '',
       hometown: ''
@@ -56,6 +56,8 @@ Page({
     showHometownSelect: false,
     isHometownSearching: false,
     selectedHometownProvince: '',
+    targetMajorInput: '', // 专业输入框的值
+    targetCityInput: '', // 城市输入框的值
   },
 
   // 修改防抖函数，保持this上下文
@@ -226,13 +228,11 @@ Page({
     this._debounceTargetSearch(value);
   },
 
-  // 处理专业输入
+  // 修改专业输入处理
   onTargetMajorInput: function(e) {
     const value = e.detail.value;
-    console.log('专业输入值:', value);
-    
     this.setData({
-      'formData.targetMajor': value
+      targetMajorInput: value
     });
     
     // 创建一个新的防抖函数实例
@@ -244,10 +244,11 @@ Page({
     this._debounceMajorSearch(value);
   },
 
+  // 修改城市输入处理
   onTargetCityInput(e) {
     const value = e.detail.value;
     this.setData({
-      'formData.targetCity': value
+      targetCityInput: value
     });
 
     // 创建一个新的防抖函数实例
@@ -323,8 +324,8 @@ Page({
     // 准备目标信息
     const targetInfo = {
       school: formData.targetSchool || '',
-      major: formData.targetMajor || '',
-      city: formData.targetCity || '',
+      major: formData.targetMajor.join(',') || '',
+      city: formData.targetCity.join(',') || '',
       school_level: formData.schoolLevel
     };
 
@@ -543,12 +544,10 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function() {
-    // 如果是从分析页面返回，不清除数据
     if (this.data.formData.school) {
       return;
     }
     
-    // 否则重置表单
     this.setData({
       formData: {
         school: '',
@@ -558,8 +557,8 @@ Page({
         project: '',
         firstTry: '',
         targetSchool: '',
-        targetMajor: '',
-        targetCity: '',
+        targetMajor: [], // 确保是空数组
+        targetCity: [], // 确保是空数组
         schoolLevel: '',
         cet: '',
         hometown: ''
@@ -574,6 +573,8 @@ Page({
       selectedMajor: '',
       cetIndex: null,
       selectedHometownProvince: '',
+      targetMajorInput: '',
+      targetCityInput: ''
     });
 
     // 清除全局保存的数据
@@ -768,21 +769,35 @@ Page({
     
     this.setData({
       selectedMajor: major,
-      directionList: directions,
-      'formData.targetMajor': major // 直接使用专业名
+      directionList: directions
     });
   },
 
-  // 选择方向
+  // 选择专业方向
   onSelectDirection: function(e) {
     const direction = e.currentTarget.dataset.direction;
     const majorName = this.data.selectedMajor;
+    const newMajor = `${majorName}(${direction})`;
     
+    // 检查是否已经选择过这个专业
+    if (!this.data.formData.targetMajor.includes(newMajor)) {
+      this.setData({
+        'formData.targetMajor': [...this.data.formData.targetMajor, newMajor],
+        targetMajorInput: '', // 清空输入框
+        showMajorSelect: false,
+        majorList: [],
+        directionList: []
+      });
+    }
+  },
+
+  // 删除已选专业
+  onDeleteMajor: function(e) {
+    const index = e.currentTarget.dataset.index;
+    const targetMajor = [...this.data.formData.targetMajor];
+    targetMajor.splice(index, 1);
     this.setData({
-      'formData.targetMajor': `${majorName}(${direction})`, // 只显示专业名和方向
-      showMajorSelect: false,
-      majorList: [],
-      directionList: []
+      'formData.targetMajor': targetMajor
     });
   },
 
@@ -883,11 +898,25 @@ Page({
   onSelectCity: function(e) {
     const city = e.currentTarget.dataset.city;
     
+    // 检查是否已经选择过这个城市
+    if (!this.data.formData.targetCity.includes(city)) {
+      this.setData({
+        'formData.targetCity': [...this.data.formData.targetCity, city],
+        targetCityInput: '', // 清空输入框
+        showCitySelect: false,
+        provinceList: [],
+        cityList: []
+      });
+    }
+  },
+
+  // 删除已选城市
+  onDeleteCity: function(e) {
+    const index = e.currentTarget.dataset.index;
+    const targetCity = [...this.data.formData.targetCity];
+    targetCity.splice(index, 1);
     this.setData({
-      'formData.targetCity': city,
-      showCitySelect: false,
-      provinceList: [],
-      cityList: []
+      'formData.targetCity': targetCity
     });
   },
 

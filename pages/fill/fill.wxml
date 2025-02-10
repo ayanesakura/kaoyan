@@ -176,12 +176,20 @@
       </view>
     </view>
 
-    <view class="form-item">
+    <view class="form-item-tags">
       <text class="label">期望专业</text>
-      <input class="input {{formData.targetMajor ? 'input-selected' : ''}}" 
-             placeholder="不同专业请用逗号开" 
+      <input class="input {{formData.targetMajor.length > 0 ? 'input-selected' : ''}}" 
+             placeholder="点击输入搜索专业" 
              bindinput="onTargetMajorInput"
-             value="{{formData.targetMajor}}"/>
+             value="{{targetMajorInput}}"/>
+      
+      <!-- 已选专业展示区域 -->
+      <view class="selected-tags" wx:if="{{formData.targetMajor.length > 0}}">
+        <view class="tag" wx:for="{{formData.targetMajor}}" wx:key="*this">
+          <text>{{item}}</text>
+          <text class="tag-delete" bindtap="onDeleteMajor" data-index="{{index}}">×</text>
+        </view>
+      </view>
     </view>
 
     <!-- 专业搜索选择器 -->
@@ -226,12 +234,20 @@
       </view>
     </view>
 
-    <view class="form-item">
+    <view class="form-item-tags">
       <text class="label">期望城市</text>
-      <input class="input {{formData.targetCity ? 'input-selected' : ''}}" 
-             placeholder="多城市请用逗号开" 
+      <input class="input {{formData.targetCity.length > 0 ? 'input-selected' : ''}}" 
+             placeholder="点击输入搜索城市" 
              bindinput="onTargetCityInput"
-             value="{{formData.targetCity}}"/>
+             value="{{targetCityInput}}"/>
+      
+      <!-- 已选城市展示区域 -->
+      <view class="selected-tags" wx:if="{{formData.targetCity.length > 0}}">
+        <view class="tag" wx:for="{{formData.targetCity}}" wx:key="*this">
+          <text>{{item}}</text>
+          <text class="tag-delete" bindtap="onDeleteCity" data-index="{{index}}">×</text>
+        </view>
+      </view>
       
       <!-- 城市搜索下拉框 -->
       <view class="school-select" wx:if="{{showCitySelect}}">

@@ -30,6 +30,7 @@ page {
   padding: 24rpx 0;
   border-bottom: 1rpx solid #eee;
   position: relative;
+  flex-direction: row;
 }
 
 .form-item:last-child {
@@ -45,13 +46,14 @@ page {
 .label {
   font-size: 28rpx;
   color: #333;
+  white-space: nowrap;
 }
 
 .input {
   flex: 1;
   font-size: 28rpx;
   text-align: right;
-  margin-right: 10rpx;
+  margin-left: 20rpx;
   color: #999;
 }
 
@@ -107,9 +109,9 @@ page {
 
 .school-select {
   position: absolute;
-  top: 88rpx;
-  left: -30rpx;
-  right: -30rpx;
+  top: calc(100% + 4rpx);
+  left: 0;
+  right: 0;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   z-index: 1000;
@@ -406,4 +408,53 @@ page {
 
 .city-item:active {
   background: #f5f5f5;
+}
+
+.selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 16rpx;
+  padding: 0;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  background: #f0f9ff;
+  padding: 8rpx 16rpx;
+  border-radius: 32rpx;
+  font-size: 24rpx;
+  color: #87CEEB;
+  border: 1rpx solid #87CEEB;
+}
+
+.tag-delete {
+  margin-left: 8rpx;
+  font-size: 28rpx;
+  color: #87CEEB;
+  padding: 0 4rpx;
+}
+
+.tag-delete:active {
+  opacity: 0.7;
+}
+
+/* 多选标签的容器样式 */
+.form-item-tags {
+  display: flex;
+  flex-direction: column;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #eee;
+  position: relative;
+}
+
+.form-item-tags .label {
+  margin-bottom: 16rpx;
+}
+
+.form-item-tags .input {
+  width: 100%;
+  text-align: left;
+  margin-left: 0;
 }
