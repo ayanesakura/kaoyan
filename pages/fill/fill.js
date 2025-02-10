@@ -11,6 +11,7 @@ Page({
       firstTry: '',
       targetMajor: [],
       targetCity: [],
+      workCity: [], // 新增：期望工作城市
       schoolLevels: [], // 改为复数名称，表示多选
       cet: '',
       hometown: ''
@@ -57,6 +58,13 @@ Page({
     selectedHometownProvince: '',
     targetMajorInput: '', // 专业输入框的值
     targetCityInput: '', // 城市输入框的值
+    workCityInput: '', // 新增：工作城市输入框的值
+    workCitySearchResults: [], // 新增：工作城市搜索结果
+    workCityProvinceList: [], // 新增：工作城市省份列表
+    workCityCityList: [], // 新增：工作城市城市列表
+    showWorkCitySelect: false, // 新增：控制工作城市选择框显示
+    isWorkCitySearching: false, // 新增：工作城市搜索状态
+    selectedWorkCityProvince: '', // 新增：选中的工作城市省份
   },
 
   // 修改防抖函数，保持this上下文
@@ -338,6 +346,7 @@ Page({
     const targetInfo = {
       major: formData.targetMajor.join(',') || '',
       city: formData.targetCity.join(',') || '',
+      work_city: formData.workCity.join(',') || '', // 新增：工作城市
       school_level: formData.schoolLevels.join(',') || ''
     };
 
@@ -567,9 +576,10 @@ Page({
         rank: '',
         project: '',
         firstTry: '',
-        targetMajor: [], // 确保是空数组
-        targetCity: [], // 确保是空数组
-        schoolLevels: [], // 确保是空数组
+        targetMajor: [],
+        targetCity: [],
+        workCity: [], // 新增：确保重置工作城市
+        schoolLevels: [],
         cet: '',
         hometown: ''
       },
@@ -582,8 +592,8 @@ Page({
       selectedMajor: '',
       cetIndex: null,
       selectedHometownProvince: '',
-      targetMajorInput: '',
-      targetCityInput: ''
+      targetCityInput: '',
+      workCityInput: '', // 新增：重置工作城市输入
     });
 
     // 清除全局保存的数据
@@ -1154,6 +1164,141 @@ Page({
     this.setData({
       selectedSchoolLevels: newSelectedLevels,
       'formData.schoolLevels': newSelectedLevels
+    });
+  },
+
+  // 处理工作城市输入
+  onWorkCityInput(e) {
+    const value = e.detail.value;
+    this.setData({
+      workCityInput: value
+    });
+
+    // 创建一个新的防抖函数实例
+    if (!this._debounceWorkCitySearch) {
+      this._debounceWorkCitySearch = this.debounce(this.searchWorkCity, 300);
+    }
+    
+    // 使用缓存的防抖函数
+    this._debounceWorkCitySearch(value);
+  },
+
+  // 搜索工作城市
+  searchWorkCity: function(value) {
+    if(!value) {
+      this.setData({
+        workCitySearchResults: [],
+        workCityProvinceList: [],
+        workCityCityList: [],
+        showWorkCitySelect: false
+      });
+      return;
+    }
+
+    this.setData({ isWorkCitySearching: true });
+
+    callService(API_PATHS.citySearch, 'POST', {
+      query: value
+    })
+    .then(res => {
+      console.log('工作城市搜索接口返回:', res.data);
+      
+      // 处理404的情况
+      if (res.data.code === 404) {
+        this.setData({
+          workCitySearchResults: [],
+          workCityProvinceList: [],
+          workCityCityList: [],
+          showWorkCitySelect: true
+        });
+        return;
+      }
+      
+      if(Array.isArray(res.data)) {
+        // 按省份分组处理数据
+        const provinceMap = new Map();
+        res.data.forEach(item => {
+          if (!provinceMap.has(item.province)) {
+            provinceMap.set(item.province, []);
+          }
+          provinceMap.get(item.province).push(item.city);
+        });
+        
+        // 获取所有省份
+        const provinceList = Array.from(provinceMap.keys());
+        
+        this.setData({
+          workCitySearchResults: res.data,
+          workCityProvinceList: provinceList,
+          showWorkCitySelect: true,
+          workCityCityList: [], // 清空城市列表
+          selectedWorkCityProvince: '' // 清空选中的省份
+        });
+      } else {
+        throw new Error('搜索返回数据格式错误');
+      }
+    })
+    .catch(err => {
+      console.error('搜索工作城市失败:', err);
+      this.setData({
+        workCitySearchResults: [],
+        workCityProvinceList: [],
+        workCityCityList: [],
+        showWorkCitySelect: true
+      });
+    })
+    .finally(() => {
+      this.setData({ isWorkCitySearching: false });
+    });
+  },
+
+  // 选择工作城市省份
+  onSelectWorkCityProvince: function(e) {
+    const province = e.currentTarget.dataset.province;
+    
+    // 查找该省份的所有城市
+    const cities = this.data.workCitySearchResults
+      .filter(item => item.province === province)
+      .map(item => item.city);
+    
+    this.setData({
+      selectedWorkCityProvince: province,
+      workCityCityList: cities
+    });
+  },
+
+  // 关闭工作城市选择器
+  closeWorkCitySelect: function() {
+    this.setData({
+      showWorkCitySelect: false,
+      workCityProvinceList: [],
+      workCityCityList: []
+    });
+  },
+
+  // 选择工作城市
+  onSelectWorkCity: function(e) {
+    const city = e.currentTarget.dataset.city;
+    
+    // 检查是否已经选择过这个城市
+    if (!this.data.formData.workCity.includes(city)) {
+      this.setData({
+        'formData.workCity': [...this.data.formData.workCity, city],
+        workCityInput: '', // 清空输入框
+        showWorkCitySelect: false,
+        workCityProvinceList: [],
+        workCityCityList: []
+      });
+    }
+  },
+
+  // 删除已选工作城市
+  onDeleteWorkCity: function(e) {
+    const index = e.currentTarget.dataset.index;
+    const workCity = [...this.data.formData.workCity];
+    workCity.splice(index, 1);
+    this.setData({
+      'formData.workCity': workCity
     });
   },
 }) 

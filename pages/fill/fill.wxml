@@ -264,6 +264,58 @@
     </view>
 
     <view class="form-item-tags">
+      <text class="label">期望工作城市</text>
+      <input class="input {{formData.workCity.length > 0 ? 'input-selected' : ''}}" 
+             placeholder="点击输入搜索工作城市" 
+             bindinput="onWorkCityInput"
+             value="{{workCityInput}}"/>
+      
+      <!-- 已选工作城市展示区域 -->
+      <view class="selected-tags" wx:if="{{formData.workCity.length > 0}}">
+        <view class="tag" wx:for="{{formData.workCity}}" wx:key="*this">
+          <text>{{item}}</text>
+          <text class="tag-delete" bindtap="onDeleteWorkCity" data-index="{{index}}">×</text>
+        </view>
+      </view>
+      
+      <!-- 工作城市搜索下拉框 -->
+      <view class="school-select" wx:if="{{showWorkCitySelect}}">
+        <view class="loading" wx:if="{{isWorkCitySearching}}">搜索中...</view>
+        <block wx:elif="{{!isWorkCitySearching && workCityProvinceList.length > 0}}">
+          <view class="city-search-container">
+            <!-- 省份列表 -->
+            <view class="city-left-column">
+              <view class="city-item {{selectedWorkCityProvince === item ? 'selected' : ''}}" 
+                    wx:for="{{workCityProvinceList}}" 
+                    wx:key="*this"
+                    bindtap="onSelectWorkCityProvince"
+                    data-province="{{item}}">
+                {{item}}
+              </view>
+            </view>
+            
+            <!-- 城市列表 -->
+            <view class="city-right-column">
+              <view class="city-item" 
+                    wx:for="{{workCityCityList}}" 
+                    wx:key="*this"
+                    bindtap="onSelectWorkCity"
+                    data-city="{{item}}">
+                {{item}}
+              </view>
+              <view class="empty" wx:if="{{selectedWorkCityProvince && workCityCityList.length === 0}}">
+                该省份暂无相关城市
+              </view>
+            </view>
+          </view>
+        </block>
+        <view class="empty" wx:if="{{!isWorkCitySearching && workCityProvinceList.length === 0}}">
+          未找到相关的城市
+        </view>
+      </view>
+    </view>
+
+    <view class="form-item-tags">
       <text class="label">学校层次</text>
       <picker 
         bindchange="onSchoolLevelChange" 
