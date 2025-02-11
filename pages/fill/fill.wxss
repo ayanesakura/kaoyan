@@ -464,7 +464,7 @@ page {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 40rpx 20rpx;
+  padding: 40rpx 40rpx;
   margin-bottom: 20rpx;
 }
 
@@ -473,7 +473,7 @@ page {
   flex-direction: column;
   align-items: center;
   position: relative;
-  flex: 1;
+  flex: 0.8;
 }
 
 .progress-dot {
@@ -493,10 +493,10 @@ page {
 }
 
 .progress-line {
-  flex: 1;
+  flex: 1.5;
   height: 3rpx;
   background: #ddd;
-  margin: 0 8rpx;
+  margin: 0 16rpx;
   margin-bottom: 32rpx;
 }
 
