@@ -13,7 +13,8 @@
     "pages/score-calculator/score-calculator",
     "pages/timeline/timeline",
     "pages/directions/directions",
-    "pages/ai_analysis/ai_analysis"
+    "pages/ai_analysis/ai_analysis",
+    "pages/target_fill/target_fill"
   ],
   "window": {
     "backgroundTextStyle": "light",

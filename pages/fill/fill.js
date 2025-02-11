@@ -1301,6 +1301,41 @@ Page({
       'formData.workCity': workCity
     });
   },
+
+  onNext() {
+    const formData = this.data.formData;
+    
+    if(!formData.school || !formData.major || !formData.grade || 
+       !formData.rank || !formData.project || !formData.firstTry ||
+       !formData.cet || !formData.hometown) {
+      wx.showToast({
+        title: '请填写必填项',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 准备个人信息数据
+    const personalInfo = {
+      ...formData,
+      indices: {
+        gradeIndex: this.data.gradeIndex,
+        rankIndex: this.data.rankIndex,
+        if_first_try_index: this.data.if_first_try_index,
+        subjectIndex: this.data.subjectIndex,
+        cetIndex: this.data.cetIndex
+      }
+    };
+
+    // 跳转到目标院校填写页面
+    wx.navigateTo({
+      url: '/pages/target_fill/target_fill',
+      success: function(res) {
+        // 传递个人信息数据
+        res.eventChannel.emit('acceptPersonalInfo', personalInfo);
+      }
+    });
+  },
 }) 
 
 // 在现有代码基础上添加请求重试函数

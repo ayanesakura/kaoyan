@@ -1,0 +1,208 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">目标院校</view>
+    
+    <view class="form-item-tags">
+      <text class="label required">期望专业</text>
+      <input class="input {{formData.targetMajor.length > 0 ? 'input-selected' : ''}}" 
+             placeholder="点击输入搜索专业" 
+             bindinput="onTargetMajorInput"
+             value="{{targetMajorInput}}"/>
+      
+      <!-- 已选专业展示区域 -->
+      <view class="selected-tags" wx:if="{{formData.targetMajor.length > 0}}">
+        <view class="tag" wx:for="{{formData.targetMajor}}" wx:key="*this">
+          <text>{{item}}</text>
+          <text class="tag-delete" bindtap="onDeleteMajor" data-index="{{index}}">×</text>
+        </view>
+      </view>
+
+      <!-- 专业搜索选择器 -->
+      <view class="college-picker" wx:if="{{showMajorSelect}}">
+        <view class="picker-mask" bindtap="closeMajorSelect"></view>
+        <view class="picker-content">
+          <view class="picker-header">
+            <text>选择专业方向</text>
+            <text class="close" bindtap="closeMajorSelect">×</text>
+          </view>
+          <view class="picker-body">
+            <view class="loading-container" wx:if="{{isMajorSearching}}">
+              <view class="loading">搜索中...</view>
+            </view>
+            <block wx:elif="{{!isMajorSearching && majorList.length > 0}}">
+              <!-- 专业列表 -->
+              <view class="major-column">
+                <view class="column-item {{selectedMajor === item ? 'selected' : ''}}" 
+                      wx:for="{{majorList}}" 
+                      wx:key="*this"
+                      bindtap="onSelectMajor"
+                      data-major="{{item}}">
+                  {{item}}
+                </view>
+              </view>
+              
+              <!-- 方向列表 -->
+              <view class="direction-column">
+                <view class="column-item" 
+                      wx:for="{{directionList}}" 
+                      wx:key="*this"
+                      bindtap="onSelectDirection"
+                      data-direction="{{item}}">
+                  {{item}}
+                </view>
+              </view>
+            </block>
+            <view class="empty-container" wx:if="{{!isMajorSearching && majorList.length === 0}}">
+              <view class="empty">未找到相关专业</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-item-tags">
+      <text class="label">期望城市</text>
+      <input class="input {{formData.targetCity.length > 0 ? 'input-selected' : ''}}" 
+             placeholder="点击输入搜索城市" 
+             bindinput="onTargetCityInput"
+             value="{{targetCityInput}}"/>
+      
+      <!-- 已选城市展示区域 -->
+      <view class="selected-tags" wx:if="{{formData.targetCity.length > 0}}">
+        <view class="tag" wx:for="{{formData.targetCity}}" wx:key="*this">
+          <text>{{item}}</text>
+          <text class="tag-delete" bindtap="onDeleteCity" data-index="{{index}}">×</text>
+        </view>
+      </view>
+      
+      <!-- 城市搜索下拉框 -->
+      <view class="school-select" wx:if="{{showCitySelect}}">
+        <view class="loading" wx:if="{{isCitySearching}}">搜索中...</view>
+        <block wx:elif="{{!isCitySearching && provinceList.length > 0}}">
+          <view class="city-search-container">
+            <!-- 省份列表 -->
+            <view class="city-left-column">
+              <view class="city-item {{selectedProvince === item ? 'selected' : ''}}" 
+                    wx:for="{{provinceList}}" 
+                    wx:key="*this"
+                    bindtap="onSelectProvince"
+                    data-province="{{item}}">
+                {{item}}
+              </view>
+            </view>
+            
+            <!-- 城市列表 -->
+            <view class="city-right-column">
+              <view class="city-item" 
+                    wx:for="{{cityList}}" 
+                    wx:key="*this"
+                    bindtap="onSelectCity"
+                    data-city="{{item}}">
+                {{item}}
+              </view>
+              <view class="empty" wx:if="{{selectedProvince && cityList.length === 0}}">
+                该省份暂无相关城市
+              </view>
+            </view>
+          </view>
+        </block>
+        <view class="empty" wx:if="{{!isCitySearching && provinceList.length === 0}}">
+          未找到相关的城市
+        </view>
+      </view>
+    </view>
+
+    <view class="form-item-tags">
+      <text class="label">期望工作城市</text>
+      <input class="input {{formData.workCity.length > 0 ? 'input-selected' : ''}}" 
+             placeholder="点击输入搜索工作城市" 
+             bindinput="onWorkCityInput"
+             value="{{workCityInput}}"/>
+      
+      <!-- 已选工作城市展示区域 -->
+      <view class="selected-tags" wx:if="{{formData.workCity.length > 0}}">
+        <view class="tag" wx:for="{{formData.workCity}}" wx:key="*this">
+          <text>{{item}}</text>
+          <text class="tag-delete" bindtap="onDeleteWorkCity" data-index="{{index}}">×</text>
+        </view>
+      </view>
+      
+      <!-- 工作城市搜索下拉框 -->
+      <view class="school-select" wx:if="{{showWorkCitySelect}}">
+        <view class="loading" wx:if="{{isWorkCitySearching}}">搜索中...</view>
+        <block wx:elif="{{!isWorkCitySearching && workCityProvinceList.length > 0}}">
+          <view class="city-search-container">
+            <!-- 省份列表 -->
+            <view class="city-left-column">
+              <view class="city-item {{selectedWorkCityProvince === item ? 'selected' : ''}}" 
+                    wx:for="{{workCityProvinceList}}" 
+                    wx:key="*this"
+                    bindtap="onSelectWorkCityProvince"
+                    data-province="{{item}}">
+                {{item}}
+              </view>
+            </view>
+            
+            <!-- 城市列表 -->
+            <view class="city-right-column">
+              <view class="city-item" 
+                    wx:for="{{workCityCityList}}" 
+                    wx:key="*this"
+                    bindtap="onSelectWorkCity"
+                    data-city="{{item}}">
+                {{item}}
+              </view>
+              <view class="empty" wx:if="{{selectedWorkCityProvince && workCityCityList.length === 0}}">
+                该省份暂无相关城市
+              </view>
+            </view>
+          </view>
+        </block>
+        <view class="empty" wx:if="{{!isWorkCitySearching && workCityProvinceList.length === 0}}">
+          未找到相关的城市
+        </view>
+      </view>
+    </view>
+
+    <view class="form-item-tags">
+      <text class="label">学校层次</text>
+      <picker 
+        bindchange="onSchoolLevelChange" 
+        value="{{-1}}" 
+        range="{{schoolLevelOptions}}"
+        class="picker-wrapper">
+        <view class="input">
+          点击选择学校层次
+        </view>
+      </picker>
+      
+      <!-- 已选学校层次展示区域 -->
+      <view class="selected-tags" wx:if="{{selectedSchoolLevels.length > 0}}">
+        <view class="tag" wx:for="{{selectedSchoolLevels}}" wx:key="*this">
+          <text>{{item}}</text>
+          <text class="tag-delete" bindtap="onDeleteSchoolLevel" data-index="{{index}}">×</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="tips">
+    <view class="tip-item">
+      <view class="tip-content">
+        <text class="tip-title">如果您有明确的期望专业，无明确期望学校时：</text>
+        <text class="tip-desc">填写期望专业，城市/学校程度可选填小范围。</text>
+      </view>
+    </view>
+    <view class="tip-item">
+      <view class="tip-content">
+        <text class="tip-title">如果您有明确城市，其他无明确：</text>
+        <text class="tip-desc">填写城市即可。</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="button-group">
+    <button class="back-btn" bindtap="onBack">上一步</button>
+    <button class="submit-btn" bindtap="onSubmit">开始查询</button>
+  </view>
+</view> 
