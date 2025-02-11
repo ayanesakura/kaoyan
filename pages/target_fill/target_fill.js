@@ -484,105 +484,29 @@ Page({
       return;
     }
 
-    // 合并个人信息和目标信息
-    const formData = {
+    // 保存当前填写的数据到全局变量
+    const app = getApp();
+    app.globalData.savedTargetData = {
+      targetMajor: this.data.formData.targetMajor,
+      targetCity: this.data.formData.targetCity,
+      workCity: this.data.formData.workCity,
+      schoolLevels: this.data.formData.schoolLevels
+    };
+
+    // 准备传递给权重页面的数据
+    const targetInfo = {
       ...this.personalInfo,
       ...this.data.formData
     };
 
-    // 保存表单数据到全局
-    const app = getApp();
-    app.globalData.savedFormData = {
-      formData: formData,
-      indices: this.personalInfo.indices
-    };
-
-    // 准备用户信息
-    const userInfo = {
-      school: formData.school,
-      major: formData.major,
-      grade: formData.grade,
-      is_first_time: formData.firstTry,
-      good_at_subject: formData.project,
-      cet: formData.cet,
-      hometown: formData.hometown
-    };
-
-    // 准备目标信息
-    const targetInfo = {
-      major: formData.targetMajor.join(',') || '',
-      city: formData.targetCity.join(',') || '',
-      work_city: formData.workCity.join(',') || '',
-      school_level: formData.schoolLevels.join(',') || ''
-    };
-
-    // 保存到globalData
-    app.globalData.userInfo = userInfo;
-    app.globalData.targetInfo = targetInfo;
-
-    // 保存到本地存储
-    try {
-      wx.setStorageSync('userInfo', userInfo);
-      wx.setStorageSync('targetInfo', targetInfo);
-      console.log('用户信息和目标信息已保存到本地存储');
-    } catch (e) {
-      console.error('保存到本地存储失败:', e);
-    }
-
-    // 准备请求数据
-    const requestData = {
-      user_info: userInfo,
-      target_info: targetInfo
-    };
-
-    // 处理空字符串
-    const processedData = this.processRequestData(requestData);
-    console.log('处理后的请求数据：', processedData);
-
-    // 显示加载提示
-    wx.showLoading({
-      title: '分析中...',
-      mask: true
+    // 跳转到权重填写页面
+    wx.navigateTo({
+      url: '/pages/weight_fill/weight_fill',
+      success: function(res) {
+        // 传递数据给权重页面
+        res.eventChannel.emit('acceptTargetInfo', targetInfo);
+      }
     });
-
-    // 调用接口
-    callService(API_PATHS.chooseSchools, 'POST', processedData)
-      .then(res => {
-        if (!res || !res.result) {
-          throw new Error('返回数据为空');
-        }
-
-        let schoolsData;
-        if (res.data && res.data.data && Array.isArray(res.data.data)) {
-          schoolsData = res.data.data;
-        } else if (res.data && Array.isArray(res.data)) {
-          schoolsData = res.data;
-        } else if (Array.isArray(res)) {
-          schoolsData = res;
-        } else {
-          throw new Error('返回数据格式错误');
-        }
-
-        // 存储分析结果
-        const app = getApp();
-        app.globalData.analysisResult = {
-          recommendations: schoolsData
-        };
-
-        wx.hideLoading();
-        wx.reLaunch({
-          url: '/pages/analysis/analysis'
-        });
-      })
-      .catch(err => {
-        console.error('分析失败:', err);
-        wx.hideLoading();
-        wx.showToast({
-          title: err.message || '分析失败，请重试',
-          icon: 'none',
-          duration: 3000
-        });
-      });
   },
 
   /**

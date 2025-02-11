@@ -1,0 +1,133 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">选择偏好权重</view>
+    <view class="total-weight {{isValid ? '' : 'invalid'}}">
+      当前总权重：{{totalWeight}}%
+      <text class="error-msg" wx:if="{{!isValid}}">{{errorMsg}}</text>
+    </view>
+
+    <view class="weight-item">
+      <view class="weight-label">地理位置权重</view>
+      <view class="weight-control">
+        <slider 
+          value="{{weights.location}}" 
+          min="0" 
+          max="100" 
+          show-value 
+          data-field="location"
+          bindchange="onSliderChange"
+        />
+        <input 
+          type="number" 
+          class="weight-input" 
+          value="{{weights.location}}" 
+          data-field="location"
+          bindinput="onInputChange"
+        />
+        <text class="unit">%</text>
+      </view>
+    </view>
+
+    <view class="weight-item">
+      <view class="weight-label">就业权重</view>
+      <view class="weight-control">
+        <slider 
+          value="{{weights.employment}}" 
+          min="0" 
+          max="100" 
+          show-value 
+          data-field="employment"
+          bindchange="onSliderChange"
+        />
+        <input 
+          type="number" 
+          class="weight-input" 
+          value="{{weights.employment}}" 
+          data-field="employment"
+          bindinput="onInputChange"
+        />
+        <text class="unit">%</text>
+      </view>
+    </view>
+
+    <view class="weight-item">
+      <view class="weight-label">进体制权重</view>
+      <view class="weight-control">
+        <slider 
+          value="{{weights.government}}" 
+          min="0" 
+          max="100" 
+          show-value 
+          data-field="government"
+          bindchange="onSliderChange"
+        />
+        <input 
+          type="number" 
+          class="weight-input" 
+          value="{{weights.government}}" 
+          data-field="government"
+          bindinput="onInputChange"
+        />
+        <text class="unit">%</text>
+      </view>
+    </view>
+
+    <view class="weight-item">
+      <view class="weight-label">升学权重</view>
+      <view class="weight-control">
+        <slider 
+          value="{{weights.education}}" 
+          min="0" 
+          max="100" 
+          show-value 
+          data-field="education"
+          bindchange="onSliderChange"
+        />
+        <input 
+          type="number" 
+          class="weight-input" 
+          value="{{weights.education}}" 
+          data-field="education"
+          bindinput="onInputChange"
+        />
+        <text class="unit">%</text>
+      </view>
+    </view>
+
+    <view class="weight-item">
+      <view class="weight-label">学校专业知名度权重</view>
+      <view class="weight-control">
+        <slider 
+          value="{{weights.reputation}}" 
+          min="0" 
+          max="100" 
+          show-value 
+          data-field="reputation"
+          bindchange="onSliderChange"
+        />
+        <input 
+          type="number" 
+          class="weight-input" 
+          value="{{weights.reputation}}" 
+          data-field="reputation"
+          bindinput="onInputChange"
+        />
+        <text class="unit">%</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="tips">
+    <view class="tip-item">
+      <view class="tip-content">
+        <text class="tip-title">权重说明：</text>
+        <text class="tip-desc">各项权重总和必须等于100%，请根据个人偏好调整各项权重。</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="button-group">
+    <button class="back-btn" bindtap="onBack">上一步</button>
+    <button class="submit-btn" bindtap="onSubmit">开始分析</button>
+  </view>
+</view> 

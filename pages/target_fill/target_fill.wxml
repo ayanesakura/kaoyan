@@ -203,6 +203,6 @@
 
   <view class="button-group">
     <button class="back-btn" bindtap="onBack">上一步</button>
-    <button class="submit-btn" bindtap="onSubmit">开始查询</button>
+    <button class="submit-btn" bindtap="onSubmit">下一步</button>
   </view>
 </view> 
