@@ -1,4 +1,21 @@
 <view class="container">
+  <view class="progress-bar">
+    <view class="progress-item completed">
+      <view class="progress-dot"></view>
+      <view class="progress-text">个人信息</view>
+    </view>
+    <view class="progress-line completed"></view>
+    <view class="progress-item active">
+      <view class="progress-dot"></view>
+      <view class="progress-text">目标院校</view>
+    </view>
+    <view class="progress-line"></view>
+    <view class="progress-item">
+      <view class="progress-dot"></view>
+      <view class="progress-text">偏好权重</view>
+    </view>
+  </view>
+
   <view class="card">
     <view class="section-title">目标院校</view>
     
