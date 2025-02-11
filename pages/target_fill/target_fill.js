@@ -42,11 +42,31 @@ Page({
     eventChannel.on('acceptPersonalInfo', (data) => {
       // 保存个人信息数据
       this.personalInfo = data;
+      
+      // 检查是否有保存的目标院校数据
+      const app = getApp();
+      const savedTargetData = app.globalData.savedTargetData;
+      if (savedTargetData) {
+        this.setData({
+          formData: savedTargetData,
+          selectedSchoolLevels: savedTargetData.schoolLevels || []
+        });
+      }
     });
   },
 
   // 返回上一页
   onBack() {
+    // 保存当前填写的数据到全局变量
+    const app = getApp();
+    app.globalData.savedTargetData = {
+      targetMajor: this.data.formData.targetMajor,
+      targetCity: this.data.formData.targetCity,
+      workCity: this.data.formData.workCity,
+      schoolLevels: this.data.formData.schoolLevels
+    };
+
+    // 返回上一页
     wx.navigateBack();
   },
 
