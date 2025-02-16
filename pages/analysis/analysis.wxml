@@ -16,6 +16,7 @@
             chart-data="{{chartData}}" 
             title="{{trendTitle}}"
             unit="{{chartUnit}}"
+            chart-type="{{chartType}}"
           ></trend-chart>
         </block>
         <block wx:else>

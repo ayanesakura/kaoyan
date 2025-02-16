@@ -6,8 +6,9 @@ Component({
       type: Object,
       value: null,
       observer: function(newVal) {
+        console.log('chartData更新:', newVal);
         if (newVal) {
-          this.initChart();
+          this.initChartWhenReady();
         }
       }
     },
@@ -21,42 +22,103 @@ Component({
     },
     chartType: {
       type: String,
-      value: 'line'
+      value: 'line',
+      observer: function(newVal) {
+        console.log('chartType更新:', newVal);
+      }
     }
   },
 
   data: {
     ec: {
       lazyLoad: true
-    }
+    },
+    isComponentReady: false
   },
 
   lifetimes: {
+    created: function() {
+      console.log('组件created');
+    },
+    
     attached: function() {
-      this.ecComponent = this.selectComponent('#mychart-dom');
-      this.initChart();
+      console.log('组件attached');
+      setTimeout(() => {
+        this.setData({ isComponentReady: true }, () => {
+          this.initChartWhenReady();
+        });
+      }, 100);
+    },
+
+    ready: function() {
+      console.log('组件ready');
+    },
+
+    detached: function() {
+      console.log('组件detached');
     }
   },
 
   methods: {
-    initChart: function() {
-      if (!this.ecComponent || !this.data.chartData) return;
-      
-      this.ecComponent.init((canvas, width, height, dpr) => {
-        const chart = echarts.init(canvas, null, {
-          width: width,
-          height: height,
-          devicePixelRatio: dpr
-        });
-        
-        const option = this.getChartOption();
-        chart.setOption(option);
-        
-        return chart;
+    initChartWhenReady: function() {
+      console.log('准备初始化图表:', {
+        isReady: this.data.isComponentReady,
+        hasData: !!this.data.chartData,
+        chartType: this.data.chartType
       });
+
+      if (!this.data.isComponentReady || !this.data.chartData) {
+        console.log('组件或数据未准备好，跳过初始化');
+        return;
+      }
+
+      try {
+        this.ecComponent = this.selectComponent('#mychart');
+        console.log('获取到图表组件:', this.ecComponent);
+        
+        if (!this.ecComponent) {
+          throw new Error('找不到图表组件实例');
+        }
+
+        this.initChart();
+      } catch (error) {
+        console.error('初始化图表失败:', error);
+      }
+    },
+
+    initChart: function() {
+      console.log('开始初始化图表');
+      
+      try {
+        this.ecComponent.init((canvas, width, height, dpr) => {
+          console.log('图表canvas初始化:', { width, height, dpr });
+          
+          // 确保有有效的宽高
+          if (!width || !height) {
+            console.error('无效的canvas尺寸:', { width, height });
+            return;
+          }
+
+          const chart = echarts.init(canvas, null, {
+            width: width,
+            height: height,
+            devicePixelRatio: dpr
+          });
+          
+          const option = this.getChartOption();
+          console.log('图表配置:', option);
+          
+          chart.setOption(option);
+          
+          return chart;
+        });
+      } catch (error) {
+        console.error('初始化图表实例失败:', error);
+      }
     },
 
     getChartOption: function() {
+      console.log('获取图表配置，类型:', this.data.chartType);
       if (this.data.chartType === 'radar') {
         return this.getRadarOption();
       }
@@ -131,11 +193,14 @@ Component({
 
     getRadarOption: function() {
       const { dimensions, values, descriptions } = this.data.chartData;
+      console.log('雷达图数据:', { dimensions, values, descriptions });
       
       return {
+        backgroundColor: '#fff',
         title: {
           text: this.data.title,
           left: 'center',
+          top: 20,
           textStyle: {
             fontSize: 14,
             color: '#333'
@@ -146,21 +211,33 @@ Component({
             name: dim,
             max: 100
           })),
-          radius: '60%',
+          center: ['50%', '60%'],
+          radius: '65%',
           splitNumber: 4,
-          axisName: {
-            color: '#666',
-            fontSize: 10
+          shape: 'circle',
+          name: {
+            textStyle: {
+              color: '#666',
+              fontSize: 12,
+              padding: [3, 5]
+            }
           },
           splitLine: {
             lineStyle: {
-              color: ['#ddd']
+              color: '#ddd',
+              width: 1
             }
           },
           splitArea: {
             show: true,
             areaStyle: {
               color: ['rgba(255,255,255,0.3)', 'rgba(135,206,235,0.05)']
+            }
+          },
+          axisLine: {
+            lineStyle: {
+              color: '#ddd',
+              width: 1
             }
           }
         },
@@ -169,6 +246,8 @@ Component({
           data: [{
             value: values[0],
             name: this.data.title,
+            symbol: 'circle',
+            symbolSize: 6,
             itemStyle: {
               color: '#87CEEB'
             },
@@ -189,6 +268,14 @@ Component({
         }],
         tooltip: {
           trigger: 'item',
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          borderColor: '#eee',
+          borderWidth: 1,
+          padding: [10, 15],
+          textStyle: {
+            color: '#666',
+            fontSize: 12
+          },
           formatter: (params) => {
             const values = params.value;
             const indicators = params.indicator;
