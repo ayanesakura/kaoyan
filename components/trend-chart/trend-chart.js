@@ -4,17 +4,10 @@ Component({
   properties: {
     chartData: {
       type: Object,
-      value: {},
+      value: null,
       observer: function(newVal) {
-        console.log('图表数据更新:', newVal);
-        if (newVal && newVal.years && newVal.values) {
-          this.setData({
-            pendingData: newVal
-          }, () => {
-            if (this.data.isReady) {
-              this.init();
-            }
-          });
+        if (newVal) {
+          this.initChart();
         }
       }
     },
@@ -24,165 +17,188 @@ Component({
     },
     unit: {
       type: String,
-      value: '分'
+      value: ''
+    },
+    chartType: {
+      type: String,
+      value: 'line'
     }
   },
 
   data: {
     ec: {
       lazyLoad: true
-    },
-    pendingData: null,
-    isReady: false
+    }
   },
 
   lifetimes: {
     attached: function() {
-      console.log('图表组件已挂载');
-      setTimeout(() => {
-        this.ecComponent = this.selectComponent('#mychart');
-        if (!this.ecComponent) {
-          console.error('找不到图表组件实例');
-          return;
-        }
-        this.setData({ isReady: true }, () => {
-          if (this.data.pendingData) {
-            this.init();
-          }
-        });
-      }, 100);
+      this.ecComponent = this.selectComponent('#mychart-dom');
+      this.initChart();
     }
   },
 
   methods: {
-    init: function() {
-      console.log('开始初始化图表');
-      if (!this.ecComponent || !this.data.isReady) {
-        console.log('组件未准备好，等待组件准备完成');
-        return;
-      }
-
+    initChart: function() {
+      if (!this.ecComponent || !this.data.chartData) return;
+      
       this.ecComponent.init((canvas, width, height, dpr) => {
-        console.log('图表画布初始化:', { width, height, dpr });
-        
-        if (height === 0) {
-          height = 600;
-        }
-        
         const chart = echarts.init(canvas, null, {
           width: width,
           height: height,
           devicePixelRatio: dpr
         });
         
-        const option = this.getOption();
-        console.log('图表配置:', option);
-        
-        option.animation = true;
-        option.animationDuration = 1000;
-        option.animationEasing = 'cubicOut';
-        
+        const option = this.getChartOption();
         chart.setOption(option);
-        this.chart = chart;
+        
         return chart;
       });
     },
 
-    getOption: function() {
-      const { years, values } = this.data.pendingData || this.properties.chartData;
+    getChartOption: function() {
+      if (this.data.chartType === 'radar') {
+        return this.getRadarOption();
+      }
+      return this.getLineOption();
+    },
+
+    getLineOption: function() {
+      const { years, values } = this.data.chartData;
+      
       return {
         title: {
-          text: this.properties.title,
+          text: this.data.title,
           left: 'center',
           textStyle: {
             fontSize: 14,
             color: '#333'
-          },
-          top: 10
+          }
         },
         grid: {
-          containLabel: true,
-          left: 30,
-          right: 20,
-          bottom: 20,
-          top: 50
+          top: '15%',
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
         },
         xAxis: {
           type: 'category',
           data: years,
           axisLabel: {
-            fontSize: 11,
-            interval: 0,
-            rotate: 0
-          },
-          axisTick: {
-            alignWithLabel: true
+            fontSize: 10
           }
         },
         yAxis: {
           type: 'value',
           axisLabel: {
-            fontSize: 11,
-            formatter: `{value}${this.properties.unit}`
-          },
-          splitLine: {
-            lineStyle: {
-              type: 'dashed'
-            }
+            formatter: `{value}${this.data.unit}`,
+            fontSize: 10
           }
         },
         series: [{
-          type: 'line',
           data: values,
+          type: 'line',
           smooth: true,
           symbol: 'circle',
-          symbolSize: 8,
+          symbolSize: 6,
           itemStyle: {
             color: '#87CEEB'
           },
           lineStyle: {
             color: '#87CEEB',
-            width: 3
+            width: 2
           },
           areaStyle: {
-            color: {
-              type: 'linear',
-              x: 0,
-              y: 0,
-              x2: 0,
-              y2: 1,
-              colorStops: [{
-                offset: 0,
-                color: 'rgba(135, 206, 235, 0.3)'
-              }, {
-                offset: 1,
-                color: 'rgba(135, 206, 235, 0)'
-              }]
-            }
-          },
-          emphasis: {
-            itemStyle: {
-              color: '#87CEEB',
-              borderWidth: 3,
-              borderColor: '#fff',
-              shadowColor: 'rgba(0, 0, 0, 0.2)',
-              shadowBlur: 10
-            }
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+              offset: 0,
+              color: 'rgba(135, 206, 235, 0.3)'
+            }, {
+              offset: 1,
+              color: 'rgba(135, 206, 235, 0.1)'
+            }])
           }
         }],
         tooltip: {
           trigger: 'axis',
-          formatter: function(params) {
-            const data = params[0];
-            return `${data.name}年: ${data.value}${this.properties.unit}`;
-          }.bind(this),
-          backgroundColor: 'rgba(255, 255, 255, 0.9)',
-          borderColor: '#eee',
-          borderWidth: 1,
+          formatter: (params) => {
+            const value = params[0].value;
+            return `${params[0].name}年: ${value !== null ? value + this.data.unit : '暂无数据'}`;
+          }
+        }
+      };
+    },
+
+    getRadarOption: function() {
+      const { dimensions, values, descriptions } = this.data.chartData;
+      
+      return {
+        title: {
+          text: this.data.title,
+          left: 'center',
           textStyle: {
+            fontSize: 14,
             color: '#333'
+          }
+        },
+        radar: {
+          indicator: dimensions.map(dim => ({
+            name: dim,
+            max: 100
+          })),
+          radius: '60%',
+          splitNumber: 4,
+          axisName: {
+            color: '#666',
+            fontSize: 10
           },
-          padding: [8, 12]
+          splitLine: {
+            lineStyle: {
+              color: ['#ddd']
+            }
+          },
+          splitArea: {
+            show: true,
+            areaStyle: {
+              color: ['rgba(255,255,255,0.3)', 'rgba(135,206,235,0.05)']
+            }
+          }
+        },
+        series: [{
+          type: 'radar',
+          data: [{
+            value: values[0],
+            name: this.data.title,
+            itemStyle: {
+              color: '#87CEEB'
+            },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                offset: 0,
+                color: 'rgba(135, 206, 235, 0.6)'
+              }, {
+                offset: 1,
+                color: 'rgba(135, 206, 235, 0.2)'
+              }])
+            },
+            lineStyle: {
+              color: '#87CEEB',
+              width: 2
+            }
+          }]
+        }],
+        tooltip: {
+          trigger: 'item',
+          formatter: (params) => {
+            const values = params.value;
+            const indicators = params.indicator;
+            let result = `${params.name}<br/>`;
+            values.forEach((val, index) => {
+              const description = descriptions?.[index] ? `<br/>${descriptions[index]}` : '';
+              result += `${indicators[index].name}: ${val}分${description}<br/>`;
+            });
+            return result;
+          }
         }
       };
     }

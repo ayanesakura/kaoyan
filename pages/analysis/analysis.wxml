@@ -1,6 +1,6 @@
 <view class="container">
   <view class="title">对比结果</view>
-  <view class="subtitle">我们根据你的意向，结合大数据，生成排名前5的大学及专业</view>
+  <view class="subtitle">我们根据你的意向，结合大数据，生成最适合的大学及专业</view>
   
   <!-- 遮罩层和趋势展示区域 -->
   <block wx:if="{{showTrend}}">
@@ -27,87 +27,107 @@
       </view>
     </view>
   </block>
-  
-  <view class="comparison-table">
-    <!-- 标签列 -->
-    <view class="label-column">
-      <view class="row-header">大学</view>
-      <view class="row-header">学院</view>
-      <view class="row-header">考上概率</view>
-      <view class="row-header">专业</view>
-      <view class="row-header">报录比</view>
-      <view class="row-header">总分数线</view>
-      <view class="row-header">- 政治</view>
-      <view class="row-header">- 英语</view>
-      <view class="row-header">- 科三</view>
-      <view class="row-header">- 科四</view>
-      <view class="row-header">就业情况</view>
-      <view class="row-header">深造占比</view>
-      <view class="row-header">考公占比</view>
-      <view class="row-header">就业占比</view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">数据加载中...</text>
+  </view>
+
+  <!-- 空数据提示 -->
+  <view class="empty-container" wx:elif="{{!hasData}}">
+    <image class="empty-icon" src="/images/empty.png" mode="aspectFit"></image>
+    <text class="empty-text">暂无匹配的院校数据</text>
+    <text class="empty-subtext">建议调整筛选条件重新查询</text>
+  </view>
+
+  <block wx:else>
+    <!-- 概率分组Tab -->
+    <view class="probability-tabs">
+      <view 
+        class="tab-item {{currentTab === '保底' ? 'active' : ''}}" 
+        bindtap="switchTab" 
+        data-tab="保底"
+      >保底院校</view>
+      <view 
+        class="tab-item {{currentTab === '稳妥' ? 'active' : ''}}" 
+        bindtap="switchTab" 
+        data-tab="稳妥"
+      >稳妥院校</view>
+      <view 
+        class="tab-item {{currentTab === '冲刺' ? 'active' : ''}}" 
+        bindtap="switchTab" 
+        data-tab="冲刺"
+      >冲刺院校</view>
+    </view>
+    
+    <!-- 当前Tab无数据提示 -->
+    <view class="empty-tab" wx:if="{{currentSchools.length === 0}}">
+      <text class="empty-tab-text">暂无{{currentTab}}院校数据</text>
+    </view>
+    
+    <!-- 学校数据表格 -->
+    <view class="comparison-table" wx:else>
+      <!-- 标签列 -->
+      <view class="label-column">
+        <view class="row-header">大学</view>
+        <view class="row-header">录取概率</view>
+        <view class="row-header">综合评分</view>
+        <view class="row-header">录取评分</view>
+        <view class="row-header">地域评分</view>
+        <view class="row-header">专业评分</view>
+        <view class="row-header">分数线</view>
+        <view class="row-header">- 政治</view>
+        <view class="row-header">- 英语</view>
+        <view class="row-header">- 数学</view>
+        <view class="row-header">- 专业课</view>
+      </view>
+
+      <!-- 学校信息列 -->
+      <scroll-view scroll-x="true" class="school-columns">
+        <view class="school-column" wx:for="{{currentSchools}}" wx:key="index">
+          <view class="row-cell">{{item.school}}</view>
+          <view class="row-cell">{{item.probability}}</view>
+          <view class="row-cell">{{item.totalScore}}</view>
+          <view class="row-cell has-btn">
+            {{item.admission_score.total_score || '/'}}
+            <view class="mini-trend-btn" bindtap="showTrend" data-type="admission" data-index="{{index}}">查看详情</view>
+          </view>
+          <view class="row-cell has-btn">
+            {{item.location_score['总分'] || '/'}}
+            <view class="mini-trend-btn" bindtap="showTrend" data-type="location" data-index="{{index}}">查看详情</view>
+          </view>
+          <view class="row-cell has-btn">
+            {{item.majorTotalScore}}
+            <view class="mini-trend-btn" bindtap="showTrend" data-type="major" data-index="{{index}}">查看详情</view>
+          </view>
+          <view class="row-cell has-btn">
+            {{item.totalScore}}
+            <view class="mini-trend-btn" bindtap="showTrend" data-type="score" data-index="{{index}}">查看往年趋势</view>
+          </view>
+          <view class="row-cell has-btn">
+            {{item.politicsScore}}
+            <view class="mini-trend-btn" bindtap="showTrend" data-type="politics" data-index="{{index}}">查看往年趋势</view>
+          </view>
+          <view class="row-cell has-btn">
+            {{item.englishScore}}
+            <view class="mini-trend-btn" bindtap="showTrend" data-type="english" data-index="{{index}}">查看往年趋势</view>
+          </view>
+          <view class="row-cell has-btn">
+            {{item.mathScore}}
+            <view class="mini-trend-btn" bindtap="showTrend" data-type="math" data-index="{{index}}">查看往年趋势</view>
+          </view>
+          <view class="row-cell has-btn">
+            {{item.majorScore}}
+            <view class="mini-trend-btn" bindtap="showTrend" data-type="major_subject" data-index="{{index}}">查看往年趋势</view>
+          </view>
+        </view>
+      </scroll-view>
     </view>
 
-    <!-- 学校信息列 -->
-    <scroll-view scroll-x="true" class="school-columns">
-      <view class="school-column" wx:for="{{recommendations}}" wx:key="index">
-        <view class="row-cell">{{item.school}}</view>
-        <view class="row-cell">{{item.departments}}</view>
-        <view class="row-cell">{{item.probability}}</view>
-        <view class="cell major-cell" bindtap="showDirections" data-index="{{index}}">
-          <view class="cell-content">
-            <view class="major-info">
-              <text class="major-name">{{item.major}}</text>
-              <text class="major-code">({{item.major_code}})</text>
-            </view>
-          </view>
-          <view class="cell-arrow"></view>
-        </view>
-        <view class="row-cell has-btn">
-          {{item.blbRatio}}
-          <view class="mini-trend-btn" bindtap="showTrend" data-type="blb" data-index="{{index}}">查看往年趋势</view>
-        </view>
-        <view class="row-cell has-btn">
-          {{item.totalScore}}
-          <view class="mini-trend-btn" bindtap="showTrend" data-type="score" data-index="{{index}}">查看往年趋势</view>
-        </view>
-        <view class="row-cell has-btn">
-          {{item.politicsScore}}
-          <view class="mini-trend-btn" bindtap="showTrend" data-type="politics" data-index="{{index}}">查看往年趋势</view>
-        </view>
-        <view class="row-cell has-btn">
-          {{item.englishScore}}
-          <view class="mini-trend-btn" bindtap="showTrend" data-type="english" data-index="{{index}}">查看往年趋势</view>
-        </view>
-        <view class="row-cell has-btn">
-          {{item.mathScore}}
-          <view class="mini-trend-btn" bindtap="showTrend" data-type="math" data-index="{{index}}">查看往年趋势</view>
-        </view>
-        <view class="row-cell has-btn">
-          {{item.majorScore}}
-          <view class="mini-trend-btn" bindtap="showTrend" data-type="major_subject" data-index="{{index}}">查看往年趋势</view>
-        </view>
-        <view class="row-cell has-btn">
-          {{item.employment_status}}
-          <view class="mini-trend-btn" bindtap="showTrend" data-type="employment" data-index="{{index}}">查看往年趋势</view>
-        </view>
-        <view class="row-cell has-btn">
-          {{item.further_study_ratio}}
-          <view class="mini-trend-btn" bindtap="showTrend" data-type="further" data-index="{{index}}">查看往年趋势</view>
-        </view>
-        <view class="row-cell has-btn">
-          {{item.civil_service_ratio}}
-          <view class="mini-trend-btn" bindtap="showTrend" data-type="civil" data-index="{{index}}">查看往年趋势</view>
-        </view>
-        <view class="row-cell has-btn">
-          {{item.employment_ratio}}
-          <view class="mini-trend-btn" bindtap="showTrend" data-type="job" data-index="{{index}}">查看往年趋势</view>
-        </view>
-      </view>
-    </scroll-view>
-  </view>
-
-  <!-- AI分析按钮 -->
-  <view class="btn-container">
-    <button class="ai-btn" bindtap="startAIAnalysis">AI分析</button>
-  </view>
+    <!-- AI分析按钮 -->
+    <view class="btn-container">
+      <button class="ai-btn" bindtap="startAIAnalysis">AI分析</button>
+    </view>
+  </block>
 </view> 

@@ -276,8 +276,8 @@ Page({
             const schoolInfo = schoolDetail.school_info;
 
             // 处理分数线数据
-            const processScoreData = (scoreData) => {
-              if (!Array.isArray(scoreData) || scoreData.length === 0) {
+            const processScoreData = (fsx) => {
+              if (!Array.isArray(fsx) || fsx.length === 0) {
                 return {
                   totalScore: '/',
                   politicsScore: '/',
@@ -288,14 +288,34 @@ Page({
               }
 
               // 按年份排序,取最新的数据
-              const latestScore = scoreData.sort((a, b) => b.year - a.year)[0];
+              const latestScore = fsx.sort((a, b) => {
+                const yearA = parseInt(a.year);
+                const yearB = parseInt(b.year);
+                return yearB - yearA;
+              })[0];
+
+              // 确保分数值为数字或'/'
+              const formatScore = (score) => {
+                if (score === null || score === undefined || score === '') {
+                  return '/';
+                }
+                const num = parseFloat(score);
+                return isNaN(num) ? '/' : num.toFixed(1);
+              };
+
+              // 从data数组中查找对应科目的分数
+              const findSubjectScore = (subjectName) => {
+                if (!latestScore.data || !Array.isArray(latestScore.data)) return '/';
+                const subject = latestScore.data.find(s => s.subject.includes(subjectName));
+                return subject ? formatScore(subject.score) : '/';
+              };
               
               return {
-                totalScore: latestScore.total || '/',
-                politicsScore: latestScore.politics || '/',
-                englishScore: latestScore.english || '/',
-                mathScore: latestScore.math || '/',
-                majorScore: latestScore.major || '/'
+                totalScore: school.total_score ? school.total_score.toFixed(1) : '/',
+                politicsScore: findSubjectScore('政治'),
+                englishScore: findSubjectScore('英语'),
+                mathScore: findSubjectScore('数学'),
+                majorScore: findSubjectScore('专业')
               };
             };
 
@@ -338,7 +358,7 @@ Page({
               school_code: schoolInfo.school_code || '',
               major: school.major,
               major_code: schoolInfo.major_code || '',
-              probability: school.probability,
+              probability: school.probability.toFixed(2) + '%',
               departments: schoolInfo.departments || '',
               
               // 分数相关
@@ -361,12 +381,12 @@ Page({
               })),
 
               // 处理后的最新数据
-              ...processScoreData(schoolInfo.score_data || []),
+              ...processScoreData(schoolInfo.fsx || []),
               blbRatio: processBlbData(schoolInfo.blb || []),
               ...processEmploymentData(schoolInfo.employment_data || []),
 
               // 保留原始趋势数据用于图表显示
-              score_data: schoolInfo.score_data || [],
+              score_data: schoolInfo.fsx || [],
               employment_data: schoolInfo.employment_data || [],
               blb: schoolInfo.blb || []
             };
