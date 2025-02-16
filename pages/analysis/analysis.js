@@ -444,10 +444,26 @@ Page({
 
       case 'location':
         title = `${schoolName} - 地域评分维度`;
-        chartData = this.processScoreDetails(
-          school[`${type}_score`],
-          type
-        );
+        const locationData = school.location_score;
+        
+        if (locationData && locationData.scores) {
+          chartType = 'radar';
+          // 获取所有维度名称，过滤掉总分
+          const dimensions = Object.keys(locationData.scores).filter(key => key !== '总分');
+          const values = dimensions.map(key => locationData.scores[key]);
+          
+          chartData = {
+            dimensions: dimensions,
+            values: [values],
+            descriptions: dimensions.map(() => '')
+          };
+          
+          console.log('地域评分雷达图数据:', {
+            dimensions,
+            values,
+            scores: locationData.scores
+          });
+        }
         break;
     }
 
