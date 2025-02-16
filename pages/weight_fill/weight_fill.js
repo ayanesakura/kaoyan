@@ -25,7 +25,22 @@ Page({
       });
     });
 
-    // 检查是否有保存的权重数据
+    // 先尝试从本地存储获取数据
+    try {
+      const savedWeightData = wx.getStorageSync('weightData');
+      if (savedWeightData) {
+        this.setData({
+          weights: savedWeightData.weights,
+          targetInfo: savedWeightData.targetInfo || this.data.targetInfo
+        });
+        this.calculateTotal();
+        return;
+      }
+    } catch (e) {
+      console.error('从本地存储读取数据失败:', e);
+    }
+
+    // 如果本地存储没有数据,检查globalData
     const app = getApp();
     const savedWeights = app.globalData.savedWeights;
     if (savedWeights) {
@@ -46,6 +61,7 @@ Page({
     });
     
     this.calculateTotal();
+    this.saveData(); // 添加保存数据的调用
   },
 
   // 处理输入框变化
@@ -61,6 +77,7 @@ Page({
     });
     
     this.calculateTotal();
+    this.saveData(); // 添加保存数据的调用
   },
 
   // 计算总和并验证
@@ -75,12 +92,28 @@ Page({
     });
   },
 
-  // 返回上一页
-  onBack() {
-    // 保存当前权重数据
+  // 新增保存数据的方法
+  saveData() {
     const app = getApp();
+    const weightData = {
+      weights: this.data.weights,
+      targetInfo: this.data.targetInfo
+    };
+
+    // 保存到globalData
     app.globalData.savedWeights = this.data.weights;
     
+    // 保存到本地存储
+    try {
+      wx.setStorageSync('weightData', weightData);
+    } catch (e) {
+      console.error('保存到本地存储失败:', e);
+    }
+  },
+
+  // 返回上一页
+  onBack() {
+    this.saveData(); // 添加保存数据的调用
     wx.navigateBack();
   },
 
@@ -218,20 +251,148 @@ Page({
     // 调用接口
     callService(API_PATHS.chooseSchoolsV2, 'POST', requestData)
       .then(res => {
-        let schoolsData;
-        if (res.data && res.data.data && Array.isArray(res.data.data)) {
-          schoolsData = res.data.data;
-        } else if (res.data && Array.isArray(res.data)) {
-          schoolsData = res.data;
-        } else if (Array.isArray(res)) {
-          schoolsData = res;
+        let responseData;
+        if (res.data && res.data.data) {
+          responseData = res.data.data;
+        } else if (res.data) {
+          responseData = res.data;
         } else {
-          throw new Error('返回数据格式错误');
+          responseData = res;
         }
+
+        // 解析学校数据
+        const processSchoolData = (schoolGroup) => {
+          return schoolGroup.map(school => {
+            // 获取学校详细信息
+            const schoolDetail = responseData.school_details.find(
+              detail => detail.school_info && detail.school_info.school_name === school.school_name
+            );
+
+            if (!schoolDetail) {
+              console.error('找不到学校详细信息:', school.school_name);
+              return null;
+            }
+
+            const schoolInfo = schoolDetail.school_info;
+
+            // 处理分数线数据
+            const processScoreData = (scoreData) => {
+              if (!Array.isArray(scoreData) || scoreData.length === 0) {
+                return {
+                  totalScore: '/',
+                  politicsScore: '/',
+                  englishScore: '/',
+                  mathScore: '/',
+                  majorScore: '/'
+                };
+              }
+
+              // 按年份排序,取最新的数据
+              const latestScore = scoreData.sort((a, b) => b.year - a.year)[0];
+              
+              return {
+                totalScore: latestScore.total || '/',
+                politicsScore: latestScore.politics || '/',
+                englishScore: latestScore.english || '/',
+                mathScore: latestScore.math || '/',
+                majorScore: latestScore.major || '/'
+              };
+            };
+
+            // 处理报录比数据
+            const processBlbData = (blbData) => {
+              if (!Array.isArray(blbData) || blbData.length === 0) {
+                return '/';
+              }
+
+              // 按年份排序,取最新的数据
+              const latestBlb = blbData.sort((a, b) => b.year - a.year)[0];
+              return latestBlb.blb || '/';
+            };
+
+            // 处理就业数据
+            const processEmploymentData = (employmentData) => {
+              if (!Array.isArray(employmentData) || employmentData.length === 0) {
+                return {
+                  employment_status: '/',
+                  further_study_ratio: '/',
+                  civil_service_ratio: '/',
+                  employment_ratio: '/'
+                };
+              }
+
+              // 按年份排序,取最新的数据
+              const latestData = employmentData.sort((a, b) => b.year - a.year)[0];
+              
+              return {
+                employment_status: latestData.status || '/',
+                further_study_ratio: latestData.further_study_ratio || '/',
+                civil_service_ratio: latestData.civil_service_ratio || '/',
+                employment_ratio: latestData.employment_ratio || '/'
+              };
+            };
+
+            return {
+              // 基本信息
+              school_name: school.school_name,
+              school_code: schoolInfo.school_code || '',
+              major: school.major,
+              major_code: schoolInfo.major_code || '',
+              probability: school.probability,
+              departments: schoolInfo.departments || '',
+              
+              // 分数相关
+              admission_score: school.admission_score,
+              location_score: school.location_score,
+              major_score: school.major_score,
+              total_score: school.total_score,
+
+              // 详细信息
+              directions: schoolInfo.directions.map(d => ({
+                name: d.yjfxmc,
+                type: d.xwlx,
+                quota: d.zsrs,
+                subjects: d.subjects[0].map(s => ({
+                  code: s.code,
+                  name: s.name,
+                  value: s.value
+                })),
+                notes: d.bz
+              })),
+
+              // 处理后的最新数据
+              ...processScoreData(schoolInfo.score_data || []),
+              blbRatio: processBlbData(schoolInfo.blb || []),
+              ...processEmploymentData(schoolInfo.employment_data || []),
+
+              // 保留原始趋势数据用于图表显示
+              score_data: schoolInfo.score_data || [],
+              employment_data: schoolInfo.employment_data || [],
+              blb: schoolInfo.blb || []
+            };
+          }).filter(school => school !== null);
+        };
+
+        // 处理不同概率组的学校
+        const recommendations = [];
+        if (responseData.probability_groups) {
+          if (responseData.probability_groups.保底) {
+            recommendations.push(...processSchoolData(responseData.probability_groups.保底));
+          }
+          if (responseData.probability_groups.稳妥) {
+            recommendations.push(...processSchoolData(responseData.probability_groups.稳妥));
+          }
+          if (responseData.probability_groups.冲刺) {
+            recommendations.push(...processSchoolData(responseData.probability_groups.冲刺));
+          }
+        }
+
+        // 按概率排序
+        recommendations.sort((a, b) => b.probability - a.probability);
 
         // 存储分析结果
         app.globalData.analysisResult = {
-          recommendations: schoolsData
+          recommendations: recommendations
         };
 
         wx.hideLoading();

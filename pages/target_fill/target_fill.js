@@ -43,7 +43,21 @@ Page({
       // 保存个人信息数据
       this.personalInfo = data;
       
-      // 检查是否有保存的目标院校数据
+      // 先尝试从本地存储获取数据
+      try {
+        const savedTargetData = wx.getStorageSync('targetData');
+        if (savedTargetData) {
+          this.setData({
+            formData: savedTargetData,
+            selectedSchoolLevels: savedTargetData.schoolLevels || []
+          });
+          return;
+        }
+      } catch (e) {
+        console.error('从本地存储读取数据失败:', e);
+      }
+      
+      // 如果本地存储没有数据,检查globalData
       const app = getApp();
       const savedTargetData = app.globalData.savedTargetData;
       if (savedTargetData) {
@@ -55,18 +69,30 @@ Page({
     });
   },
 
-  // 返回上一页
-  onBack() {
-    // 保存当前填写的数据到全局变量
+  // 新增保存数据的方法
+  saveData() {
     const app = getApp();
-    app.globalData.savedTargetData = {
+    const targetData = {
       targetMajor: this.data.formData.targetMajor,
       targetCity: this.data.formData.targetCity,
       workCity: this.data.formData.workCity,
       schoolLevels: this.data.formData.schoolLevels
     };
 
-    // 返回上一页
+    // 保存到globalData
+    app.globalData.savedTargetData = targetData;
+    
+    // 保存到本地存储
+    try {
+      wx.setStorageSync('targetData', targetData);
+    } catch (e) {
+      console.error('保存到本地存储失败:', e);
+    }
+  },
+
+  // 返回上一页
+  onBack() {
+    this.saveData();
     wx.navigateBack();
   },
 
@@ -182,6 +208,8 @@ Page({
         showMajorSelect: false,
         majorList: [],
         directionList: []
+      }, () => {
+        this.saveData(); // 保存数据
       });
     }
   },
@@ -193,6 +221,8 @@ Page({
     targetMajor.splice(index, 1);
     this.setData({
       'formData.targetMajor': targetMajor
+    }, () => {
+      this.saveData(); // 保存数据
     });
   },
 
@@ -308,6 +338,8 @@ Page({
         showCitySelect: false,
         provinceList: [],
         cityList: []
+      }, () => {
+        this.saveData(); // 保存数据
       });
     }
   },
@@ -319,6 +351,8 @@ Page({
     targetCity.splice(index, 1);
     this.setData({
       'formData.targetCity': targetCity
+    }, () => {
+      this.saveData(); // 保存数据
     });
   },
 
@@ -430,6 +464,8 @@ Page({
         showWorkCitySelect: false,
         workCityProvinceList: [],
         workCityCityList: []
+      }, () => {
+        this.saveData(); // 保存数据
       });
     }
   },
@@ -440,6 +476,8 @@ Page({
     workCity.splice(index, 1);
     this.setData({
       'formData.workCity': workCity
+    }, () => {
+      this.saveData(); // 保存数据
     });
   },
 
@@ -460,6 +498,8 @@ Page({
     this.setData({
       selectedSchoolLevels: newSelectedLevels,
       'formData.schoolLevels': newSelectedLevels
+    }, () => {
+      this.saveData(); // 保存数据
     });
   },
 
@@ -471,6 +511,8 @@ Page({
     this.setData({
       selectedSchoolLevels: newSelectedLevels,
       'formData.schoolLevels': newSelectedLevels
+    }, () => {
+      this.saveData(); // 保存数据
     });
   },
 
@@ -483,15 +525,6 @@ Page({
       });
       return;
     }
-
-    // 保存当前填写的数据到全局变量
-    const app = getApp();
-    app.globalData.savedTargetData = {
-      targetMajor: this.data.formData.targetMajor,
-      targetCity: this.data.formData.targetCity,
-      workCity: this.data.formData.workCity,
-      schoolLevels: this.data.formData.schoolLevels
-    };
 
     // 准备传递给权重页面的数据
     const targetInfo = {

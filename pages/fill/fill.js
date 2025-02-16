@@ -141,6 +141,8 @@ Page({
       'formData.school': school,
       showSchoolSelect: false,
       schoolList: []
+    }, () => {
+      this.saveData(); // 保存数据
     });
 
     // 获取学院专业数据
@@ -151,6 +153,8 @@ Page({
       this.setData({
         collegeList: res.data.colleges || [],
         'formData.major': '' // 清空已选专业
+      }, () => {
+        this.saveData(); // 保存数据
       });
     })
     .catch(err => {
@@ -208,6 +212,8 @@ Page({
     this.setData({
       gradeIndex: index,
       'formData.grade': this.data.grades[index]
+    }, () => {
+      this.saveData(); // 保存数据
     });
   },
 
@@ -216,6 +222,8 @@ Page({
     this.setData({
       rankIndex: index,
       'formData.rank': this.data.ranks[index]
+    }, () => {
+      this.saveData(); // 保存数据
     });
   },
 
@@ -224,6 +232,8 @@ Page({
     this.setData({
       if_first_try_index: index,
       'formData.firstTry': this.data.if_first_try[index]
+    }, () => {
+      this.saveData(); // 保存数据
     });
   },
 
@@ -232,6 +242,8 @@ Page({
     this.setData({
       subjectIndex: index,
       'formData.project': this.data.subjects[index]
+    }, () => {
+      this.saveData(); // 保存数据
     });
   },
 
@@ -526,7 +538,43 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function(options) {
-    // 检查是否有保存的表单数据
+    // 先尝试从本地存储获取数据
+    try {
+      const savedFillData = wx.getStorageSync('fillData');
+      if (savedFillData) {
+        this.setData({
+          formData: savedFillData.formData,
+          // 恢复所有索引值
+          gradeIndex: savedFillData.indices.gradeIndex,
+          rankIndex: savedFillData.indices.rankIndex,
+          if_first_try_index: savedFillData.indices.if_first_try_index,
+          subjectIndex: savedFillData.indices.subjectIndex,
+          cetIndex: savedFillData.indices.cetIndex,
+          // 恢复选中的学校层级
+          selectedSchoolLevels: savedFillData.formData.schoolLevels || []
+        });
+
+        // 如果有学校数据,获取学院专业信息
+        if (savedFillData.formData.school) {
+          callService(API_PATHS.schoolStructure, 'POST', {
+            school_name: savedFillData.formData.school
+          })
+          .then(res => {
+            this.setData({
+              collegeList: res.data.colleges || []
+            });
+          })
+          .catch(err => {
+            console.error('获取学院专业失败:', err);
+          });
+        }
+        return;
+      }
+    } catch (e) {
+      console.error('从本地存储读取数据失败:', e);
+    }
+
+    // 如果本地存储没有数据,检查globalData
     const app = getApp();
     const savedData = app.globalData.savedFormData;
     
@@ -540,10 +588,11 @@ Page({
         gradeIndex: savedData.indices.gradeIndex,
         rankIndex: savedData.indices.rankIndex,
         if_first_try_index: savedData.indices.if_first_try_index,
-        subjectIndex: savedData.indices.subjectIndex
+        subjectIndex: savedData.indices.subjectIndex,
+        cetIndex: savedData.indices.cetIndex
       });
 
-      // 如果有学校数据，获取学院专业信息
+      // 如果有学校数据,获取学院专业信息
       if (savedData.formData.school) {
         callService(API_PATHS.schoolStructure, 'POST', {
           school_name: savedData.formData.school
@@ -626,6 +675,8 @@ Page({
       selectedMajor: major,
       showCollegePicker: false,
       'formData.major': `${this.data.selectedCollege} ${major}`
+    }, () => {
+      this.saveData(); // 保存数据
     });
   },
 
@@ -1031,6 +1082,8 @@ Page({
     this.setData({
       cetIndex: index,
       'formData.cet': this.data.cetOptions[index]
+    }, () => {
+      this.saveData(); // 保存数据
     });
   },
 
@@ -1152,6 +1205,8 @@ Page({
       showHometownSelect: false,
       hometownProvinceList: [],
       hometownCityList: []
+    }, () => {
+      this.saveData(); // 保存数据
     });
   },
 
@@ -1335,6 +1390,31 @@ Page({
         res.eventChannel.emit('acceptPersonalInfo', personalInfo);
       }
     });
+  },
+
+  // 新增保存数据的方法
+  saveData() {
+    const app = getApp();
+    const fillData = {
+      formData: { ...this.data.formData },
+      indices: {
+        gradeIndex: this.data.gradeIndex,
+        rankIndex: this.data.rankIndex,
+        if_first_try_index: this.data.if_first_try_index,
+        subjectIndex: this.data.subjectIndex,
+        cetIndex: this.data.cetIndex
+      }
+    };
+
+    // 保存到globalData
+    app.globalData.savedFormData = fillData;
+    
+    // 保存到本地存储
+    try {
+      wx.setStorageSync('fillData', fillData);
+    } catch (e) {
+      console.error('保存到本地存储失败:', e);
+    }
   },
 }) 
 
