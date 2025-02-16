@@ -11,14 +11,18 @@ Page({
     },
     totalWeight: 100,
     isValid: true,
-    errorMsg: ''
+    errorMsg: '',
+    targetInfo: null  // 添加targetInfo字段
   },
 
   onLoad(options) {
     // 获取之前页面传递的数据
     const eventChannel = this.getOpenerEventChannel();
     eventChannel.on('acceptTargetInfo', (data) => {
-      this.targetInfo = data;
+      // 保存到data中
+      this.setData({
+        targetInfo: data
+      });
     });
 
     // 检查是否有保存的权重数据
@@ -90,30 +94,100 @@ Page({
       return;
     }
 
+    // 检查targetInfo是否存在
+    if (!this.data.targetInfo) {
+      wx.showToast({
+        title: '缺少必要的信息',
+        icon: 'none'
+      });
+      return;
+    }
+
     // 合并所有数据
     const formData = {
-      ...this.targetInfo,
+      ...this.data.targetInfo,
       weights: this.data.weights
     };
 
     // 准备用户信息
     const userInfo = {
+      signature: formData.signature || '未设置',
+      gender: formData.gender || '未设置',
       school: formData.school,
-      major: formData.major,
+      major: formData.major ? formData.major.split(' ').pop() : '', // 只取空格后的专业名称
       grade: formData.grade,
+      rank: formData.rank || '未设置',
       is_first_time: formData.firstTry,
-      good_at_subject: formData.project,
       cet: formData.cet,
-      hometown: formData.hometown
+      hometown: formData.hometown ? (() => {
+        const parts = formData.hometown.split('-');
+        return {
+          province: parts[0] || '未设置',
+          city: parts[1] || parts[0] || '未设置' // 如果没有city部分,使用province作为city
+        };
+      })() : {
+        province: '未设置',
+        city: '未设置'
+      }
     };
 
     // 准备目标信息
     const targetInfo = {
-      major: formData.targetMajor.join(',') || '',
-      city: formData.targetCity.join(',') || '',
-      work_city: formData.workCity.join(',') || '',
-      school_level: formData.schoolLevels.join(',') || '',
-      weights: this.data.weights
+      school_cities: (formData.targetCity || []).map(city => {
+        if (!city) return { province: '未设置', city: '未设置' };
+        const parts = city.split('-');
+        return {
+          province: parts[0] || '未设置',
+          city: parts[1] || parts[0] || '未设置' // 如果没有city部分,使用province作为city
+        };
+      }),
+      majors: (formData.targetMajor || []).map(item => {
+        const majorStr = item.major || item;
+        const match = majorStr.match(/^(.+?)\((.*)\)$/);
+        if (match) {
+          return match[1]; // 返回括号前的专业名称
+        }
+        return majorStr; // 如果没有括号,返回完整字符串
+      }),
+      directions: (formData.targetMajor || []).map(item => {
+        const majorStr = item.major || item;
+        const match = majorStr.match(/^(.+?)\((.*)\)$/);
+        if (match) {
+          return match[2]; // 返回括号中的方向
+        }
+        return null; // 如果没有括号,返回null
+      }).filter(Boolean), // 过滤掉null值
+      levels: formData.schoolLevels || [],
+      work_cities: (formData.workCity || []).map(city => {
+        if (!city) return { province: '未设置', city: '未设置' };
+        const parts = city.split('-');
+        return {
+          province: parts[0] || '未设置',
+          city: parts[1] || parts[0] || '未设置' // 如果没有city部分,使用province作为city
+        };
+      }),
+      weights: [
+        {
+          name: "城市",
+          val: this.data.weights.location / 100
+        },
+        {
+          name: "就业",
+          val: this.data.weights.employment / 100
+        },
+        {
+          name: "体制",
+          val: this.data.weights.government / 100
+        },
+        {
+          name: "升学",
+          val: this.data.weights.education / 100
+        },
+        {
+          name: "声誉",
+          val: this.data.weights.reputation / 100
+        }
+      ]
     };
 
     // 保存到globalData
@@ -142,7 +216,7 @@ Page({
     });
 
     // 调用接口
-    callService(API_PATHS.chooseSchools, 'POST', requestData)
+    callService(API_PATHS.chooseSchoolsV2, 'POST', requestData)
       .then(res => {
         let schoolsData;
         if (res.data && res.data.data && Array.isArray(res.data.data)) {

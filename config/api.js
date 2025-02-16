@@ -1,7 +1,7 @@
 // 环境配置
 const env = {
   dev: {
-    baseUrl: 'http://192.168.0.101:80'
+    baseUrl: 'http://10.10.23.99:80'
   }
 }
 
@@ -23,6 +23,7 @@ const API_PATHS = {
   generalMajorSearch: '/api/query_majors_or_fxs',
   citySearch: '/api/query_city',
   chooseSchools: '/api/choose_schools',
+  chooseSchoolsV2: '/api/choose_schools_v2',
   aiAnalysis: '/api/ai_ana',
   kyys: '/api/kyys'
 }

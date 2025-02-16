@@ -157,44 +157,13 @@ Page({
       'school_code',
       'major',
       'major_code',
-      'departments'
+      'probability'
     ];
 
     const missingFields = requiredFields.filter(field => !item[field]);
     
     if (missingFields.length > 0) {
       console.error('缺少必要字段:', missingFields);
-      return false;
-    }
-
-    // 检查directions数组
-    if (!Array.isArray(item.directions) || item.directions.length === 0) {
-      console.error('directions字段无效');
-      return false;
-    }
-
-    // 检查第一个direction的必要字段
-    const direction = item.directions[0];
-    const requiredDirectionFields = [
-      'yjfxmc',
-      'yjfxdm',
-      'ksfs',
-      'xwlx',
-      'zsrs',
-      'subjects'
-    ];
-
-    const missingDirectionFields = requiredDirectionFields.filter(field => !direction[field]);
-    
-    if (missingDirectionFields.length > 0) {
-      console.error('direction缺少必要字段:', missingDirectionFields);
-      return false;
-    }
-
-    // 检查subjects数组
-    if (!Array.isArray(direction.subjects) || direction.subjects.length === 0 || 
-        !Array.isArray(direction.subjects[0]) || direction.subjects[0].length === 0) {
-      console.error('subjects字段无效');
       return false;
     }
 
@@ -268,52 +237,42 @@ Page({
       // 处理学校名称和代码
       const schoolDisplay = `${item.school_name}\n(${item.school_code})`;
 
-      // 处理专业名称和代码 - 修改这里,不再合并显示
+      // 处理专业名称和代码
       const majorDisplay = item.major;
 
-      // 处理研究方向信息
-      const directionInfo = item.directions[0];
-      const directionDisplay = `${directionInfo.yjfxmc}\n(${directionInfo.yjfxdm})`;
+      // 获取最新年份的就业数据
+      const latestEmploymentData = item.employment_data && item.employment_data.length > 0 
+        ? item.employment_data[item.employment_data.length - 1] 
+        : null;
 
-      // 处理考试科目（显示第一个方向的第一组考试科目）
-      const subjectsDisplay = directionInfo.subjects[0]
-        .map(s => `${s.value}(${s.code})`)
-        .join('、');
+      // 获取最新年份的分数线数据
+      const latestScoreData = item.score_data && item.score_data.length > 0
+        ? item.score_data[item.score_data.length - 1]
+        : null;
 
       return {
         ...item,
         // 基本信息
         school: schoolDisplay,
-        major: majorDisplay, // 只保留专业名称
-        departments: item.departments,
+        major: majorDisplay,
+        probability: (item.probability || 0).toFixed(2) + '%',
         
-        // 研究方向相关信息
-        direction: directionDisplay,
-        ksfs: directionInfo.ksfs,
-        xwlx: directionInfo.xwlx,
-        zsrs: directionInfo.zsrs,
-        zybz: directionInfo.bz || '/',
-        
-        // 考试科目
-        subjectsDisplay,
-        directions: item.directions,
+        // 分数线数据
+        englishScore: latestScoreData ? latestScoreData.english || '/' : '/',
+        mathScore: latestScoreData ? latestScoreData.math || '/' : '/',
+        majorScore: latestScoreData ? latestScoreData.major || '/' : '/',
+        politicsScore: latestScoreData ? latestScoreData.politics || '/' : '/',
+        totalScore: latestScoreData ? latestScoreData.total || '/' : '/',
 
-        // 预处理分数数据
-        englishScore: this.processScoreData(item.fsx, '外语科二'),
-        mathScore: this.processScoreData(item.fsx, '科三'),
-        majorScore: this.processScoreData(item.fsx, '科四'),
-        politicsScore: this.processScoreData(item.fsx, '政治科一'),
-        totalScore: item.fsx && item.fsx[0] ? 
-          item.fsx[0].data.find(s => s.subject === '总分')?.score || '/' : '/',
+        // 就业相关信息
+        employment_status: latestEmploymentData ? latestEmploymentData.status || '/' : '/',
+        further_study_ratio: latestEmploymentData ? latestEmploymentData.further_study_ratio || '/' : '/',
+        civil_service_ratio: latestEmploymentData ? latestEmploymentData.civil_service_ratio || '/' : '/',
+        employment_ratio: latestEmploymentData ? latestEmploymentData.employment_ratio || '/' : '/',
 
-        // 处理报录比数据
-        blbRatio: this.processBlbRatio(item.blb),
-
-        // 就业相关信息（处理空数组情况）
-        employment_status: item.jy && item.jy[0]?.status || '/',
-        further_study_ratio: item.jy && item.jy[0]?.further_study_ratio || '/',
-        civil_service_ratio: item.jy && item.jy[0]?.civil_service_ratio || '/',
-        employment_ratio: item.jy && item.jy[0]?.employment_ratio || '/'
+        // 保存原始数据用于趋势图
+        score_data: item.score_data || [],
+        employment_data: item.employment_data || []
       };
     }).filter(item => item !== null); // 过滤掉无效的数据
 
@@ -402,67 +361,72 @@ Page({
     const school = this.data.recommendations[index];
     const schoolName = school.school.split('\n')[0];  // 只使用学校名称，不包含代码
     let title = '';
-    let data = [];
-    let showChart = false;
+    let showChart = true;
     let chartData = null;
     let chartUnit = '分';  // 默认单位为分
 
+    const processScoreData = (data, field) => {
+      if (!data || !Array.isArray(data) || data.length === 0) return null;
+      
+      const years = data.map(item => item.year);
+      const values = data.map(item => item[field] ? parseFloat(item[field]) : null);
+      
+      return { years, values };
+    };
+
+    const processEmploymentData = (data, field) => {
+      if (!data || !Array.isArray(data) || data.length === 0) return null;
+      
+      const years = data.map(item => item.year);
+      const values = data.map(item => {
+        if (!item[field]) return null;
+        // 移除百分号并转换为数字
+        return parseFloat(item[field].replace('%', ''));
+      });
+      
+      return { years, values };
+    };
+
     switch(type) {
-      case 'blb':
-        title = `${schoolName} - 报录比趋势`;
-        showChart = true;
-        chartData = this.processBlbData(school.blb);
-        chartUnit = '%';  // 报录比使用百分比单位
-        break;
       case 'score':
         title = `${schoolName} - 总分数线趋势`;
-        showChart = true;
-        chartData = this.processChartData(school.fsx, '总分');
+        chartData = processScoreData(school.score_data, 'total');
         break;
       case 'english':
-        title = `${schoolName} - ${this.getSubjectDisplayName(school, '外语科二')}分数趋势`;
-        showChart = true;
-        chartData = this.processChartData(school.fsx, '外语科二');
+        title = `${schoolName} - 英语分数趋势`;
+        chartData = processScoreData(school.score_data, 'english');
         break;
       case 'math':
-        title = `${schoolName} - ${this.getSubjectDisplayName(school, '科三')}分数趋势`;
-        showChart = true;
-        chartData = this.processChartData(school.fsx, '科三');
+        title = `${schoolName} - 数学分数趋势`;
+        chartData = processScoreData(school.score_data, 'math');
         break;
       case 'major_subject':
-        title = `${schoolName} - ${this.getSubjectDisplayName(school, '科四')}分数趋势`;
-        showChart = true;
-        chartData = this.processChartData(school.fsx, '科四');
+        title = `${schoolName} - 专业课分数趋势`;
+        chartData = processScoreData(school.score_data, 'major');
         break;
       case 'politics':
-        title = `${schoolName} - ${this.getSubjectDisplayName(school, '政治科一')}分数趋势`;
-        showChart = true;
-        chartData = this.processChartData(school.fsx, '政治科一');
+        title = `${schoolName} - 政治分数趋势`;
+        chartData = processScoreData(school.score_data, 'politics');
         break;
       case 'employment':
         title = `${schoolName} - 就业情况趋势`;
-        data = school.jy || [];
+        chartData = processEmploymentData(school.employment_data, 'status');
+        chartUnit = '%';
         break;
       case 'further':
         title = `${schoolName} - 深造占比趋势`;
-        data = school.jy ? school.jy.map(item => ({
-          year: item.year,
-          value: item.further_study_ratio
-        })) : [];
+        chartData = processEmploymentData(school.employment_data, 'further_study_ratio');
+        chartUnit = '%';
         break;
       case 'civil':
         title = `${schoolName} - 考公占比趋势`;
-        data = school.jy ? school.jy.map(item => ({
-          year: item.year,
-          value: item.civil_service_ratio
-        })) : [];
+        chartData = processEmploymentData(school.employment_data, 'civil_service_ratio');
+        chartUnit = '%';
         break;
       case 'job':
         title = `${schoolName} - 就业占比趋势`;
-        data = school.jy ? school.jy.map(item => ({
-          year: item.year,
-          value: item.employment_ratio
-        })) : [];
+        chartData = processEmploymentData(school.employment_data, 'employment_ratio');
+        chartUnit = '%';
         break;
     }
 
@@ -474,7 +438,7 @@ Page({
     });
 
     // 如果是图表模式但没有数据，显示提示
-    if (showChart && !chartData) {
+    if (!chartData || chartData.years.length === 0) {
       wx.showToast({
         title: '暂无趋势数据',
         icon: 'none'
@@ -485,11 +449,9 @@ Page({
     this.setData({
       showTrend: true,
       trendTitle: title,
-      trendData: data,
-      currentSchool: school,
       showChart,
       chartData,
-      chartUnit  // 设置单位
+      chartUnit
     });
   },
 
