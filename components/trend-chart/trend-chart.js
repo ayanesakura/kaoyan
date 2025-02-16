@@ -212,7 +212,7 @@ Component({
             max: 100
           })),
           center: ['50%', '60%'],
-          radius: '65%',
+          radius: '55%',
           splitNumber: 4,
           shape: 'circle',
           name: {
@@ -248,6 +248,14 @@ Component({
             name: this.data.title,
             symbol: 'circle',
             symbolSize: 6,
+            label: {
+              show: true,
+              formatter: '{c}分',
+              color: '#333',
+              fontSize: 11,
+              distance: 0,
+              position: 'top'
+            },
             itemStyle: {
               color: '#87CEEB'
             },
