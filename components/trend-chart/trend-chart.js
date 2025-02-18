@@ -193,33 +193,53 @@ Component({
 
     getRadarOption: function() {
       const { dimensions, values, descriptions } = this.data.chartData;
-      console.log('雷达图数据:', { dimensions, values, descriptions });
       
       return {
         backgroundColor: '#fff',
-        title: {
-          text: this.data.title,
-          left: 'center',
-          top: 20,
-          textStyle: {
-            fontSize: 14,
-            color: '#333'
-          }
+        grid: {
+          containLabel: true  // 确保包含标签
         },
         radar: {
           indicator: dimensions.map(dim => ({
             name: dim,
             max: 100
           })),
-          center: ['50%', '60%'],
-          radius: '55%',
+          center: ['50%', '50%'],  // 略微下移中心点
+          radius: '55%',  // 缩小雷达图主体
           splitNumber: 4,
           shape: 'circle',
           name: {
+            formatter: (text) => {
+              // 优化换行逻辑
+              const maxLength = 4;  // 增加单行最大字符数
+              const textArr = text.split('');
+              const rows = [];
+              let row = '';
+              
+              textArr.forEach(char => {
+                if (row.length < maxLength) {
+                  row += char;
+                } else {
+                  rows.push(row);
+                  row = char;
+                }
+              });
+              if (row) rows.push(row);
+              
+              return rows.join('\n');
+            },
             textStyle: {
               color: '#666',
-              fontSize: 12,
-              padding: [3, 5]
+              fontSize: 11,
+              lineHeight: 14,  // 增加行高
+              padding: [5, 8],  // 增加内边距
+              backgroundColor: 'rgba(255, 255, 255, 0.8)'  // 添加半透明背景
+            }
+          },
+          axisLine: {
+            lineStyle: {
+              color: '#ddd',
+              width: 1
             }
           },
           splitLine: {
@@ -233,19 +253,13 @@ Component({
             areaStyle: {
               color: ['rgba(255,255,255,0.3)', 'rgba(135,206,235,0.05)']
             }
-          },
-          axisLine: {
-            lineStyle: {
-              color: '#ddd',
-              width: 1
-            }
           }
         },
         series: [{
           type: 'radar',
           data: [{
             value: values[0],
-            name: this.data.title,
+            name: '',
             symbol: 'circle',
             symbolSize: 6,
             label: {
@@ -253,8 +267,7 @@ Component({
               formatter: '{c}',
               color: '#333',
               fontSize: 11,
-              distance: 0,
-              position: 'top'
+              distance: 1
             },
             itemStyle: {
               color: '#87CEEB'
@@ -273,28 +286,7 @@ Component({
               width: 2
             }
           }]
-        }],
-        tooltip: {
-          trigger: 'item',
-          backgroundColor: 'rgba(255, 255, 255, 0.9)',
-          borderColor: '#eee',
-          borderWidth: 1,
-          padding: [10, 15],
-          textStyle: {
-            color: '#666',
-            fontSize: 12
-          },
-          formatter: (params) => {
-            const values = params.value;
-            const indicators = params.indicator;
-            let result = `${params.name}<br/>`;
-            values.forEach((val, index) => {
-              const description = descriptions?.[index] ? `<br/>${descriptions[index]}` : '';
-              result += `${indicators[index].name}: ${val}${description}<br/>`;
-            });
-            return result;
-          }
-        }
+        }]
       };
     }
   }

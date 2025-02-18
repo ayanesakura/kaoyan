@@ -59,15 +59,15 @@
         <view class="row-cell">{{item.total_score}}</view>
         <view class="row-cell">
           {{item.admission_score.total_score || '/'}}
-          <view class="detail-btn">查看详情</view>
+          <view class="detail-btn" bindtap="showTrend" data-type="admission" data-index="{{index}}">查看详情</view>
         </view>
         <view class="row-cell">
           {{item.location_score.total_score || '/'}}
-          <view class="detail-btn">查看详情</view>
+          <view class="detail-btn" bindtap="showTrend" data-type="location" data-index="{{index}}">查看详情</view>
         </view>
         <view class="row-cell">
           {{item.major_score.total_score || '/'}}
-          <view class="detail-btn">查看详情</view>
+          <view class="detail-btn" bindtap="showTrend" data-type="major" data-index="{{index}}">查看详情</view>
         </view>
         <view class="row-cell">
           {{item.latestScore.total || '/'}}

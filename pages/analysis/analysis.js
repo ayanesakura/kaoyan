@@ -410,91 +410,149 @@ Page({
     const { type, index } = e.currentTarget.dataset;
     const school = this.data.currentSchools[index];
     
-    if (!school) {
-      console.error('找不到学校数据');
-      return;
-    }
+    if (type === 'admission') {
+      // 处理录取评分雷达图数据
+      const admissionScore = school.admission_score;
+      const dimensions = [
+        '专业匹配度',
+        '专业排名',
+        '备考时间',
+        '学校跨度',
+        '录取规模',
+        '竞争强度',
+        '英语基础'
+      ];
+      
+      const values = dimensions.map(dim => admissionScore[dim] || 0);
+      
+      // 准备雷达图数据
+      const chartData = {
+        dimensions,
+        values: [values],  // 雷达图需要二维数组
+        descriptions: []   // 可以添加每个维度的描述
+      };
 
-    let title = '';
-    let chartData = null;
-    let chartUnit = '';
-    let chartType = 'line';
-
-    switch(type) {
-      case 'admission':
-        title = `${school.school_name} - 录取评分维度`;
-        const admissionData = school.admission_score;
-        if (admissionData && Object.keys(admissionData).length > 0) {
-          chartType = 'radar';
-          const dimensions = Object.keys(admissionData).filter(key => key !== 'total_score');
-          const values = dimensions.map(key => admissionData[key]);
-          
-          chartData = {
-            dimensions: dimensions,
-            values: [values],
-            descriptions: dimensions.map(() => '')
-          };
-          chartUnit = '分';
-        }
-        break;
-
-      case 'score':
-      case 'english':
-      case 'math':
-      case 'major_subject':
-      case 'politics':
-        const subjectMap = {
-          'score': '总分',
-          'english': '英语',
-          'math': '数学',
-          'major_subject': '专业课',
-          'politics': '政治'
-        };
-        title = `${school.school_name} - ${subjectMap[type]}分数线趋势`;
-        chartData = this.processChartData(school.fsx_score, subjectMap[type]);
-        break;
-
-      case 'location':
-        title = `${school.school_name} - 地域评分维度`;
-        const locationData = school.location_score;
-        
-        if (locationData && locationData.scores) {
-          chartType = 'radar';
-          // 获取所有维度名称，过滤掉总分
-          const dimensions = Object.keys(locationData.scores).filter(key => key !== '总分');
-          const values = dimensions.map(key => locationData.scores[key]);
-          
-          chartData = {
-            dimensions: dimensions,
-            values: [values],
-            descriptions: dimensions.map(() => '')
-          };
-          
-          console.log('地域评分雷达图数据:', {
-            dimensions,
-            values,
-            scores: locationData.scores
-          });
-        }
-        break;
-    }
-
-    if (!chartData) {
-      wx.showToast({
-        title: '暂无趋势数据',
-        icon: 'none'
+      this.setData({
+        showTrend: true,
+        trendTitle: `${school.school_name} - 录取评分分析`,
+        chartData,
+        chartType: 'radar'  // 设置为雷达图
       });
-      return;
-    }
+    } else if (type === 'location') {
+      // 处理地域评分雷达图数据
+      const locationScore = school.location_score;
+      const dimensions = [
+        '医疗资源',
+        '家乡匹配度',
+        '工作城市匹配度',
+        '教育资源'
+      ];
+      
+      const values = dimensions.map(dim => locationScore[dim] || 0);
+      
+      // 准备雷达图数据
+      const chartData = {
+        dimensions,
+        values: [values],
+        descriptions: []
+      };
 
-    this.setData({
-      showTrend: true,
-      trendTitle: title,
-      showChart: true,
-      chartData,
-      chartUnit,
-      chartType
-    });
+      this.setData({
+        showTrend: true,
+        trendTitle: `${school.school_name} - 地域评分分析`,
+        chartData,
+        chartType: 'radar'
+      });
+    } else if (type === 'major') {
+      // 处理专业评分雷达图数据
+      const majorScore = school.major_score;
+      const dimensions = [
+        '专业排名',
+        '专业综合满意度',
+        '学校知名度',
+        '学校综合满意度'
+      ];
+      
+      const values = dimensions.map(dim => majorScore[dim] || 0);
+      
+      // 准备雷达图数据
+      const chartData = {
+        dimensions,
+        values: [values],
+        descriptions: []
+      };
+
+      this.setData({
+        showTrend: true,
+        trendTitle: `${school.school_name} - 专业评分分析`,
+        chartData,
+        chartType: 'radar'
+      });
+    } else {
+      let title = '';
+      let chartData = null;
+      let chartUnit = '';
+      let chartType = 'line';
+
+      switch(type) {
+        case 'score':
+        case 'english':
+        case 'math':
+        case 'major_subject':
+        case 'politics':
+          const subjectMap = {
+            'score': '总分',
+            'english': '英语',
+            'math': '数学',
+            'major_subject': '专业课',
+            'politics': '政治'
+          };
+          title = `${school.school_name} - ${subjectMap[type]}分数线趋势`;
+          chartData = this.processChartData(school.fsx_score, subjectMap[type]);
+          break;
+
+        case 'location':
+          title = `${school.school_name} - 地域评分维度`;
+          const locationData = school.location_score;
+          
+          if (locationData && locationData.scores) {
+            chartType = 'radar';
+            // 获取所有维度名称，过滤掉总分
+            const dimensions = Object.keys(locationData.scores).filter(key => key !== '总分');
+            const values = dimensions.map(key => locationData.scores[key]);
+            
+            chartData = {
+              dimensions: dimensions,
+              values: [values],
+              descriptions: dimensions.map(() => '')
+            };
+            
+            console.log('地域评分雷达图数据:', {
+              dimensions,
+              values,
+              scores: locationData.scores
+            });
+          }
+          break;
+      }
+
+      if (!chartData) {
+        wx.showToast({
+          title: '暂无趋势数据',
+          icon: 'none'
+        });
+        return;
+      }
+
+      this.setData({
+        showTrend: true,
+        trendTitle: title,
+        showChart: true,
+        chartData,
+        chartUnit,
+        chartType
+      });
+    }
   },
 
   /**
