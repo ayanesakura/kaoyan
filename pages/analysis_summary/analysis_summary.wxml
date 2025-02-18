@@ -1,6 +1,8 @@
 <view class="container">
-  <view class="title">分析结果</view>
-  <view class="subtitle">根据您的填写，我们建议如下。</view>
+  <view class="header">
+    <view class="title">分析结果</view>
+    <view class="subtitle">根据您的填写，我们建议如下。</view>
+  </view>
 
   <!-- 加载状态 -->
   <view class="loading-container" wx:if="{{loading}}">
@@ -29,7 +31,10 @@
     <!-- 学校数据 -->
     <view class="school-item" wx:for="{{schools}}" wx:key="index">
       <view class="col-school">
-        <view class="school-name">{{item.name}}</view>
+        <view class="school-name-container">
+          <text class="school-name">{{item.name}}</text>
+          <view class="category-tag category-{{item.category}}">{{item.categoryText}}</view>
+        </view>
         <view class="department">
           {{item.department}}
           <text class="major-code" bindtap="onMajorTap" data-major-code="{{item.majorCode}}">

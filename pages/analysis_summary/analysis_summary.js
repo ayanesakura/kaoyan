@@ -18,12 +18,26 @@ Page({
     }
 
     try {
-      // 合并所有分组的学校数据
-      const allSchools = [
-        ...(result.data.冲刺 || []),
-        ...(result.data.稳妥 || []),
-        ...(result.data.保底 || [])
-      ];
+      // 处理所有学校数据
+      let allSchools = [];
+      
+      // 修改分类标识
+      if (result.data.冲刺) {
+        allSchools.push(...result.data.冲刺.map(school => ({...school, category: 'chong'})));
+      }
+      if (result.data.稳妥) {
+        allSchools.push(...result.data.稳妥.map(school => ({...school, category: 'wen'})));
+      }
+      if (result.data.保底) {
+        allSchools.push(...result.data.保底.map(school => ({...school, category: 'bao'})));
+      }
+
+      // 处理学校数据时添加显示文本
+      const categoryText = {
+        'chong': '冲',
+        'wen': '稳',
+        'bao': '保'
+      };
 
       // 处理学校数据
       const schools = allSchools.map(school => ({
@@ -33,7 +47,9 @@ Page({
         city: school.city,
         levels: school.levels || [],
         score: Math.round(parseFloat(school.total_score)) || 0,
-        probability: parseInt(school.admission_probability) || 0
+        probability: parseInt(school.admission_probability) || 0,
+        category: school.category, // 分类标识
+        categoryText: categoryText[school.category] // 显示文本
       }));
 
       // 按综合得分排序
