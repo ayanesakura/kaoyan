@@ -28,6 +28,11 @@ Page({
    * 处理单个学校的分数数据
    */
   processScoreData(fsx, subjectName) {
+    console.log('处理分数线数据:', {
+      subjectName: subjectName,
+      fsx: fsx
+    });
+
     if (!Array.isArray(fsx) || fsx.length === 0) {
       console.log('无效的分数线数据');
       return '/';
@@ -35,20 +40,28 @@ Page({
 
     // 按年份排序,取最新的数据
     const latestScore = fsx.sort((a, b) => parseInt(b.year) - parseInt(a.year))[0];
+    console.log('最新分数线数据:', latestScore);
     
     if (!latestScore || !latestScore.data || !Array.isArray(latestScore.data)) {
+      console.log('无效的最新分数线数据结构');
       return '/';
     }
 
     // 查找对应科目的分数
     const subjectData = latestScore.data.find(s => s.subject === subjectName);
+    console.log('科目分数数据:', {
+      subjectName: subjectName,
+      subjectData: subjectData
+    });
     
     if (!subjectData || !subjectData.score) {
+      console.log('未找到科目分数数据');
       return '/';
     }
 
     // 格式化分数
     const score = parseFloat(subjectData.score);
+    console.log('格式化后的分数:', score);
     return isNaN(score) ? '/' : score.toFixed(1);
   },
 
@@ -136,32 +149,52 @@ Page({
 
     // 处理概率值
     let probability = '/';
-    if (typeof school.probability === 'string' && school.probability.includes('%')) {
-      probability = school.probability; // 直接使用带百分号的字符串
-    } else if (typeof school.probability === 'number') {
-      probability = school.probability.toFixed(1) + '%';
+    if (typeof school.admission_probability === 'string' && school.admission_probability.includes('%')) {
+      probability = school.admission_probability;
+    } else if (typeof school.admission_probability === 'number') {
+      probability = school.admission_probability.toFixed(1) + '%';
     }
 
-    // 处理专业评分总分
-    let majorScore = '/';
-    if (school.major_score && typeof school.major_score['总分'] === 'number') {
-      majorScore = school.major_score['总分'].toFixed(1);
-    }
+    // 处理分数线数据
+    const fsx_data = (school.fsx_score || []).filter(item => {
+      return item && item.year && item.总分 && !isNaN(item.总分);
+    }).sort((a, b) => b.year - a.year);
+
+    // 获取最新的分数数据
+    const latestScore = fsx_data.length > 0 ? {
+      total: fsx_data[0].总分,
+      subject1: fsx_data[0].科目1 || '/',
+      subject2: fsx_data[0].科目2 || '/',
+      subject3: fsx_data[0].科目3 || '/',
+      subject4: fsx_data[0].科目4 || '/'
+    } : {
+      total: '/',
+      subject1: '/',
+      subject2: '/',
+      subject3: '/',
+      subject4: '/'
+    };
 
     return {
       school_name: school.school_name,
-      school: school.school_name,
       probability: probability,
       totalScore: typeof school.total_score === 'number' ? school.total_score.toFixed(1) : '/',
       
-      // 评分数据
+      // 各维度评分
       admission_score: school.admission_score || {},
       location_score: school.location_score || {},
       major_score: school.major_score || {},
-      majorTotalScore: majorScore, // 添加专业评分总分
+      sx_score: school.sx_score || {},
       
-      // 专业信息
-      major: school.major || ''
+      // 分数线数据
+      fsx_score: fsx_data,
+      latestScore: latestScore,
+      
+      // 其他信息
+      major: school.major_name || '',
+      major_code: school.major_code || '',
+      city: school.city || '',
+      levels: school.levels || []
     };
   },
 
@@ -194,112 +227,68 @@ Page({
     const app = getApp();
     console.log('app.globalData:', app.globalData);
     
-    const analysisResult = app.globalData.analysisResult;
-    console.log('analysisResult:', analysisResult);
-    
-    let userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
-    let targetInfo = app.globalData.targetInfo || wx.getStorageSync('targetInfo');
-
-    this.setData({ userInfo, targetInfo });
+    const result = app.globalData.analysisResult;
+    console.log('analysisResult:', result);
 
     // 检查数据结构
-    if (!analysisResult) {
-      console.error('analysisResult为空');
+    if (!result || !result.data) {
+      console.error('无效的分析结果数据');
       this.setData({ 
         loading: false,
         hasData: false 
-      });
-      wx.showToast({
-        title: '数据加载失败',
-        icon: 'none'
       });
       return;
     }
 
     try {
-      let probability_groups = null;
-      
-      // 处理 recommendations 数组
-      if (analysisResult.recommendations && Array.isArray(analysisResult.recommendations)) {
-        console.log('使用 recommendations 数组处理数据');
-        probability_groups = {
-          '保底': [],
-          '稳妥': [],
-          '冲刺': []
-        };
-
-        analysisResult.recommendations.forEach(school => {
-          const probability = parseFloat(school.probability);
-          if (!isNaN(probability)) {
-            if (probability >= 60) {
-              probability_groups['保底'].push(school);
-            } else if (probability >= 40) {
-              probability_groups['稳妥'].push(school);
-            } else {
-              probability_groups['冲刺'].push(school);
-            }
-          }
-        });
-      } 
-      // 处理 probability_groups 结构
-      else if (analysisResult.data?.probability_groups) {
-        console.log('使用 probability_groups 结构处理数据');
-        probability_groups = analysisResult.data.probability_groups;
-      }
-
-      if (!probability_groups) {
-        console.error('无有效的院校数据');
-        throw new Error('无有效的院校数据');
-      }
-
-      console.log('概率分组数据:', probability_groups);
-
-      const processedGroups = {
-        '保底': [],
-        '稳妥': [],
-        '冲刺': []
+      // 处理概率分组数据
+      const groups = {
+        '保底': result.data.保底 || [],
+        '稳妥': result.data.稳妥 || [],
+        '冲刺': result.data.冲刺 || []
       };
 
-      // 处理每个概率分组
-      Object.keys(processedGroups).forEach(groupKey => {
-        console.log(`开始处理${groupKey}分组`);
-        const groupSchools = probability_groups[groupKey];
-        console.log(`${groupKey}分组原始数据:`, groupSchools);
-        
-        if (Array.isArray(groupSchools)) {
-          processedGroups[groupKey] = groupSchools
-            .map(school => {
-              console.log(`处理学校数据:`, school);
-              const processed = this.processSchoolData(school);
-              console.log('处理后的学校数据:', processed);
-              return processed;
-            })
-            .filter(Boolean);
+      // 处理每个分组的学校数据
+      Object.keys(groups).forEach(groupKey => {
+        groups[groupKey] = groups[groupKey].map(school => ({
+          // 基础信息
+          school_name: school.school_name,
+          major_name: school.major_name,
+          major_code: school.major_code,
+          city: school.city,
+          levels: school.levels || [],
+          nlqrs: school.nlqrs,
           
-          console.log(`${groupKey}分组处理完成:`, processedGroups[groupKey]);
-        } else {
-          console.error(`${groupKey}分组不是数组:`, groupSchools);
-        }
+          // 评分信息
+          probability: school.admission_probability,
+          totalScore: parseFloat(school.total_score) || 0,
+          
+          // 各维度评分
+          admission_score: school.admission_score || {},
+          location_score: school.location_score || {},
+          major_score: school.major_score || {},
+          sx_score: school.sx_score || {},
+          
+          // 处理最新分数线
+          latestScore: this.processLatestScore(school.fsx_score),
+          
+          // 保存原始数据用于趋势图
+          fsx_score: school.fsx_score || [],
+          blb_score: school.blb_score || {},
+          tzjy_score: school.tzjy_score || {}
+        }));
       });
-
-      console.log('所有分组处理完成:', processedGroups);
-
-      // 检查是否有任何有效数据
-      const hasAnyData = Object.values(processedGroups).some(group => group.length > 0);
-      console.log('是否有数据:', hasAnyData);
-
-      // 检查稳妥组数据
-      console.log('稳妥组数据:', processedGroups['稳妥']);
 
       // 更新数据
+      const hasData = Object.values(groups).some(group => group.length > 0);
       this.setData({
-        probabilityGroups: processedGroups,
-        currentSchools: processedGroups['稳妥'] || [],
+        probabilityGroups: groups,
+        currentSchools: groups['稳妥'] || [],
         loading: false,
-        hasData: hasAnyData
+        hasData: hasData
       });
 
-      if (!hasAnyData) {
+      if (!hasData) {
         wx.showToast({
           title: '暂无匹配的院校',
           icon: 'none'
@@ -317,6 +306,50 @@ Page({
         icon: 'none'
       });
     }
+  },
+
+  // 处理最新分数线数据
+  processLatestScore(fsx) {
+    if (!Array.isArray(fsx) || fsx.length === 0) {
+      return {
+        total: '/',
+        subject1: '/',
+        subject2: '/',
+        subject3: '/',
+        subject4: '/'
+      };
+    }
+
+    // 过滤掉无效数据并按年份排序
+    const validScores = fsx
+      .filter(score => 
+        score.year && 
+        score.总分 != null && 
+        score.科目1 != null && 
+        score.科目2 != null && 
+        score.科目3 != null && 
+        score.科目4 != null
+      )
+      .sort((a, b) => b.year - a.year);
+
+    if (validScores.length === 0) {
+      return {
+        total: '/',
+        subject1: '/',
+        subject2: '/',
+        subject3: '/',
+        subject4: '/'
+      };
+    }
+
+    const latest = validScores[0];
+    return {
+      total: latest.总分 || '/',
+      subject1: latest.科目1 || '/',
+      subject2: latest.科目2 || '/',
+      subject3: latest.科目3 || '/',
+      subject4: latest.科目4 || '/'
+    };
   },
 
   /**
@@ -387,15 +420,35 @@ Page({
   showTrend(e) {
     const { type, index } = e.currentTarget.dataset;
     const school = this.data.currentSchools[index];
-    if (!school) return;
     
-    const schoolName = school.school.split('\n')[0];
+    if (!school) {
+      console.error('找不到学校数据');
+      return;
+    }
+
     let title = '';
     let chartData = null;
-    let chartUnit = '分';
-    let chartType = 'line'; // 默认为折线图
+    let chartUnit = '';
+    let chartType = 'line';
 
     switch(type) {
+      case 'admission':
+        title = `${school.school_name} - 录取评分维度`;
+        const admissionData = school.admission_score;
+        if (admissionData && Object.keys(admissionData).length > 0) {
+          chartType = 'radar';
+          const dimensions = Object.keys(admissionData).filter(key => key !== 'total_score');
+          const values = dimensions.map(key => admissionData[key]);
+          
+          chartData = {
+            dimensions: dimensions,
+            values: [values],
+            descriptions: dimensions.map(() => '')
+          };
+          chartUnit = '分';
+        }
+        break;
+
       case 'score':
       case 'english':
       case 'math':
@@ -408,42 +461,12 @@ Page({
           'major_subject': '专业课',
           'politics': '政治'
         };
-        title = `${schoolName} - ${subjectMap[type]}分数线趋势`;
-        chartData = this.processChartData(school.score_data, subjectMap[type]);
-        break;
-
-      case 'admission':
-        title = `${schoolName} - 录取评分维度`;
-        const admissionData = school.admission_score;
-        
-        if (admissionData && admissionData.dimension_scores) {
-          chartType = 'radar';
-          chartData = {
-            dimensions: admissionData.dimension_scores.map(item => item.name),
-            values: [admissionData.dimension_scores.map(item => item.score)],
-            descriptions: admissionData.dimension_scores.map(item => item.description)
-          };
-        }
-        break;
-
-      case 'major':
-        title = `${schoolName} - 专业评分维度`;
-        const majorData = school.major_score;
-        
-        if (majorData) {
-          chartType = 'radar';
-          // 过滤掉"总分"，只展示其他维度
-          const dimensions = Object.keys(majorData).filter(key => key !== '总分');
-          chartData = {
-            dimensions: dimensions,
-            values: [dimensions.map(key => majorData[key])],
-            descriptions: dimensions.map(() => '') // 如果没有描述，使用空字符串
-          };
-        }
+        title = `${school.school_name} - ${subjectMap[type]}分数线趋势`;
+        chartData = this.processChartData(school.fsx_score, subjectMap[type]);
         break;
 
       case 'location':
-        title = `${schoolName} - 地域评分维度`;
+        title = `${school.school_name} - 地域评分维度`;
         const locationData = school.location_score;
         
         if (locationData && locationData.scores) {

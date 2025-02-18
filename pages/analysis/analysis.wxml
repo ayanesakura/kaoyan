@@ -87,41 +87,42 @@
       <!-- 学校信息列 -->
       <scroll-view scroll-x="true" class="school-columns">
         <view class="school-column" wx:for="{{currentSchools}}" wx:key="index">
-          <view class="row-cell">{{item.school}}</view>
+          <view class="row-cell">
+            <text>{{item.school_name}}</text>
+            <view class="school-tags">
+              <text class="tag" wx:for="{{item.levels}}" wx:key="*this">{{item}}</text>
+            </view>
+          </view>
           <view class="row-cell">{{item.probability}}</view>
           <view class="row-cell">{{item.totalScore}}</view>
+          
+          <!-- 录取评分 -->
           <view class="row-cell has-btn">
             {{item.admission_score.total_score || '/'}}
             <view class="mini-trend-btn" bindtap="showTrend" data-type="admission" data-index="{{index}}">查看详情</view>
           </view>
+          
+          <!-- 地域评分 -->
           <view class="row-cell has-btn">
-            {{item.location_score['总分'] || '/'}}
+            {{item.location_score.total_score || '/'}}
             <view class="mini-trend-btn" bindtap="showTrend" data-type="location" data-index="{{index}}">查看详情</view>
           </view>
+          
+          <!-- 专业评分 -->
           <view class="row-cell has-btn">
-            {{item.majorTotalScore}}
+            {{item.major_score.total_score || '/'}}
             <view class="mini-trend-btn" bindtap="showTrend" data-type="major" data-index="{{index}}">查看详情</view>
           </view>
-          <view class="row-cell has-btn">
-            {{item.totalScore}}
+          
+          <!-- 分数线 -->
+          <view class="row-cell">
+            <text>{{item.latestScore.total}}</text>
             <view class="mini-trend-btn" bindtap="showTrend" data-type="score" data-index="{{index}}">查看往年趋势</view>
           </view>
-          <view class="row-cell has-btn">
-            {{item.politicsScore}}
-            <view class="mini-trend-btn" bindtap="showTrend" data-type="politics" data-index="{{index}}">查看往年趋势</view>
-          </view>
-          <view class="row-cell has-btn">
-            {{item.englishScore}}
-            <view class="mini-trend-btn" bindtap="showTrend" data-type="english" data-index="{{index}}">查看往年趋势</view>
-          </view>
-          <view class="row-cell has-btn">
-            {{item.mathScore}}
-            <view class="mini-trend-btn" bindtap="showTrend" data-type="math" data-index="{{index}}">查看往年趋势</view>
-          </view>
-          <view class="row-cell has-btn">
-            {{item.majorScore}}
-            <view class="mini-trend-btn" bindtap="showTrend" data-type="major_subject" data-index="{{index}}">查看往年趋势</view>
-          </view>
+          <view class="row-cell">{{item.latestScore.subject1}}</view>
+          <view class="row-cell">{{item.latestScore.subject2}}</view>
+          <view class="row-cell">{{item.latestScore.subject3}}</view>
+          <view class="row-cell">{{item.latestScore.subject4}}</view>
         </view>
       </scroll-view>
     </view>

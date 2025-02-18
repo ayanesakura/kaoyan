@@ -152,38 +152,25 @@
 }
 
 .row-cell {
-  height: 88rpx; /* 减小固定高度 */
-  padding: 10rpx 20rpx 24rpx; /* 调整内边距，为按钮留出空间 */
-  font-size: 26rpx;
-  color: #333;
-  border-bottom: 1rpx solid #eee;
-  text-align: center;
-  position: relative; /* 用于定位趋势按钮 */
-  box-sizing: border-box;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden; /* 防止内容溢出 */
+  min-height: 80rpx;
+  padding: 10rpx;
+  border-bottom: 1rpx solid #eee;
+  font-size: 26rpx;
+  color: #333;
 }
 
-/* 迷你趋势按钮 */
-.mini-trend-btn {
-  position: absolute; /* 绝对定位 */
-  bottom: 4rpx; /* 距底部距离 */
-  left: 50%; /* 水平居中 */
-  transform: translateX(-50%); /* 水平居中偏移 */
-  font-size: 20rpx;
-  color: #87CEEB;
-  padding: 2rpx 12rpx;
-  border-radius: 20rpx;
-  background: rgba(135, 206, 235, 0.1);
-  white-space: nowrap; /* 防止文字换行 */
-  line-height: 1.2; /* 调整行高 */
-}
-
-/* 调整有按钮的单元格内容位置 */
 .row-cell.has-btn {
-  padding-bottom: 30rpx; /* 为按钮预留空间 */
+  padding-bottom: 30rpx;
+}
+
+.mini-trend-btn {
+  font-size: 22rpx;
+  color: #87CEEB;
+  margin-top: 6rpx;
 }
 
 /* 隐藏滚动条 */
@@ -542,4 +529,19 @@
 .empty-tab-text {
   font-size: 28rpx;
   color: #666;
+}
+
+.school-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4rpx;
+  margin-top: 4rpx;
+}
+
+.tag {
+  font-size: 20rpx;
+  color: #87CEEB;
+  background: rgba(135, 206, 235, 0.1);
+  padding: 2rpx 8rpx;
+  border-radius: 4rpx;
 }

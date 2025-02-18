@@ -1,7 +1,7 @@
 // 环境配置
 const env = {
   dev: {
-    baseUrl: 'http://10.10.23.99:80'
+    baseUrl: 'http://192.168.0.102:80'
   }
 }
 
@@ -64,9 +64,27 @@ function callService(path, method = 'POST', data = {}) {
           'content-type': 'application/json'
         },
         data: data,
+        responseType: 'text',
         success: (res) => {
-          console.log('请求成功:', res);
-          resolve(res);
+          try {
+            if (typeof res.data === 'string') {
+              // 预处理JSON字符串，替换特殊值
+              const jsonStr = res.data
+                .replace(/:\s*NaN\s*([,}])/g, ':null$1')  // 替换NaN为null
+                .replace(/:\s*undefined\s*([,}])/g, ':null$1')  // 替换undefined为null
+                .replace(/:\s*Infinity\s*([,}])/g, ':null$1')  // 替换Infinity为null
+                .replace(/:\s*-Infinity\s*([,}])/g, ':null$1'); // 替换-Infinity为null
+              
+              console.log('处理后的JSON字符串:', jsonStr);
+              res.data = JSON.parse(jsonStr);
+            }
+            console.log('请求成功:', res);
+            resolve(res);
+          } catch (err) {
+            console.error('解析响应数据失败:', err);
+            console.error('原始数据:', res.data);
+            reject(new Error('数据解析失败: ' + err.message));
+          }
         },
         fail: (err) => {
           console.error('请求失败:', err);

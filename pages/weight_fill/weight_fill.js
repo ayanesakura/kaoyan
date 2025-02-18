@@ -251,174 +251,20 @@ Page({
     // 调用接口
     callService(API_PATHS.chooseSchoolsV2, 'POST', requestData)
       .then(res => {
-        let responseData;
-        if (res.data && res.data.data) {
-          responseData = res.data.data;
-        } else if (res.data) {
-          responseData = res.data;
+        // res.data 已经是解析好的对象
+        const responseData = res.data;
+        
+        if (responseData.code === 0 && responseData.data) {
+          // 存储解析后的数据
+          app.globalData.analysisResult = responseData;
+          
+          wx.hideLoading();
+          wx.reLaunch({
+            url: '/pages/analysis/analysis'
+          });
         } else {
-          responseData = res;
+          throw new Error(responseData.message || '请求失败');
         }
-
-        // 解析学校数据
-        const processSchoolData = (schoolGroup) => {
-          return schoolGroup.map(school => {
-            // 获取学校详细信息
-            const schoolDetail = responseData.school_details.find(
-              detail => detail.school_info && detail.school_info.school_name === school.school_name
-            );
-
-            if (!schoolDetail) {
-              console.error('找不到学校详细信息:', school.school_name);
-              return null;
-            }
-
-            const schoolInfo = schoolDetail.school_info;
-
-            // 处理分数线数据
-            const processScoreData = (fsx) => {
-              if (!Array.isArray(fsx) || fsx.length === 0) {
-                return {
-                  totalScore: '/',
-                  politicsScore: '/',
-                  englishScore: '/',
-                  mathScore: '/',
-                  majorScore: '/'
-                };
-              }
-
-              // 按年份排序,取最新的数据
-              const latestScore = fsx.sort((a, b) => {
-                const yearA = parseInt(a.year);
-                const yearB = parseInt(b.year);
-                return yearB - yearA;
-              })[0];
-
-              // 确保分数值为数字或'/'
-              const formatScore = (score) => {
-                if (score === null || score === undefined || score === '') {
-                  return '/';
-                }
-                const num = parseFloat(score);
-                return isNaN(num) ? '/' : num.toFixed(1);
-              };
-
-              // 从data数组中查找对应科目的分数
-              const findSubjectScore = (subjectName) => {
-                if (!latestScore.data || !Array.isArray(latestScore.data)) return '/';
-                const subject = latestScore.data.find(s => s.subject.includes(subjectName));
-                return subject ? formatScore(subject.score) : '/';
-              };
-              
-              return {
-                totalScore: school.total_score ? school.total_score.toFixed(1) : '/',
-                politicsScore: findSubjectScore('政治'),
-                englishScore: findSubjectScore('英语'),
-                mathScore: findSubjectScore('数学'),
-                majorScore: findSubjectScore('专业')
-              };
-            };
-
-            // 处理报录比数据
-            const processBlbData = (blbData) => {
-              if (!Array.isArray(blbData) || blbData.length === 0) {
-                return '/';
-              }
-
-              // 按年份排序,取最新的数据
-              const latestBlb = blbData.sort((a, b) => b.year - a.year)[0];
-              return latestBlb.blb || '/';
-            };
-
-            // 处理就业数据
-            const processEmploymentData = (employmentData) => {
-              if (!Array.isArray(employmentData) || employmentData.length === 0) {
-                return {
-                  employment_status: '/',
-                  further_study_ratio: '/',
-                  civil_service_ratio: '/',
-                  employment_ratio: '/'
-                };
-              }
-
-              // 按年份排序,取最新的数据
-              const latestData = employmentData.sort((a, b) => b.year - a.year)[0];
-              
-              return {
-                employment_status: latestData.status || '/',
-                further_study_ratio: latestData.further_study_ratio || '/',
-                civil_service_ratio: latestData.civil_service_ratio || '/',
-                employment_ratio: latestData.employment_ratio || '/'
-              };
-            };
-
-            return {
-              // 基本信息
-              school_name: school.school_name,
-              school_code: schoolInfo.school_code || '',
-              major: school.major,
-              major_code: schoolInfo.major_code || '',
-              probability: school.probability.toFixed(2) + '%',
-              departments: schoolInfo.departments || '',
-              
-              // 分数相关
-              admission_score: school.admission_score,
-              location_score: school.location_score,
-              major_score: school.major_score,
-              total_score: school.total_score,
-
-              // 详细信息
-              directions: schoolInfo.directions.map(d => ({
-                name: d.yjfxmc,
-                type: d.xwlx,
-                quota: d.zsrs,
-                subjects: d.subjects[0].map(s => ({
-                  code: s.code,
-                  name: s.name,
-                  value: s.value
-                })),
-                notes: d.bz
-              })),
-
-              // 处理后的最新数据
-              ...processScoreData(schoolInfo.fsx || []),
-              blbRatio: processBlbData(schoolInfo.blb || []),
-              ...processEmploymentData(schoolInfo.employment_data || []),
-
-              // 保留原始趋势数据用于图表显示
-              score_data: schoolInfo.fsx || [],
-              employment_data: schoolInfo.employment_data || [],
-              blb: schoolInfo.blb || []
-            };
-          }).filter(school => school !== null);
-        };
-
-        // 处理不同概率组的学校
-        const recommendations = [];
-        if (responseData.probability_groups) {
-          if (responseData.probability_groups.保底) {
-            recommendations.push(...processSchoolData(responseData.probability_groups.保底));
-          }
-          if (responseData.probability_groups.稳妥) {
-            recommendations.push(...processSchoolData(responseData.probability_groups.稳妥));
-          }
-          if (responseData.probability_groups.冲刺) {
-            recommendations.push(...processSchoolData(responseData.probability_groups.冲刺));
-          }
-        }
-
-        // 按概率排序
-        recommendations.sort((a, b) => b.probability - a.probability);
-
-        // 存储分析结果
-        app.globalData.analysisResult = {
-          recommendations: recommendations
-        };
-
-        wx.hideLoading();
-        wx.reLaunch({
-          url: '/pages/analysis/analysis'
-        });
       })
       .catch(err => {
         console.error('分析失败:', err);

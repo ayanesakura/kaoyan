@@ -250,7 +250,7 @@ Component({
             symbolSize: 6,
             label: {
               show: true,
-              formatter: '{c}分',
+              formatter: '{c}',
               color: '#333',
               fontSize: 11,
               distance: 0,
@@ -290,7 +290,7 @@ Component({
             let result = `${params.name}<br/>`;
             values.forEach((val, index) => {
               const description = descriptions?.[index] ? `<br/>${descriptions[index]}` : '';
-              result += `${indicators[index].name}: ${val}分${description}<br/>`;
+              result += `${indicators[index].name}: ${val}${description}<br/>`;
             });
             return result;
           }
