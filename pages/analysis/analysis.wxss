@@ -1,9 +1,8 @@
 /* pages/analysis/analysis.wxss */
 .container {
   padding: 20rpx;
-  background: #fff;
+  background: #f8f9fa;
   min-height: 100vh;
-  position: relative;
 }
 
 .title {
@@ -11,139 +10,82 @@
   font-weight: bold;
   color: #333;
   margin: 20rpx 0 10rpx;
-  padding: 0 10rpx;
 }
 
 .subtitle {
   font-size: 26rpx;
   color: #666;
   margin-bottom: 30rpx;
-  padding: 0 10rpx;
 }
 
-/* 趋势展示面板 */
-.trend-panel {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 600rpx;
+/* Tab样式 */
+.probability-tabs {
+  display: flex;
   background: #fff;
-  border-radius: 16rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
-  z-index: 1001;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  max-height: 80vh;
+  padding: 16rpx;
+  border-radius: 12rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.05);
 }
 
-/* 遮罩层 */
-.mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-}
-
-.trend-header {
-  padding: 24rpx;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1rpx solid #eee;
-}
-
-.trend-title {
-  font-size: 32rpx;
-  font-weight: 500;
-  color: #333;
-}
-
-.close-btn {
-  font-size: 40rpx;
-  color: #999;
-  padding: 0 20rpx;
-}
-
-.trend-content {
-  padding: 24rpx;
+.tab-item {
   flex: 1;
-  overflow-y: auto;
-  min-height: 0;
-}
-
-.trend-content.chart-mode {
-  padding: 0;
-  height: 600rpx;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.trend-content.chart-mode trend-chart {
-  flex: 1;
-  height: 100%;
-  min-height: 0;
-}
-
-.trend-item {
-  display: flex;
-  justify-content: space-between;
+  text-align: center;
   padding: 16rpx 0;
-  border-bottom: 1rpx solid #f5f5f5;
-}
-
-.trend-year {
   font-size: 28rpx;
   color: #666;
+  position: relative;
+  margin: 0 10rpx;
+  border-radius: 8rpx;
+  transition: all 0.3s;
 }
 
-.trend-value {
-  font-size: 28rpx;
-  color: #333;
+.tab-item.active {
+  color: #87CEEB;
+  background: rgba(135, 206, 235, 0.1);
   font-weight: 500;
 }
 
-.comparison-table {
+/* 表格容器 */
+.table-container {
   display: flex;
-  width: 100%;
-  overflow: hidden;
-  border: 1rpx solid #eee;
+  background: #fff;
   border-radius: 12rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.05);
+  overflow: hidden;
+  margin-bottom: 20rpx;
 }
 
+/* 左侧标签列 */
 .label-column {
-  min-width: 180rpx;
-  background: #f5f5f5;
+  width: 150rpx;
+  background: #f8f9fa;
+  flex-shrink: 0;
   border-right: 1rpx solid #eee;
 }
 
 .row-header {
-  height: 88rpx; /* 减小固定高度 */
-  padding: 0 20rpx;
-  font-size: 26rpx;
+  height: 88rpx;
+  padding: 0 12rpx;
+  font-size: 24rpx;
   color: #666;
-  border-bottom: 1rpx solid #eee;
   display: flex;
   align-items: center;
-  overflow: hidden; /* 防止内容溢出 */
-  box-sizing: border-box;
+  border-bottom: 1rpx solid #eee;
 }
 
+/* 右侧数据区域 */
 .school-columns {
   flex: 1;
-  white-space: nowrap;
   overflow-x: auto;
+  white-space: nowrap;
 }
 
+/* 学校列 */
 .school-column {
   display: inline-block;
-  min-width: 300rpx;
+  vertical-align: top;
+  width: 200rpx;
   border-right: 1rpx solid #eee;
 }
 
@@ -151,253 +93,35 @@
   border-right: none;
 }
 
+/* 单元格 */
 .row-cell {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 80rpx;
-  padding: 10rpx;
-  border-bottom: 1rpx solid #eee;
-  font-size: 26rpx;
-  color: #333;
-}
-
-.row-cell.has-btn {
-  padding-bottom: 30rpx;
-}
-
-.mini-trend-btn {
-  font-size: 22rpx;
-  color: #87CEEB;
-  margin-top: 6rpx;
-}
-
-/* 隐藏滚动条 */
-::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
-  color: transparent;
-}
-
-.analysis-card {
-  background: #fff;
-  border-radius: 12rpx;
-  padding: 30rpx;
-  margin-bottom: 20rpx;
-}
-
-.card-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20rpx;
-}
-
-.card-content {
-  font-size: 28rpx;
-  color: #666;
-  line-height: 1.6;
-}
-
-.school-card {
-  background: #fff;
-  border-radius: 12rpx;
-  padding: 30rpx;
-  margin-bottom: 30rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
-}
-
-.school-header {
-  margin-bottom: 20rpx;
-  padding-bottom: 20rpx;
-  border-bottom: 1rpx solid #eee;
-}
-
-.school-name {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10rpx;
-}
-
-.school-code {
-  font-size: 24rpx;
-  color: #999;
-}
-
-.major-info {
-  margin-bottom: 20rpx;
-}
-
-.info-item {
-  display: flex;
-  margin-bottom: 10rpx;
-  font-size: 28rpx;
-  color: #666;
-}
-
-.label {
-  color: #999;
-  margin-right: 10rpx;
-  min-width: 140rpx;
-}
-
-.section {
-  margin-top: 30rpx;
-  padding-top: 20rpx;
-  border-top: 1rpx solid #eee;
-}
-
-.section-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20rpx;
-  display: flex;
-  align-items: center;
-}
-
-.section-title::before {
-  content: "";
-  width: 6rpx;
-  height: 32rpx;
-  background: #87CEEB;
-  margin-right: 16rpx;
-  border-radius: 3rpx;
-}
-
-.score-list, .ratio-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
-}
-
-.score-item, .ratio-item {
-  background: #f9f9f9;
-  padding: 20rpx;
-  border-radius: 8rpx;
-}
-
-.year {
-  font-size: 26rpx;
-  color: #87CEEB;
-  margin-bottom: 10rpx;
-  font-weight: bold;
-}
-
-.score-detail, .ratio-detail {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20rpx;
-  font-size: 26rpx;
-  color: #666;
-}
-
-.score-detail text, .ratio-detail text {
-  background: #fff;
-  padding: 8rpx 16rpx;
-  border-radius: 4rpx;
-  border: 1rpx solid #eee;
-}
-
-.employment-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10rpx;
-}
-
-.employment-item {
-  font-size: 26rpx;
-  color: #666;
-  line-height: 1.6;
-  padding: 16rpx;
-  background: #f9f9f9;
-  border-radius: 8rpx;
-}
-
-.clickable {
-  position: relative;
-  cursor: pointer;
-  padding-right: 20px !important;
-}
-
-.direction-icon {
-  position: absolute;
-  right: 5px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #4a90e2;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.clickable:hover {
-  background-color: rgba(74, 144, 226, 0.1);
-}
-
-.major-cell {
   height: 88rpx;
-  padding: 0 20rpx;
-  font-size: 26rpx;
+  padding: 0 12rpx;
+  font-size: 24rpx;
   color: #333;
   border-bottom: 1rpx solid #eee;
-  text-align: center;
-  position: relative;
-  box-sizing: border-box;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  white-space: nowrap;
 }
 
-.major-cell:active {
-  background: #f5f5f5;
+/* 学校名称单元格 */
+.row-cell:first-child {
+  font-weight: 500;
 }
 
-.cell-content {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0;
+/* 查看详情按钮 */
+.detail-btn {
+  font-size: 20rpx;
+  color: #87CEEB;
+  margin-top: 4rpx;
+  padding: 2rpx 8rpx;
 }
 
-.major-info {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.major-name {
-  font-size: 26rpx;
-  color: #333;
-  padding: 0;
-}
-
-.major-code {
-  font-size: 26rpx;
-  color: #333;
-  margin-left: 4rpx;
-  padding: 0;
-}
-
-.cell-arrow {
-  width: 12rpx;
-  height: 12rpx;
-  border-top: 2rpx solid #999;
-  border-right: 2rpx solid #999;
-  transform: rotate(45deg);
-  margin-left: 10rpx;
-  flex-shrink: 0;
-}
-
+/* AI分析按钮 */
 .btn-container {
   padding: 32rpx;
-  margin-bottom: 32rpx;
 }
 
 .ai-btn {
@@ -414,53 +138,98 @@
   box-shadow: 0 4rpx 16rpx rgba(135, 206, 235, 0.3);
 }
 
-.ai-btn:active {
-  opacity: 0.9;
-}
-
-/* 概率分组Tab样式 */
-.probability-tabs {
+/* 学校信息样式 */
+.school-info {
   display: flex;
-  justify-content: space-between;
-  padding: 20rpx 30rpx;
-  background: #fff;
-  margin-bottom: 20rpx;
-  border-radius: 12rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+  flex-direction: column;
+  gap: 4rpx;
 }
 
-.tab-item {
-  flex: 1;
-  text-align: center;
-  padding: 16rpx 0;
+.school-name {
   font-size: 28rpx;
-  color: #666;
-  position: relative;
-  margin: 0 10rpx;
-  border-radius: 8rpx;
-  transition: all 0.3s ease;
-}
-
-.tab-item.active {
-  color: #87CEEB;
-  background: rgba(135, 206, 235, 0.1);
   font-weight: 500;
 }
 
-.tab-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40rpx;
-  height: 4rpx;
-  background: #87CEEB;
-  border-radius: 2rpx;
+.school-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4rpx;
 }
 
-/* 加载状态样式 */
-.loading-container {
+.tag {
+  font-size: 20rpx;
+  color: #87CEEB;
+  background: rgba(135, 206, 235, 0.1);
+  padding: 2rpx 8rpx;
+  border-radius: 4rpx;
+}
+
+.major-name {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 趋势按钮 */
+.trend-btn {
+  font-size: 20rpx;
+  color: #87CEEB;
+  margin-top: 4rpx;
+  padding: 4rpx 12rpx;
+  background: rgba(135, 206, 235, 0.1);
+  border-radius: 4rpx;
+}
+
+/* 趋势图弹窗 */
+.mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
+.trend-panel {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 600rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  z-index: 101;
+  overflow: hidden;
+}
+
+.trend-header {
+  padding: 24rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1rpx solid #eee;
+}
+
+.trend-title {
+  font-size: 32rpx;
+  font-weight: 500;
+}
+
+.close-btn {
+  font-size: 40rpx;
+  color: #999;
+  padding: 0 20rpx;
+}
+
+.trend-content {
+  height: 600rpx;
+  padding: 24rpx;
+}
+
+/* 加载和空状态 */
+.loading-container,
+.empty-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -488,15 +257,6 @@
   color: #666;
 }
 
-/* 空数据提示样式 */
-.empty-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80rpx 0;
-}
-
 .empty-icon {
   width: 200rpx;
   height: 200rpx;
@@ -514,7 +274,6 @@
   color: #999;
 }
 
-/* 当前Tab空数据提示样式 */
 .empty-tab {
   display: flex;
   align-items: center;
@@ -529,19 +288,4 @@
 .empty-tab-text {
   font-size: 28rpx;
   color: #666;
-}
-
-.school-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4rpx;
-  margin-top: 4rpx;
-}
-
-.tag {
-  font-size: 20rpx;
-  color: #87CEEB;
-  background: rgba(135, 206, 235, 0.1);
-  padding: 2rpx 8rpx;
-  border-radius: 4rpx;
 }

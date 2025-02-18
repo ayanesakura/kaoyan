@@ -84,8 +84,18 @@ Page({
 
   // 查看完整分析
   viewFullAnalysis() {
-    wx.navigateTo({
-      url: '/pages/analysis/analysis'
+    wx.reLaunch({
+      url: '/pages/analysis/analysis',
+      success: () => {
+        console.log('跳转到分析页面成功');
+      },
+      fail: (err) => {
+        console.error('跳转失败:', err);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none'
+        });
+      }
     });
   }
 }); 
