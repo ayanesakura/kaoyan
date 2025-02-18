@@ -43,9 +43,9 @@
         </view>
       </view>
       <view class="col-level">
-        <text class="tag-985" wx:if="{{item.levels.includes('985')}}">985</text>
-        <text class="tag-211" wx:if="{{item.levels.includes('211')}}">211</text>
-        <text class="tag-c9" wx:if="{{item.levels.includes('C9')}}">C9</text>
+        <block wx:for="{{item.levels}}" wx:for-item="level" wx:key="*this">
+          <text class="tag-{{level.toLowerCase()}}" wx:if="{{level}}">{{level}}</text>
+        </block>
       </view>
       <view class="col-location">{{item.city}}</view>
       <view class="col-score">{{item.score}}/100</view>

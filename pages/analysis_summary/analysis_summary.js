@@ -8,6 +8,7 @@ Page({
   onLoad() {
     const app = getApp();
     const result = app.globalData.analysisResult;
+    console.log('原始数据:', result); // 添加日志查看原始数据
 
     if (!result || !result.data) {
       this.setData({ 
@@ -21,7 +22,7 @@ Page({
       // 处理所有学校数据
       let allSchools = [];
       
-      // 修改分类标识
+      // 添加分类标识
       if (result.data.冲刺) {
         allSchools.push(...result.data.冲刺.map(school => ({...school, category: 'chong'})));
       }
@@ -40,20 +41,25 @@ Page({
       };
 
       // 处理学校数据
-      const schools = allSchools.map(school => ({
-        name: school.school_name,
-        department: school.major_name,
-        majorCode: school.major_code,
-        city: school.city,
-        levels: school.levels || [],
-        score: Math.round(parseFloat(school.total_score)) || 0,
-        probability: parseInt(school.admission_probability) || 0,
-        category: school.category, // 分类标识
-        categoryText: categoryText[school.category] // 显示文本
-      }));
+      const schools = allSchools.map(school => {
+        console.log('单个学校原始数据:', school); // 添加调试日志
+        return {
+          name: school.school_name,
+          department: school.major_name,
+          majorCode: school.major_code,
+          city: school.city,
+          levels: school.levels || [], // 直接使用原始数据中的levels数组
+          score: Math.round(parseFloat(school.total_score)) || 0,
+          probability: parseInt(school.admission_probability) || 0,
+          category: school.category,
+          categoryText: categoryText[school.category]
+        };
+      });
 
       // 按综合得分排序
       schools.sort((a, b) => b.score - a.score);
+
+      console.log('处理后的学校数据:', schools); // 添加日志查看处理后的数据
 
       this.setData({
         schools,
