@@ -147,14 +147,6 @@ Page({
       return null;
     }
 
-    // 处理概率值
-    let probability = '/';
-    if (typeof school.admission_probability === 'string' && school.admission_probability.includes('%')) {
-      probability = school.admission_probability;
-    } else if (typeof school.admission_probability === 'number') {
-      probability = school.admission_probability.toFixed(1) + '%';
-    }
-
     // 处理分数线数据
     const fsx_data = (school.fsx_score || []).filter(item => {
       return item && item.year && item.总分 && !isNaN(item.总分);
@@ -175,27 +167,53 @@ Page({
       subject4: '/'
     };
 
-    return {
+    // 处理概率值
+    let probability = school.admission_probability || '/';
+    if (typeof probability === 'number') {
+      probability = probability.toFixed(1) + '%';
+    }
+
+    // 处理评分 - 添加更多调试信息
+    console.log('完整的学校数据:', school);
+    const score = school.total_score;
+    console.log('原始分数:', score, typeof score);
+    
+    let formattedScore = '/';
+    if (score !== undefined && score !== null && !isNaN(score)) {
+      formattedScore = Math.round(parseFloat(score)).toString();
+    }
+    console.log('格式化后的分数:', formattedScore);
+
+    // 先创建基础对象，然后添加处理后的值
+    const processedSchool = {
+      // 基础信息
       school_name: school.school_name,
-      probability: probability,
-      totalScore: typeof school.total_score === 'number' ? school.total_score.toFixed(1) : '/',
+      major_name: school.major_name || '',
+      major_code: school.major_code || '',
+      city: school.city || '',
+      levels: school.levels || [],
       
-      // 各维度评分
+      // 处理后的值
+      probability,
+      total_score: formattedScore,
+      
+      // 评分数据
       admission_score: school.admission_score || {},
       location_score: school.location_score || {},
       major_score: school.major_score || {},
       sx_score: school.sx_score || {},
       
       // 分数线数据
-      fsx_score: fsx_data,
-      latestScore: latestScore,
-      
-      // 其他信息
-      major: school.major_name || '',
-      major_code: school.major_code || '',
-      city: school.city || '',
-      levels: school.levels || []
+      latestScore,
+      fsx_score: fsx_data
     };
+
+    return processedSchool;
+  },
+
+  formatNumber(num) {
+    if (!num || isNaN(num)) return '/';
+    return parseFloat(num).toFixed(1);
   },
 
   /**
@@ -225,20 +243,8 @@ Page({
     this.setData({ loading: true });
 
     const app = getApp();
-    console.log('app.globalData:', app.globalData);
-    
     const result = app.globalData.analysisResult;
-    console.log('analysisResult:', result);
-
-    // 检查数据结构
-    if (!result || !result.data) {
-      console.error('无效的分析结果数据');
-      this.setData({ 
-        loading: false,
-        hasData: false 
-      });
-      return;
-    }
+    console.log('原始数据:', result.data);
 
     try {
       // 处理概率分组数据
@@ -248,35 +254,18 @@ Page({
         '冲刺': result.data.冲刺 || []
       };
 
+      // 添加调试日志
+      console.log('分组前的数据:', groups);
+
       // 处理每个分组的学校数据
       Object.keys(groups).forEach(groupKey => {
-        groups[groupKey] = groups[groupKey].map(school => ({
-          // 基础信息
-          school_name: school.school_name,
-          major_name: school.major_name,
-          major_code: school.major_code,
-          city: school.city,
-          levels: school.levels || [],
-          nlqrs: school.nlqrs,
-          
-          // 评分信息
-          probability: school.admission_probability,
-          totalScore: parseFloat(school.total_score) || 0,
-          
-          // 各维度评分
-          admission_score: school.admission_score || {},
-          location_score: school.location_score || {},
-          major_score: school.major_score || {},
-          sx_score: school.sx_score || {},
-          
-          // 处理最新分数线
-          latestScore: this.processLatestScore(school.fsx_score),
-          
-          // 保存原始数据用于趋势图
-          fsx_score: school.fsx_score || [],
-          blb_score: school.blb_score || {},
-          tzjy_score: school.tzjy_score || {}
-        }));
+        groups[groupKey] = groups[groupKey].map(school => {
+          // 添加调试日志
+          console.log('处理前的学校数据:', school);
+          const processed = this.processSchoolData(school);
+          console.log('处理后的学校数据:', processed);
+          return processed;
+        });
       });
 
       // 更新数据

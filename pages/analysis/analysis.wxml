@@ -55,7 +55,7 @@
     <scroll-view scroll-x class="school-columns">
       <view class="school-column" wx:for="{{currentSchools}}" wx:key="index">
         <view class="row-cell">{{item.school_name}}</view>
-        <view class="row-cell">{{item.admission_probability}}%</view>
+        <view class="row-cell">{{item.probability}}</view>
         <view class="row-cell">{{item.total_score}}</view>
         <view class="row-cell">
           {{item.admission_score.total_score || '/'}}
