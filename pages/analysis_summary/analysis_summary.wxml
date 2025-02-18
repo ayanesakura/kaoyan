@@ -44,7 +44,7 @@
       </view>
       <view class="col-level">
         <block wx:for="{{item.levels}}" wx:for-item="level" wx:key="*this">
-          <text class="tag-{{level.toLowerCase()}}" wx:if="{{level}}">{{level}}</text>
+          <text class="tag tag-{{level}}" wx:if="{{level}}">{{level}}</text>
         </block>
       </view>
       <view class="col-location">{{item.city}}</view>
