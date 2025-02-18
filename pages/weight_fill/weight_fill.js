@@ -259,8 +259,25 @@ Page({
           app.globalData.analysisResult = responseData;
           
           wx.hideLoading();
-          wx.reLaunch({
-            url: '/pages/analysis/analysis'
+          wx.navigateTo({
+            url: '/pages/analysis_summary/analysis_summary',
+            success: () => {
+              console.log('跳转到分析小结页面成功');
+            },
+            fail: (err) => {
+              console.error('跳转失败:', err);
+              // 如果跳转失败，回退到直接显示分析页面
+              wx.navigateTo({
+                url: '/pages/analysis/analysis',
+                fail: (err) => {
+                  console.error('备选跳转也失败:', err);
+                  wx.showToast({
+                    title: '页面跳转失败',
+                    icon: 'none'
+                  });
+                }
+              });
+            }
           });
         } else {
           throw new Error(responseData.message || '请求失败');

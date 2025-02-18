@@ -15,7 +15,8 @@
     "pages/directions/directions",
     "pages/ai_analysis/ai_analysis",
     "pages/target_fill/target_fill",
-    "pages/weight_fill/weight_fill"
+    "pages/weight_fill/weight_fill",
+    "pages/analysis_summary/analysis_summary"
   ],
   "window": {
     "backgroundTextStyle": "light",

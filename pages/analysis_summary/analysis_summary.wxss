@@ -1,0 +1,169 @@
+.container {
+  padding: 20rpx;
+  background: #fff;
+  min-height: 100vh;
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin: 20rpx 0 10rpx;
+  padding: 0 10rpx;
+}
+
+.subtitle {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 30rpx;
+  padding: 0 10rpx;
+}
+
+/* 表格样式 */
+.table-header {
+  display: flex;
+  padding: 20rpx 0;
+  background: #f8f9fa;
+  font-size: 26rpx;
+  color: #666;
+  border-bottom: 1rpx solid #eee;
+}
+
+.school-item {
+  display: flex;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+
+/* 列宽设置 */
+.col-school {
+  flex: 2;
+  padding: 0 10rpx;
+}
+
+.col-level {
+  flex: 1;
+  padding: 0 10rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4rpx;
+}
+
+.col-location {
+  flex: 1;
+  padding: 0 10rpx;
+}
+
+.col-score, .col-probability {
+  flex: 1;
+  padding: 0 10rpx;
+  text-align: center;
+}
+
+/* 学校信息样式 */
+.school-name {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.department {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.major-code {
+  color: #1890ff;
+  margin-left: 8rpx;
+}
+
+/* 标签样式 */
+.tag-985, .tag-211, .tag-c9 {
+  font-size: 20rpx;
+  padding: 2rpx 8rpx;
+  border-radius: 4rpx;
+  margin: 2rpx;
+}
+
+.tag-985 {
+  background: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.tag-211 {
+  background: rgba(135, 206, 235, 0.1);
+  color: #87CEEB;
+}
+
+.tag-c9 {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+/* 按钮样式 */
+.btn-container {
+  padding: 40rpx 20rpx;
+}
+
+.view-details-btn {
+  background: #87CEEB;
+  color: #fff;
+  font-size: 32rpx;
+  padding: 20rpx 0;
+  border-radius: 44rpx;
+}
+
+/* 加载和空状态样式 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 0;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 6rpx solid #f3f3f3;
+  border-top: 6rpx solid #87CEEB;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20rpx;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 0;
+}
+
+.empty-icon {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 30rpx;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.empty-subtext {
+  font-size: 26rpx;
+  color: #999;
+} 
