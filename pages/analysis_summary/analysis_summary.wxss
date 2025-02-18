@@ -1,16 +1,12 @@
 .container {
-  padding: 20rpx;
+  padding: 10rpx;
   background: #f8f9fa;
   min-height: 100vh;
   box-sizing: border-box;
 }
 
-.header {
-  background: #fff;
-  padding: 30rpx;
-  border-radius: 12rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+.title-section {
+  padding: 20rpx 10rpx 30rpx;
 }
 
 .title {
@@ -34,59 +30,74 @@
   width: 100%;
 }
 
-.table-header {
-  display: flex;
-  padding: 20rpx 0;
-  background: #f8f9fa;
-  font-size: 26rpx;
-  color: #666;
-  border-bottom: 1rpx solid #eee;
-  min-height: 40rpx;
-  align-items: center;
-}
-
-.school-item {
-  display: flex;
-  padding: 24rpx 0;
-  border-bottom: 1rpx solid #eee;
-  transition: background-color 0.3s;
-  min-height: 80rpx;
-}
-
-.school-item:hover {
-  background-color: #f8f9fa;
+/* 统一列样式 */
+.col-school,
+.col-level,
+.col-location,
+.col-score,
+.col-probability {
+  padding: 0 16rpx; /* 统一所有列的内边距 */
+  box-sizing: border-box;
 }
 
 /* 列宽设置 */
 .col-school {
-  flex: 3;
-  padding: 0 20rpx;
-  min-width: 240rpx;
+  flex: 2.5;
+  min-width: 200rpx;
 }
 
 .col-level {
-  flex: 1.5;
-  padding: 0 10rpx;
+  flex: 1.2;
+  min-width: 100rpx;
   display: flex;
   flex-wrap: wrap;
-  gap: 8rpx;
+  gap: 6rpx;
   align-items: center;
-  min-width: 120rpx;
-  justify-content: flex-start;
-  height: 100%;
 }
 
 .col-location {
-  flex: 1;
-  padding: 0 10rpx;
-  min-width: 80rpx;
+  flex: 0.8;
+  min-width: 70rpx;
 }
 
-.col-score, .col-probability {
-  flex: 1.2;
-  padding: 0 10rpx;
-  text-align: center;
-  min-width: 100rpx;
+.col-score, 
+.col-probability {
+  flex: 1;
+  min-width: 90rpx;
+}
+
+/* 居中显示的列 */
+.col-location, 
+.col-score, 
+.col-probability {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 表头样式 */
+.table-header {
+  display: flex;
+  padding: 16rpx 0;
+  background: #f8f9fa;
+  font-size: 24rpx;
+  color: #666;
+  border-bottom: 1rpx solid #eee;
+  min-height: 36rpx;
+  align-items: center;
+}
+
+/* 表格行样式 */
+.school-item {
+  display: flex;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #eee;
+  transition: background-color 0.3s;
+  min-height: 70rpx;
+}
+
+.school-item:hover {
+  background-color: #f8f9fa;
 }
 
 /* 学校信息样式 */
@@ -98,13 +109,13 @@
 }
 
 .school-name {
-  font-size: 30rpx;
+  font-size: 28rpx;
   font-weight: 500;
   color: #333;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 200rpx;
+  max-width: 180rpx;
 }
 
 .category-tag {
@@ -136,6 +147,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 180rpx;
 }
 
 .major-code {
@@ -145,15 +157,19 @@
 
 /* 标签样式 */
 .tag {
-  font-size: 22rpx;
-  padding: 6rpx 16rpx;
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
   border-radius: 6rpx;
   font-weight: 500;
   white-space: nowrap;
-  display: inline-block;
-  margin: 2rpx 4rpx;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2rpx;
   box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
+  height: 28rpx;
+  min-width: 44rpx;
 }
 
 /* 985标签样式 */
@@ -271,4 +287,19 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 学校专业列保持左对齐 */
+.table-header .col-school,
+.col-school {
+  justify-content: flex-start;
+}
+
+/* 学校层次列保持左对齐 */
+.table-header .col-level,
+.col-level {
+  justify-content: flex-start;
 } 

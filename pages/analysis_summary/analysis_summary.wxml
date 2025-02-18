@@ -1,5 +1,5 @@
 <view class="container">
-  <view class="header">
+  <view class="title-section">
     <view class="title">分析结果</view>
     <view class="subtitle">根据您的填写，我们建议如下。</view>
   </view>
@@ -23,7 +23,7 @@
     <view class="table-header">
       <view class="col-school">学校专业</view>
       <view class="col-level">学校层次</view>
-      <view class="col-location">所在地区</view>
+      <view class="col-location">城市</view>
       <view class="col-score">综合得分</view>
       <view class="col-probability">考上概率</view>
     </view>
