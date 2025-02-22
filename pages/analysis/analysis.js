@@ -736,32 +736,26 @@ Page({
     const { index } = e.currentTarget.dataset;
     const school = this.data.currentSchools[index];
     
-    // 显示加载提示
     wx.showLoading({
       title: '加载中...',
       mask: true
     });
     
-    // 调用正确的接口获取详情
     callService(API_PATHS.getSchoolDetail, 'POST', {
       school_name: school.school_name,
       major_name: school.major_name
     })
     .then(res => {
-      console.log('获取学校详情成功:', res.data);
-      
       if (res.data.code !== 0) {
         throw new Error(res.data.message || '获取数据失败');
       }
       
       const { departments, directions } = res.data.data || {};
       
-      // 检查数据有效性
       if (!directions || !Array.isArray(directions)) {
         throw new Error('暂无研究方向数据');
       }
       
-      // 准备要传递的数据
       const params = {
         school: school.school_name,
         school_code: school.school_code || '',
@@ -771,14 +765,10 @@ Page({
         directions: encodeURIComponent(JSON.stringify(directions))
       };
       
-      // 构建查询字符串
       const query = Object.keys(params)
-        .map(key => `${key}=${encodeURIComponent(params[key])}`)
+        .map(key => `${key}=${params[key]}`)
         .join('&');
       
-      console.log('跳转参数:', query);
-      
-      // 跳转到方向详情页
       wx.navigateTo({
         url: `/pages/directions/directions?${query}`,
         fail: (err) => {
