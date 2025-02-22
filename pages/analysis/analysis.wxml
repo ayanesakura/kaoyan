@@ -54,14 +54,20 @@
     </view>
 
     <!-- 右侧数据列 -->
-    <scroll-view scroll-x class="school-columns">
+    <scroll-view scroll-x class="school-columns" enhanced show-scrollbar="{{false}}">
       <view class="school-column" wx:for="{{currentSchools}}" wx:key="index">
-        <view class="row-cell">{{item.school_name}}</view>
         <view class="row-cell">
-          {{item.major_name || '/'}}
-          <view class="detail-btn" bindtap="showDirections" data-index="{{index}}">查看详情</view>
+          <text class="cell-content">{{item.school_name}}</text>
         </view>
-        <view class="row-cell">{{item.major_code || '/'}}</view>
+        <view class="row-cell">
+          <text class="cell-content">{{item.major_name || '/'}}</text>
+          <view class="btn-wrapper">
+            <view class="detail-btn" bindtap="showDirections" data-index="{{index}}">查看详情</view>
+          </view>
+        </view>
+        <view class="row-cell">
+          <text class="cell-content">{{item.major_code || '/'}}</text>
+        </view>
         <view class="row-cell">{{item.probability}}</view>
         <view class="row-cell">{{item.total_score}}</view>
         <view class="row-cell">

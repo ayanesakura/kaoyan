@@ -65,13 +65,16 @@
 }
 
 .row-header {
-  height: 88rpx;
-  padding: 0 12rpx;
+  height: auto;  /* 改为自适应高度 */
+  min-height: 88rpx;  /* 与右侧保持一致 */
+  padding: 12rpx 16rpx;  /* 与右侧保持一致 */
   font-size: 24rpx;
   color: #666;
   display: flex;
   align-items: center;
   border-bottom: 1rpx solid #eee;
+  text-align: center;  /* 文本居中 */
+  line-height: 1.4;  /* 与右侧保持一致 */
 }
 
 /* 右侧数据区域 */
@@ -79,13 +82,15 @@
   flex: 1;
   overflow-x: auto;
   white-space: nowrap;
+  padding-bottom: 20rpx;  /* 为滚动条预留空间 */
 }
 
 /* 学校列 */
 .school-column {
-  display: inline-block;
-  vertical-align: top;
-  width: 180rpx;
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 180rpx;  /* 最小宽度 */
+  width: fit-content;  /* 自适应内容宽度 */
   border-right: 1rpx solid #eee;
 }
 
@@ -95,8 +100,9 @@
 
 /* 单元格 */
 .row-cell {
-  height: 88rpx;
-  padding: 0 12rpx;
+  height: auto;
+  min-height: 88rpx;
+  padding: 12rpx 16rpx;
   font-size: 24rpx;
   color: #333;
   border-bottom: 1rpx solid #eee;
@@ -104,9 +110,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  text-align: center;
+}
+
+/* 单元格内容 */
+.cell-content {
+  width: 100%;
+  word-break: break-all;  /* 允许在任意字符间换行 */
+  white-space: normal;  /* 允许文本换行 */
+  line-height: 1.4;  /* 行高 */
 }
 
 /* 数字单元格特殊样式 */
@@ -121,12 +133,18 @@
   font-weight: 500;
 }
 
+/* 按钮容器 */
+.btn-wrapper {
+  margin-top: 8rpx;
+  width: 100%;
+}
+
 /* 查看详情按钮 */
 .detail-btn {
   font-size: 20rpx;
   color: #87CEEB;
-  margin-top: 4rpx;
-  padding: 2rpx 8rpx;
+  padding: 4rpx 12rpx;
+  display: inline-block;
 }
 
 /* AI分析按钮 */
