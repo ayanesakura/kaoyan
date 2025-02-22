@@ -49,7 +49,10 @@
             <view class="group-title">科目组合 {{index + 1}}</view>
             <view class="subject-list">
               <view class="subject-item" wx:for="{{group}}" wx:key="code" wx:for-item="subject">
-                <text class="subject-name">{{subject.name}}</text>
+                <view class="subject-header">
+                  <text class="subject-name">{{subject.name}}</text>
+                  <text class="subject-code">({{subject.code}})</text>
+                </view>
                 <text class="subject-value">{{subject.value}}</text>
               </view>
             </view>
