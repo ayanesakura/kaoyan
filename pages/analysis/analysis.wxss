@@ -88,7 +88,6 @@
   flex: 1;
   overflow-x: auto;
   white-space: nowrap;
-  padding-bottom: 20rpx;  /* 为滚动条预留空间 */
 }
 
 /* 学校列 */
