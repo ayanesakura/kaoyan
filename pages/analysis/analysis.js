@@ -422,6 +422,12 @@ Page({
         return;
       }
 
+      // 禁止页面滚动
+      wx.pageScrollTo({
+        scrollTop: 0,
+        duration: 0
+      });
+      
       this.setData({
         showTrend: true,
         trendTitle: `${school.school_name} - 分数线趋势`,
@@ -441,6 +447,12 @@ Page({
         return;
       }
 
+      // 禁止页面滚动
+      wx.pageScrollTo({
+        scrollTop: 0,
+        duration: 0
+      });
+      
       this.setData({
         showTrend: true,
         trendTitle: `${school.school_name} - 政治分数趋势`,
@@ -460,6 +472,12 @@ Page({
         return;
       }
 
+      // 禁止页面滚动
+      wx.pageScrollTo({
+        scrollTop: 0,
+        duration: 0
+      });
+      
       this.setData({
         showTrend: true,
         trendTitle: `${school.school_name} - 英语分数趋势`,
@@ -479,6 +497,12 @@ Page({
         return;
       }
 
+      // 禁止页面滚动
+      wx.pageScrollTo({
+        scrollTop: 0,
+        duration: 0
+      });
+      
       this.setData({
         showTrend: true,
         trendTitle: `${school.school_name} - 数学分数趋势`,
@@ -498,6 +522,12 @@ Page({
         return;
       }
 
+      // 禁止页面滚动
+      wx.pageScrollTo({
+        scrollTop: 0,
+        duration: 0
+      });
+      
       this.setData({
         showTrend: true,
         trendTitle: `${school.school_name} - 专业课分数趋势`,
@@ -527,6 +557,12 @@ Page({
         descriptions: []   // 可以添加每个维度的描述
       };
 
+      // 禁止页面滚动
+      wx.pageScrollTo({
+        scrollTop: 0,
+        duration: 0
+      });
+      
       this.setData({
         showTrend: true,
         trendTitle: `${school.school_name} - 录取评分分析`,
@@ -552,6 +588,12 @@ Page({
         descriptions: []
       };
 
+      // 禁止页面滚动
+      wx.pageScrollTo({
+        scrollTop: 0,
+        duration: 0
+      });
+      
       this.setData({
         showTrend: true,
         trendTitle: `${school.school_name} - 地域评分分析`,
@@ -577,6 +619,12 @@ Page({
         descriptions: []
       };
 
+      // 禁止页面滚动
+      wx.pageScrollTo({
+        scrollTop: 0,
+        duration: 0
+      });
+      
       this.setData({
         showTrend: true,
         trendTitle: `${school.school_name} - 专业评分分析`,
@@ -639,6 +687,12 @@ Page({
         return;
       }
 
+      // 禁止页面滚动
+      wx.pageScrollTo({
+        scrollTop: 0,
+        duration: 0
+      });
+      
       this.setData({
         showTrend: true,
         trendTitle: title,

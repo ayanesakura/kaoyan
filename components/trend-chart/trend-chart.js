@@ -129,16 +129,8 @@ Component({
       const { years, values } = this.data.chartData;
       
       return {
-        title: {
-          text: this.data.title,
-          left: 'center',
-          textStyle: {
-            fontSize: 14,
-            color: '#333'
-          }
-        },
         grid: {
-          top: '15%',
+          top: '10%',
           left: '3%',
           right: '4%',
           bottom: '3%',
@@ -164,6 +156,18 @@ Component({
           smooth: true,
           symbol: 'circle',
           symbolSize: 6,
+          label: {
+            show: true,
+            position: 'top',
+            fontSize: 10,
+            color: '#666',
+            formatter: function(params) {
+              return params.value !== null ? params.value : '-';
+            },
+            distance: 5,  // 标签与点的距离
+            padding: [2, 4],  // 标签内边距
+            backgroundColor: 'rgba(255, 255, 255, 0.8)'  // 半透明背景
+          },
           itemStyle: {
             color: '#87CEEB'
           },

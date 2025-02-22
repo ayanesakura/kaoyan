@@ -189,7 +189,7 @@
   border-radius: 4rpx;
 }
 
-/* 趋势图弹窗 */
+/* 修改遮罩层样式 */
 .mask {
   position: fixed;
   top: 0;
@@ -200,6 +200,7 @@
   z-index: 100;
 }
 
+/* 修改趋势图弹窗样式 */
 .trend-panel {
   position: fixed;
   left: 50%;
@@ -207,10 +208,13 @@
   transform: translate(-50%, -50%);
   width: 90%;
   max-width: 600rpx;
+  max-height: 90vh;  /* 限制最大高度 */
   background: #fff;
   border-radius: 16rpx;
   z-index: 101;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .trend-header {
@@ -219,6 +223,7 @@
   justify-content: space-between;
   align-items: center;
   border-bottom: 1rpx solid #eee;
+  flex-shrink: 0;  /* 防止头部压缩 */
 }
 
 .trend-title {
@@ -233,8 +238,20 @@
 }
 
 .trend-content {
+  flex: 1;  /* 内容区域自适应 */
+  overflow: hidden;  /* 防止内容溢出 */
+  position: relative;  /* 为图表提供定位上下文 */
   height: 600rpx;
-  padding: 24rpx;
+}
+
+/* 图表容器样式 */
+.chart-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
 }
 
 /* 加载和空状态 */
