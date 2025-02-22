@@ -233,7 +233,8 @@ Page({
     if (schools.length === 0) {
       wx.showToast({
         title: `暂无${tab}院校`,
-        icon: 'none'
+        icon: 'none',
+        duration: 2000
       });
     }
   },

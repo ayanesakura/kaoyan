@@ -36,74 +36,79 @@
 
   <!-- 表格区域 -->
   <view class="table-container" wx:if="{{!loading && hasData}}">
-    <!-- 左侧标签列 -->
-    <view class="label-column">
-      <view class="row-header">大学</view>
-      <view class="row-header">专业</view>
-      <view class="row-header">专业代码</view>
-      <view class="row-header">录取概率</view>
-      <view class="row-header">综合评分</view>
-      <view class="row-header">录取评分</view>
-      <view class="row-header">地域评分</view>
-      <view class="row-header">专业评分</view>
-      <view class="row-header">分数线</view>
-      <view class="row-header">- 科目一</view>
-      <view class="row-header">- 科目二</view>
-      <view class="row-header">- 科目三</view>
-      <view class="row-header">- 科目四</view>
-    </view>
+    <block wx:if="{{currentSchools.length > 0}}">
+      <view class="table-content">
+        <!-- 左侧标签列 -->
+        <view class="label-column">
+          <view class="row-header">大学</view>
+          <view class="row-header">专业</view>
+          <view class="row-header">专业代码</view>
+          <view class="row-header">录取概率</view>
+          <view class="row-header">综合评分</view>
+          <view class="row-header">录取评分</view>
+          <view class="row-header">地域评分</view>
+          <view class="row-header">专业评分</view>
+          <view class="row-header">分数线</view>
+          <view class="row-header">- 科目一</view>
+          <view class="row-header">- 科目二</view>
+          <view class="row-header">- 科目三</view>
+          <view class="row-header">- 科目四</view>
+        </view>
 
-    <!-- 右侧数据列 -->
-    <scroll-view scroll-x class="school-columns" enhanced show-scrollbar="{{false}}">
-      <view class="school-column" wx:for="{{currentSchools}}" wx:key="index">
-        <view class="row-cell">
-          <text class="cell-content">{{item.school_name}}</text>
-        </view>
-        <view class="row-cell">
-          <text class="cell-content">{{item.major_name || '/'}}</text>
-          <view class="btn-wrapper">
-            <view class="detail-btn" bindtap="showDirections" data-index="{{index}}">查看详情</view>
+        <!-- 右侧数据列 -->
+        <scroll-view scroll-x class="school-columns" enhanced show-scrollbar="{{false}}">
+          <view class="school-column" wx:for="{{currentSchools}}" wx:key="index">
+            <view class="row-cell">
+              <text class="cell-content">{{item.school_name}}</text>
+            </view>
+            <view class="row-cell">
+              <text class="cell-content">{{item.major_name || '/'}}</text>
+              <view class="btn-wrapper">
+                <view class="detail-btn" bindtap="showDirections" data-index="{{index}}">查看详情</view>
+              </view>
+            </view>
+            <view class="row-cell">
+              <text class="cell-content">{{item.major_code || '/'}}</text>
+            </view>
+            <view class="row-cell">{{item.probability}}</view>
+            <view class="row-cell">{{item.total_score}}</view>
+            <view class="row-cell">
+              {{item.admission_score.total_score || '/'}}
+              <view class="detail-btn" bindtap="showTrend" data-type="admission" data-index="{{index}}">查看详情</view>
+            </view>
+            <view class="row-cell">
+              {{item.location_score.total_score || '/'}}
+              <view class="detail-btn" bindtap="showTrend" data-type="location" data-index="{{index}}">查看详情</view>
+            </view>
+            <view class="row-cell">
+              {{item.major_score.total_score || '/'}}
+              <view class="detail-btn" bindtap="showTrend" data-type="major" data-index="{{index}}">查看详情</view>
+            </view>
+            <view class="row-cell">
+              {{item.latestScore.total || '/'}}
+              <view class="detail-btn" bindtap="showTrend" data-type="score" data-index="{{index}}">查看往年趋势</view>
+            </view>
+            <view class="row-cell">
+              {{item.latestScore.subject1 || '/'}}
+              <view class="detail-btn" bindtap="showTrend" data-type="subject1" data-index="{{index}}">查看往年趋势</view>
+            </view>
+            <view class="row-cell">
+              {{item.latestScore.subject2 || '/'}}
+              <view class="detail-btn" bindtap="showTrend" data-type="subject2" data-index="{{index}}">查看往年趋势</view>
+            </view>
+            <view class="row-cell">
+              {{item.latestScore.subject3 || '/'}}
+              <view class="detail-btn" bindtap="showTrend" data-type="subject3" data-index="{{index}}">查看往年趋势</view>
+            </view>
+            <view class="row-cell">
+              {{item.latestScore.subject4 || '/'}}
+              <view class="detail-btn" bindtap="showTrend" data-type="subject4" data-index="{{index}}">查看往年趋势</view>
+            </view>
           </view>
-        </view>
-        <view class="row-cell">
-          <text class="cell-content">{{item.major_code || '/'}}</text>
-        </view>
-        <view class="row-cell">{{item.probability}}</view>
-        <view class="row-cell">{{item.total_score}}</view>
-        <view class="row-cell">
-          {{item.admission_score.total_score || '/'}}
-          <view class="detail-btn" bindtap="showTrend" data-type="admission" data-index="{{index}}">查看详情</view>
-        </view>
-        <view class="row-cell">
-          {{item.location_score.total_score || '/'}}
-          <view class="detail-btn" bindtap="showTrend" data-type="location" data-index="{{index}}">查看详情</view>
-        </view>
-        <view class="row-cell">
-          {{item.major_score.total_score || '/'}}
-          <view class="detail-btn" bindtap="showTrend" data-type="major" data-index="{{index}}">查看详情</view>
-        </view>
-        <view class="row-cell">
-          {{item.latestScore.total || '/'}}
-          <view class="detail-btn" bindtap="showTrend" data-type="score" data-index="{{index}}">查看往年趋势</view>
-        </view>
-        <view class="row-cell">
-          {{item.latestScore.subject1 || '/'}}
-          <view class="detail-btn" bindtap="showTrend" data-type="subject1" data-index="{{index}}">查看往年趋势</view>
-        </view>
-        <view class="row-cell">
-          {{item.latestScore.subject2 || '/'}}
-          <view class="detail-btn" bindtap="showTrend" data-type="subject2" data-index="{{index}}">查看往年趋势</view>
-        </view>
-        <view class="row-cell">
-          {{item.latestScore.subject3 || '/'}}
-          <view class="detail-btn" bindtap="showTrend" data-type="subject3" data-index="{{index}}">查看往年趋势</view>
-        </view>
-        <view class="row-cell">
-          {{item.latestScore.subject4 || '/'}}
-          <view class="detail-btn" bindtap="showTrend" data-type="subject4" data-index="{{index}}">查看往年趋势</view>
-        </view>
+        </scroll-view>
       </view>
-    </scroll-view>
+    </block>
+    <view wx:else class="empty-space"></view>
   </view>
 
   <!-- AI分析按钮 -->
