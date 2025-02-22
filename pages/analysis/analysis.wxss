@@ -58,7 +58,7 @@
 
 /* 左侧标签列 */
 .label-column {
-  width: 150rpx;
+  width: 160rpx;
   background: #f8f9fa;
   flex-shrink: 0;
   border-right: 1rpx solid #eee;
@@ -85,7 +85,7 @@
 .school-column {
   display: inline-block;
   vertical-align: top;
-  width: 200rpx;
+  width: 180rpx;
   border-right: 1rpx solid #eee;
 }
 
@@ -112,8 +112,8 @@
 /* 数字单元格特殊样式 */
 .row-cell:nth-child(2),
 .row-cell:nth-child(3) {
-  font-weight: 500;
-  color: #333;
+  font-size: 22rpx;
+  color: #666;
 }
 
 /* 学校名称单元格 */

@@ -39,6 +39,8 @@
     <!-- 左侧标签列 -->
     <view class="label-column">
       <view class="row-header">大学</view>
+      <view class="row-header">专业</view>
+      <view class="row-header">专业代码</view>
       <view class="row-header">录取概率</view>
       <view class="row-header">综合评分</view>
       <view class="row-header">录取评分</view>
@@ -55,6 +57,8 @@
     <scroll-view scroll-x class="school-columns">
       <view class="school-column" wx:for="{{currentSchools}}" wx:key="index">
         <view class="row-cell">{{item.school_name}}</view>
+        <view class="row-cell">{{item.major_name || '/'}}</view>
+        <view class="row-cell">{{item.major_code || '/'}}</view>
         <view class="row-cell">{{item.probability}}</view>
         <view class="row-cell">{{item.total_score}}</view>
         <view class="row-cell">
@@ -71,23 +75,23 @@
         </view>
         <view class="row-cell">
           {{item.latestScore.total || '/'}}
-          <view class="detail-btn">查看往年趋势</view>
+          <view class="detail-btn" bindtap="showTrend" data-type="score" data-index="{{index}}">查看往年趋势</view>
         </view>
         <view class="row-cell">
           {{item.latestScore.subject1 || '/'}}
-          <view class="detail-btn">查看往年趋势</view>
+          <view class="detail-btn" bindtap="showTrend" data-type="subject1" data-index="{{index}}">查看往年趋势</view>
         </view>
         <view class="row-cell">
           {{item.latestScore.subject2 || '/'}}
-          <view class="detail-btn">查看往年趋势</view>
+          <view class="detail-btn" bindtap="showTrend" data-type="subject2" data-index="{{index}}">查看往年趋势</view>
         </view>
         <view class="row-cell">
           {{item.latestScore.subject3 || '/'}}
-          <view class="detail-btn">查看往年趋势</view>
+          <view class="detail-btn" bindtap="showTrend" data-type="subject3" data-index="{{index}}">查看往年趋势</view>
         </view>
         <view class="row-cell">
           {{item.latestScore.subject4 || '/'}}
-          <view class="detail-btn">查看往年趋势</view>
+          <view class="detail-btn" bindtap="showTrend" data-type="subject4" data-index="{{index}}">查看往年趋势</view>
         </view>
       </view>
     </scroll-view>

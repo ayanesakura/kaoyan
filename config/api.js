@@ -6,7 +6,7 @@ const env = {
 }
 
 // 设置当前环境 (dev/prod)
-const currentEnv = 'dev'
+const currentEnv = 'prod'
 
 // 云托管配置
 const CLOUD_CONFIG = {

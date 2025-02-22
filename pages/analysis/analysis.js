@@ -410,7 +410,102 @@ Page({
     const { type, index } = e.currentTarget.dataset;
     const school = this.data.currentSchools[index];
     
-    if (type === 'admission') {
+    if (type === 'score') {
+      // 处理总分趋势
+      const fsx_data = this.processFsxData(school.fsx_score, '总分');
+      
+      if (!fsx_data) {
+        wx.showToast({
+          title: '暂无趋势数据',
+          icon: 'none'
+        });
+        return;
+      }
+
+      this.setData({
+        showTrend: true,
+        trendTitle: `${school.school_name} - 分数线趋势`,
+        chartData: fsx_data,
+        chartType: 'line',
+        chartUnit: '分'
+      });
+    } else if (type === 'subject1') {
+      // 处理政治分数趋势
+      const fsx_data = this.processFsxData(school.fsx_score, '科目1');
+      
+      if (!fsx_data) {
+        wx.showToast({
+          title: '暂无趋势数据',
+          icon: 'none'
+        });
+        return;
+      }
+
+      this.setData({
+        showTrend: true,
+        trendTitle: `${school.school_name} - 政治分数趋势`,
+        chartData: fsx_data,
+        chartType: 'line',
+        chartUnit: '分'
+      });
+    } else if (type === 'subject2') {
+      // 处理英语分数趋势
+      const fsx_data = this.processFsxData(school.fsx_score, '科目2');
+      
+      if (!fsx_data) {
+        wx.showToast({
+          title: '暂无趋势数据',
+          icon: 'none'
+        });
+        return;
+      }
+
+      this.setData({
+        showTrend: true,
+        trendTitle: `${school.school_name} - 英语分数趋势`,
+        chartData: fsx_data,
+        chartType: 'line',
+        chartUnit: '分'
+      });
+    } else if (type === 'subject3') {
+      // 处理数学分数趋势
+      const fsx_data = this.processFsxData(school.fsx_score, '科目3');
+      
+      if (!fsx_data) {
+        wx.showToast({
+          title: '暂无趋势数据',
+          icon: 'none'
+        });
+        return;
+      }
+
+      this.setData({
+        showTrend: true,
+        trendTitle: `${school.school_name} - 数学分数趋势`,
+        chartData: fsx_data,
+        chartType: 'line',
+        chartUnit: '分'
+      });
+    } else if (type === 'subject4') {
+      // 处理专业课分数趋势
+      const fsx_data = this.processFsxData(school.fsx_score, '科目4');
+      
+      if (!fsx_data) {
+        wx.showToast({
+          title: '暂无趋势数据',
+          icon: 'none'
+        });
+        return;
+      }
+
+      this.setData({
+        showTrend: true,
+        trendTitle: `${school.school_name} - 专业课分数趋势`,
+        chartData: fsx_data,
+        chartType: 'line',
+        chartUnit: '分'
+      });
+    } else if (type === 'admission') {
       // 处理录取评分雷达图数据
       const admissionScore = school.admission_score;
       const dimensions = [
@@ -666,5 +761,47 @@ Page({
         });
       }
     });
+  },
+
+  // 处理分数线数据
+  processFsxData(fsx_score, field) {
+    if (!Array.isArray(fsx_score) || fsx_score.length === 0) {
+      console.log('无效的分数线数据:', fsx_score);
+      return null;
+    }
+
+    // 按年份去重并排序
+    const uniqueData = {};
+    fsx_score.forEach(item => {
+      // 确保数据有效
+      if (item && item.year && item[field] !== undefined) {
+        if (!uniqueData[item.year] || item.year > uniqueData[item.year].year) {
+          uniqueData[item.year] = item;
+        }
+      }
+    });
+    
+    const sortedData = Object.values(uniqueData).sort((a, b) => a.year - b.year);
+    
+    // 检查处理后的数据是否有效
+    if (sortedData.length === 0) {
+      console.log('处理后无有效数据');
+      return null;
+    }
+
+    const years = sortedData.map(item => item.year);
+    const values = sortedData.map(item => {
+      const value = parseFloat(item[field]);
+      return isNaN(value) ? null : value;
+    });
+
+    // 检查是否所有值都是null
+    if (values.every(v => v === null)) {
+      console.log('所有分数值都无效');
+      return null;
+    }
+
+    console.log('处理后的趋势数据:', { years, values });
+    return { years, values };
   }
 })
