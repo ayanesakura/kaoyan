@@ -1,4 +1,6 @@
 // pages/analysis/analysis.js
+const { callService, API_PATHS } = require('../../config/api.js');
+
 Page({
 
   /**
@@ -731,41 +733,72 @@ Page({
    * 显示专业方向详情
    */
   showDirections(e) {
-    const index = e.currentTarget.dataset.index;
+    const { index } = e.currentTarget.dataset;
     const school = this.data.currentSchools[index];
     
-    console.log('点击专业，准备跳转:', {
-      index,
-      school
+    // 显示加载提示
+    wx.showLoading({
+      title: '加载中...',
+      mask: true
     });
     
-    // 准备要传递的数据
-    const params = {
-      school: school.school_name,
-      school_code: school.school_code,
-      major: school.major,
-      major_code: school.major_code,
-      departments: school.departments,
-      directions: encodeURIComponent(JSON.stringify(school.directions))
-    };
-    
-    // 构建查询字符串
-    const query = Object.keys(params)
-      .map(key => `${key}=${encodeURIComponent(params[key])}`)
-      .join('&');
-    
-    console.log('跳转参数:', query);
-    
-    // 跳转到方向详情页
-    wx.navigateTo({
-      url: `/pages/directions/directions?${query}`,
-      fail: (err) => {
-        console.error('跳转失败:', err);
-        wx.showToast({
-          title: '页面跳转失败',
-          icon: 'none'
-        });
+    // 调用正确的接口获取详情
+    callService(API_PATHS.getSchoolDetail, 'POST', {
+      school_name: school.school_name,
+      major_name: school.major_name
+    })
+    .then(res => {
+      console.log('获取学校详情成功:', res.data);
+      
+      if (res.data.code !== 0) {
+        throw new Error(res.data.message || '获取数据失败');
       }
+      
+      const { departments, directions } = res.data.data || {};
+      
+      // 检查数据有效性
+      if (!directions || !Array.isArray(directions)) {
+        throw new Error('暂无研究方向数据');
+      }
+      
+      // 准备要传递的数据
+      const params = {
+        school: school.school_name,
+        school_code: school.school_code || '',
+        major: school.major_name,
+        major_code: school.major_code || '',
+        departments: departments || '',
+        directions: encodeURIComponent(JSON.stringify(directions))
+      };
+      
+      // 构建查询字符串
+      const query = Object.keys(params)
+        .map(key => `${key}=${encodeURIComponent(params[key])}`)
+        .join('&');
+      
+      console.log('跳转参数:', query);
+      
+      // 跳转到方向详情页
+      wx.navigateTo({
+        url: `/pages/directions/directions?${query}`,
+        fail: (err) => {
+          console.error('跳转失败:', err);
+          wx.showToast({
+            title: '页面跳转失败',
+            icon: 'none'
+          });
+        }
+      });
+    })
+    .catch(err => {
+      console.error('获取学校详情失败:', err);
+      wx.showToast({
+        title: err.message || '获取数据失败',
+        icon: 'none'
+      });
+    })
+    .finally(() => {
+      wx.hideLoading();
     });
   },
 

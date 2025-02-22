@@ -1,12 +1,12 @@
 // 环境配置
 const env = {
   dev: {
-    baseUrl: 'http://192.168.0.102:80'
+    baseUrl: 'http://192.168.0.101:80'
   }
 }
 
 // 设置当前环境 (dev/prod)
-const currentEnv = 'prod'
+const currentEnv = 'dev'
 
 // 云托管配置
 const CLOUD_CONFIG = {
@@ -25,7 +25,8 @@ const API_PATHS = {
   chooseSchools: '/api/choose_schools',
   chooseSchoolsV2: '/api/choose_schools_v2',
   aiAnalysis: '/api/ai_ana',
-  kyys: '/api/kyys'
+  kyys: '/api/kyys',
+  getSchoolDetail: '/api/get_school_detail'
 }
 
 // 统一的服务调用方法

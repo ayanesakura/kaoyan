@@ -57,7 +57,10 @@
     <scroll-view scroll-x class="school-columns">
       <view class="school-column" wx:for="{{currentSchools}}" wx:key="index">
         <view class="row-cell">{{item.school_name}}</view>
-        <view class="row-cell">{{item.major_name || '/'}}</view>
+        <view class="row-cell">
+          {{item.major_name || '/'}}
+          <view class="detail-btn" bindtap="showDirections" data-index="{{index}}">查看详情</view>
+        </view>
         <view class="row-cell">{{item.major_code || '/'}}</view>
         <view class="row-cell">{{item.probability}}</view>
         <view class="row-cell">{{item.total_score}}</view>
