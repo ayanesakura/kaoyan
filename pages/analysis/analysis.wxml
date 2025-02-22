@@ -47,10 +47,10 @@
       <view class="row-header">地域评分</view>
       <view class="row-header">专业评分</view>
       <view class="row-header">分数线</view>
-      <view class="row-header">- 政治</view>
-      <view class="row-header">- 英语</view>
-      <view class="row-header">- 数学</view>
-      <view class="row-header">- 专业课</view>
+      <view class="row-header">- 科目一</view>
+      <view class="row-header">- 科目二</view>
+      <view class="row-header">- 科目三</view>
+      <view class="row-header">- 科目四</view>
     </view>
 
     <!-- 右侧数据列 -->

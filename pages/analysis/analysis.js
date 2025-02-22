@@ -455,7 +455,7 @@ Page({
       
       this.setData({
         showTrend: true,
-        trendTitle: `${school.school_name} - 政治分数趋势`,
+        trendTitle: `${school.school_name} - 科目一分数趋势`,
         chartData: fsx_data,
         chartType: 'line',
         chartUnit: '分'
@@ -480,7 +480,7 @@ Page({
       
       this.setData({
         showTrend: true,
-        trendTitle: `${school.school_name} - 英语分数趋势`,
+        trendTitle: `${school.school_name} - 科目二分数趋势`,
         chartData: fsx_data,
         chartType: 'line',
         chartUnit: '分'
@@ -505,7 +505,7 @@ Page({
       
       this.setData({
         showTrend: true,
-        trendTitle: `${school.school_name} - 数学分数趋势`,
+        trendTitle: `${school.school_name} - 科目三分数趋势`,
         chartData: fsx_data,
         chartType: 'line',
         chartUnit: '分'
@@ -530,7 +530,7 @@ Page({
       
       this.setData({
         showTrend: true,
-        trendTitle: `${school.school_name} - 专业课分数趋势`,
+        trendTitle: `${school.school_name} - 科目四分数趋势`,
         chartData: fsx_data,
         chartType: 'line',
         chartUnit: '分'
