@@ -3,6 +3,8 @@ page {
   background: #f5f5f5;
   width: 100%;
   height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .container {
@@ -108,9 +110,7 @@ page {
 
 /* 运势内容区域 */
 .fortune-content {
-  flex: 1;
-  margin-top: 88rpx;
-  height: calc(100vh - 88rpx);
+  padding-top: 88rpx;
   background: #f5f5f5;
 }
 
@@ -188,55 +188,63 @@ page {
 
 /* 运势指标 */
 .fortune-metrics {
-  padding: 24rpx;
-}
-
-.metric-item {
+  padding: 20rpx;
   background: #fff;
   border-radius: 16rpx;
-  padding: 24rpx;
-  margin-bottom: 16rpx;
+  margin: 0 24rpx 16rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  height: 400rpx;
 }
 
-.metric-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16rpx;
-}
-
-.metric-name {
-  font-size: 28rpx;
-  color: #333;
-  font-weight: 500;
-}
-
-.metric-score {
-  font-size: 32rpx;
-  color: #87CEEB;
-  font-weight: 600;
-}
-
-.metric-bar {
-  height: 8rpx;
-  background: #f0f0f0;
-  border-radius: 4rpx;
-  overflow: hidden;
-  margin-bottom: 16rpx;
-}
-
-.bar-fill {
+.chart-container {
   height: 100%;
-  background: #87CEEB;
-  border-radius: 4rpx;
-  transition: width 0.6s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10rpx 0;
 }
 
-.metric-desc {
-  font-size: 26rpx;
+.chart-bars {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  padding: 0 10rpx;
+}
+
+.bar-item {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 0 8rpx;
+  position: relative;
+}
+
+.bar-value {
+  font-size: 22rpx;
   color: #666;
-  line-height: 1.6;
+  margin-bottom: 4rpx;
+}
+
+.bar-column {
+  width: 30rpx;
+  border-radius: 15rpx 15rpx 4rpx 4rpx;
+  transition: height 0.6s ease;
+}
+
+.bar-name {
+  font-size: 22rpx;
+  color: #666;
+  margin-top: 8rpx;
+  text-align: center;
+  width: 80rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* 幸运信息 */

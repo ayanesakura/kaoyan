@@ -24,7 +24,7 @@
   </view>
 
   <!-- 运势内容区域 -->
-  <scroll-view class="fortune-content" scroll-y wx:else>
+  <view class="fortune-content" wx:else>
     <!-- 日历选择器 -->
     <view class="calendar-header">
       <view class="calendar-tabs">
@@ -46,15 +46,14 @@
 
     <!-- 运势指标 -->
     <view class="fortune-metrics">
-      <view class="metric-item" wx:for="{{fortuneMetrics}}" wx:key="name">
-        <view class="metric-header">
-          <text class="metric-name">{{item.name}}</text>
-          <text class="metric-score">{{item.score}}</text>
+      <view class="chart-container">
+        <view class="chart-bars">
+          <view class="bar-item" wx:for="{{fortuneMetrics}}" wx:key="name">
+            <text class="bar-value">{{item.score}}</text>
+            <view class="bar-column" style="height: {{item.score}}%; background: linear-gradient(180deg, {{barColors[index]}} 0%, {{barColors[index]}}33 100%)"></view>
+            <text class="bar-name">{{item.name}}</text>
+          </view>
         </view>
-        <view class="metric-bar">
-          <view class="bar-fill" style="width: {{item.score}}%;"></view>
-        </view>
-        <text class="metric-desc">{{item.description}}</text>
       </view>
     </view>
 
@@ -100,7 +99,7 @@
     <view class="fortune-summary">
       <text class="summary-text">{{summary}}</text>
     </view>
-  </scroll-view>
+  </view>
 
   <!-- 用户信息填写弹窗 -->
   <view class="info-modal" wx:if="{{showInfoModal}}">

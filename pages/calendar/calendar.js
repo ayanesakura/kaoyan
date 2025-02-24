@@ -17,6 +17,8 @@ Page({
     genderIndex: -1,
     // 运势数据
     fortuneMetrics: [], // 考研运势指标
+    metricsChartData: null, // 图表数据
+    barColors: ['#87CEEB', '#FFB6C1', '#98FB98', '#DDA0DD', '#F0E68C'], // 柱状图颜色
     luckyColor: {}, // 今日幸运色
     luckyNumber: {}, // 今日幸运数字
     luckyDirection: {}, // 今日幸运方向
@@ -33,22 +35,38 @@ Page({
 
   onLoad() {
     console.log('页面加载');
-    // 开发阶段，清除运势缓存
-    this.clearFortuneCache();
-    this.checkUserInfo();
-    this.initDates();
+    this.initApp();
+  },
+
+  // 初始化应用
+  async initApp() {
+    try {
+      console.log('开始检查用户信息');
+      const hasInfo = this.checkUserInfo();
+      if (hasInfo) {
+        this.getFortune();
+      }
+      this.initDates();
+    } catch (err) {
+      console.error('初始化失败:', err);
+    }
   },
 
   onShow() {
-    if (this.data.hasRequiredInfo) {
+    const hasInfo = this.checkUserInfo();
+    if (hasInfo) {
       this.getFortune();
     }
   },
 
   // 检查用户信息
   checkUserInfo() {
-    const userInfo = wx.getStorageSync('userInfo') || {};
+    const userInfo = {signature: '测试用户', birthday: '2000-01-01', mbti: 'INTJ', gender: '男性'}
+    // const userInfo = wx.getStorageSync('userInfo') || {};
+    console.log('检查用户信息:', userInfo);
+    
     const hasRequiredInfo = !!(userInfo.signature && userInfo.birthday && userInfo.mbti && userInfo.gender);
+    console.log('是否有必需信息:', hasRequiredInfo);
     
     this.setData({
       hasRequiredInfo,
@@ -87,22 +105,21 @@ Page({
   async getFortune() {
     console.log('进入getFortune方法');
     const today = new Date().toISOString().split('T')[0];
-    const cacheKey = `fortune_${today}`;
+    const cacheKey = `fortune1_${today}`;
     console.log('今日缓存key:', cacheKey);
-    
     const cachedData = wx.getStorageSync(cacheKey);
     console.log('缓存数据:', cachedData);
-
+  
     if (cachedData) {
       console.log('使用缓存数据');
       this.setFortuneData(cachedData);
-      return;
+      // return;
     }
 
-    const userInfo = wx.getStorageSync('userInfo');
+    const userInfo = this.data.userForm;
     console.log('获取到的用户信息:', userInfo);
     
-    if (!userInfo) {
+    if (!userInfo || !userInfo.signature) {
       console.log('未找到用户信息');
       return;
     }
@@ -149,8 +166,16 @@ Page({
   // 设置运势数据
   setFortuneData(data) {
     console.log('设置运势数据:', data);
+    
+    // 转换运势指标数据为图表格式
+    const metricsChartData = {
+      dimensions: data.考研运势.map(item => item.name),
+      values: [data.考研运势.map(item => item.score)]
+    };
+
     this.setData({
       fortuneMetrics: data.考研运势,
+      metricsChartData: metricsChartData,
       luckyColor: data.今日幸运色,
       luckyNumber: data.今日幸运数字,
       luckyDirection: data.今日幸运方向,
