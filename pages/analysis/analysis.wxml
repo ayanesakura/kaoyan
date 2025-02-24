@@ -71,16 +71,7 @@
               <text class="cell-content">{{item.major_code || '/'}}</text>
             </view>
             <view class="row-cell">{{item.probability}}</view>
-            <view class="row-cell">
-              <view class="score-wrapper">
-                <text class="score-value {{item.total_score >= 80 ? 'score-high' : item.total_score >= 60 ? 'score-medium' : 'score-low'}}">
-                  {{item.total_score}}
-                </text>
-              </view>
-              <view class="trend-btn" bindtap="showTrend" data-type="score" data-index="{{index}}">
-                查看趋势
-              </view>
-            </view>
+            <view class="row-cell">{{item.total_score}}</view>
             <view class="row-cell">
               {{item.admission_score.total_score || '/'}}
               <view class="detail-btn" bindtap="showTrend" data-type="admission" data-index="{{index}}">查看详情</view>

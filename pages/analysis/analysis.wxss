@@ -1,62 +1,59 @@
 /* pages/analysis/analysis.wxss */
 .container {
-  padding: 40rpx 20rpx;
+  padding: 20rpx;
   background: #f8f9fa;
   min-height: 100vh;
 }
 
 .title {
-  font-size: 40rpx;
+  font-size: 36rpx;
   font-weight: bold;
   color: #333;
-  margin: 0 0 10rpx;
+  margin: 20rpx 0 10rpx;
 }
 
 .subtitle {
   font-size: 26rpx;
   color: #666;
-  margin-bottom: 40rpx;
+  margin-bottom: 30rpx;
 }
 
-/* Tab样式优化 */
+/* Tab样式 */
 .probability-tabs {
   display: flex;
   background: #fff;
-  padding: 16rpx 20rpx;
-  border-radius: 16rpx;
-  margin: 0 10rpx 30rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.03);
+  padding: 16rpx;
+  border-radius: 12rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.05);
 }
 
 .tab-item {
   flex: 1;
   text-align: center;
-  padding: 24rpx 0;
-  font-size: 30rpx;
+  padding: 16rpx 0;
+  font-size: 28rpx;
   color: #666;
   position: relative;
-  margin: 0 20rpx;
-  border-radius: 12rpx;
-  transition: all 0.3s ease;
+  margin: 0 10rpx;
+  border-radius: 8rpx;
+  transition: all 0.3s;
 }
 
 .tab-item.active {
-  color: #fff;
-  background: #87CEEB;
+  color: #87CEEB;
+  background: rgba(135, 206, 235, 0.1);
   font-weight: 500;
-  box-shadow: 0 4rpx 12rpx rgba(135, 206, 235, 0.3);
-  transform: translateY(-2rpx);
 }
 
-/* 表格容器优化 */
+/* 表格容器 */
 .table-container {
   background: #fff;
-  border-radius: 16rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.05);
   overflow: hidden;
-  margin: 0 10rpx 30rpx;
-  min-height: 1144rpx;
-  transition: all 0.3s ease;
+  margin-bottom: 20rpx;
+  min-height: 1144rpx; /* 13 * 88rpx */
 }
 
 .table-content {
@@ -65,54 +62,55 @@
   height: 100%;
 }
 
-/* 左侧标签列优化 */
+/* 左侧标签列 */
 .label-column {
-  width: 180rpx;
+  width: 160rpx;
   background: #f8f9fa;
   flex-shrink: 0;
-  border-right: 1rpx solid rgba(0,0,0,0.06);
+  border-right: 1rpx solid #eee;
 }
 
 .row-header {
-  min-height: 100rpx;
-  padding: 16rpx 12rpx;
-  font-size: 26rpx;
-  color: #444;
+  height: auto;  /* 改为自适应高度 */
+  min-height: 88rpx;  /* 与右侧保持一致 */
+  padding: 12rpx 16rpx;  /* 与右侧保持一致 */
+  font-size: 24rpx;
+  color: #666;
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-bottom: 1rpx solid rgba(0,0,0,0.08);
-  text-align: center;
-  line-height: 1.4;
-  font-weight: 500;
+  border-bottom: 1rpx solid #eee;
+  text-align: center;  /* 文本居中 */
+  line-height: 1.4;  /* 与右侧保持一致 */
 }
 
-/* 右侧数据区域优化 */
+/* 右侧数据区域 */
 .school-columns {
   flex: 1;
   overflow-x: auto;
   white-space: nowrap;
 }
 
+/* 学校列 */
 .school-column {
   display: inline-flex;
   flex-direction: column;
-  min-width: 240rpx;
-  width: fit-content;
-  border-right: 1rpx solid rgba(0,0,0,0.04);
-  background: linear-gradient(to right, rgba(255,255,255,0), rgba(0,0,0,0.02));
+  min-width: 180rpx;  /* 最小宽度 */
+  width: fit-content;  /* 自适应内容宽度 */
+  border-right: 1rpx solid #eee;
 }
 
 .school-column:last-child {
   border-right: none;
 }
 
+/* 单元格 */
 .row-cell {
-  min-height: 100rpx;
-  padding: 16rpx 20rpx;
+  height: auto;
+  min-height: 88rpx;
+  padding: 12rpx 16rpx;
   font-size: 24rpx;
   color: #333;
-  border-bottom: 1rpx solid rgba(0,0,0,0.08);
+  border-bottom: 1rpx solid #eee;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -137,65 +135,32 @@
 
 /* 学校名称单元格 */
 .row-cell:first-child {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #222;
-}
-
-/* 录取概率样式 */
-.row-cell:nth-child(4) {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #87CEEB;
-}
-
-/* 评分样式 */
-.score-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8rpx;
-}
-
-.score-value {
-  font-size: 28rpx;
   font-weight: 500;
 }
 
-.score-high {
-  color: #52c41a;
+/* 按钮容器 */
+.btn-wrapper {
+  margin-top: 8rpx;
+  width: 100%;
 }
 
-.score-medium {
-  color: #faad14;
-}
-
-.score-low {
-  color: #ff4d4f;
-}
-
-/* 查看详情按钮优化 */
+/* 查看详情按钮 */
 .detail-btn {
-  font-size: 24rpx;
-  padding: 8rpx 20rpx;
-  border-radius: 8rpx;
-  background: rgba(135, 206, 235, 0.1);
-  margin-top: 12rpx;
+  font-size: 20rpx;
+  color: #87CEEB;
+  padding: 4rpx 12rpx;
+  display: inline-block;
 }
 
-.detail-btn:active {
-  background: rgba(135, 206, 235, 0.2);
-}
-
-/* AI分析按钮优化 */
+/* AI分析按钮 */
 .btn-container {
-  padding: 40rpx 32rpx;
+  padding: 32rpx;
 }
 
 .ai-btn {
   width: 100%;
   height: 88rpx;
-  background: linear-gradient(135deg, #87CEEB, #5FB6E5);
+  background: #87CEEB;
   color: #fff;
   font-size: 32rpx;
   font-weight: 500;
@@ -203,13 +168,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6rpx 20rpx rgba(135, 206, 235, 0.3);
-  transition: all 0.3s ease;
-}
-
-.ai-btn:active {
-  transform: translateY(2rpx);
-  box-shadow: 0 4rpx 12rpx rgba(135, 206, 235, 0.2);
+  box-shadow: 0 4rpx 16rpx rgba(135, 206, 235, 0.3);
 }
 
 /* 学校信息样式 */
@@ -243,27 +202,14 @@
   color: #666;
 }
 
-/* 趋势按钮优化 */
+/* 趋势按钮 */
 .trend-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4rpx;
-  font-size: 22rpx;
+  font-size: 20rpx;
   color: #87CEEB;
-  padding: 6rpx 16rpx;
-  border-radius: 6rpx;
+  margin-top: 4rpx;
+  padding: 4rpx 12rpx;
   background: rgba(135, 206, 235, 0.1);
-  margin-top: 8rpx;
-}
-
-.trend-btn::after {
-  content: '';
-  width: 12rpx;
-  height: 12rpx;
-  border-right: 2rpx solid currentColor;
-  border-bottom: 2rpx solid currentColor;
-  transform: rotate(-45deg);
+  border-radius: 4rpx;
 }
 
 /* 修改遮罩层样式 */
@@ -380,6 +326,5 @@
 
 .empty-space {
   width: 100%;
-  height: 1144rpx;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.01), rgba(0,0,0,0.02));
+  height: 1144rpx; /* 与表格高度一致 */
 }
