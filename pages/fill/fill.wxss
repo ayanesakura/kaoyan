@@ -464,8 +464,8 @@ page {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 40rpx 40rpx;
-  margin-bottom: 20rpx;
+  padding: 20rpx;
+  margin-bottom: 10rpx;
 }
 
 .progress-item {
@@ -477,12 +477,12 @@ page {
 }
 
 .progress-dot {
-  width: 40rpx;
-  height: 40rpx;
+  width: 30rpx;
+  height: 30rpx;
   border-radius: 50%;
   background: #ddd;
-  margin-bottom: 12rpx;
-  border: 8rpx solid #f5f5f5;
+  margin-bottom: 8rpx;
+  border: 6rpx solid #f5f5f5;
   box-sizing: border-box;
 }
 
