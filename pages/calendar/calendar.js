@@ -168,17 +168,18 @@ Page({
     console.log('设置运势数据:', data);
     
     // 转换运势指标数据为图表格式
-    const metricsChartData = {
-      dimensions: data.考研运势.map(item => item.name),
-      values: [data.考研运势.map(item => item.score)]
-    };
+    const metrics = [
+      { name: '复习效率', score: data.复习效率指数 },
+      { name: '刷题顺利', score: data.刷题顺利度 },
+      { name: '抢座运势', score: data.抢座运势 },
+      { name: '意外惊喜', score: data.意外惊喜指数 }
+    ];
 
     this.setData({
-      fortuneMetrics: data.考研运势,
-      metricsChartData: metricsChartData,
-      luckyColor: data.今日幸运色,
-      luckyNumber: data.今日幸运数字,
-      luckyDirection: data.今日幸运方向,
+      fortuneMetrics: metrics,
+      luckyColor: { value: data.今日幸运色, description: '' },
+      luckyNumber: { value: data.今日幸运数字, description: '' },
+      luckyDirection: { value: data.今日幸运方向, description: '' },
       todayDo: data.今日宜,
       todayDont: data.今日忌,
       summary: data.总结

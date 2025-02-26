@@ -1,7 +1,7 @@
 // 环境配置
 const env = {
   dev: {
-    baseUrl: 'http://192.168.0.104:80'
+    baseUrl: 'http://192.168.0.101:80'
   }
 }
 

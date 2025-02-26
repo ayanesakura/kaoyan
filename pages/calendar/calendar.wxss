@@ -220,7 +220,7 @@ page {
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  margin: 0 8rpx;
+  margin: 0 4rpx;
   position: relative;
 }
 
@@ -237,11 +237,11 @@ page {
 }
 
 .bar-name {
-  font-size: 22rpx;
+  font-size: 20rpx;
   color: #666;
   margin-top: 8rpx;
   text-align: center;
-  width: 80rpx;
+  width: 120rpx;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
