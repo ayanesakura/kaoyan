@@ -226,14 +226,16 @@ page {
   flex: 1;
   display: flex;
   justify-content: space-between;
-  gap: 32rpx;
+  gap: 12rpx;
   height: 260rpx;
-  padding: 0 20rpx;
+  padding: 0 12rpx;
   align-items: flex-end;
 }
 
 .metric-item {
   flex: 1;
+  min-width: 85rpx;
+  max-width: 100rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -247,12 +249,16 @@ page {
   background: #87CEEB;
   position: absolute;
   bottom: 85rpx;
+  left: 50%;
+  transform: translateX(-50%);
   transition: height 0.3s ease;
 }
 
 .metric-score {
   position: absolute;
   bottom: 45rpx;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 24rpx;
   color: #666;
 }
@@ -260,10 +266,12 @@ page {
 .metric-name {
   position: absolute;
   bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 24rpx;
   color: #666;
   text-align: center;
-  width: 100%;
+  width: 85rpx;
   white-space: nowrap;
 }
 
@@ -307,6 +315,7 @@ page {
   font-weight: 500;
   margin-bottom: 16rpx;
   display: block;
+  text-align: center;
 }
 
 .tips-list {
@@ -322,6 +331,7 @@ page {
   padding: 14rpx;
   background: #f8f8f8;
   border-radius: 8rpx;
+  text-align: center;
 }
 
 /* 幸运信息 */

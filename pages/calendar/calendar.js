@@ -182,10 +182,10 @@ Page({
     
     // 转换运势指标数据为图表格式
     const metrics = [
-      { name: '复习效率', score: getScore(data.复习效率指数) },
-      { name: '刷题顺利', score: getScore(data.刷题顺利度) },
-      { name: '抢座运势', score: getScore(data.抢座运势) },
-      { name: '意外惊喜', score: getScore(data.意外惊喜指数) }
+      { name: '复习', score: getScore(data.复习效率指数) },
+      { name: '刷题', score: getScore(data.刷题顺利度) },
+      { name: '抢座', score: getScore(data.抢座运势) },
+      { name: '惊喜', score: getScore(data.意外惊喜指数) }
     ];
     
     console.log('转换后的指标数据:', metrics);
