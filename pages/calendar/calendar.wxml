@@ -34,7 +34,7 @@
         </view>
         <view class="metrics-list">
           <view class="metric-item" wx:for="{{fortuneMetrics}}" wx:key="name">
-            <view class="metric-bar" style="background: {{barColors[index]}}; height: {{item.score}}%"></view>
+            <view class="metric-bar" style="background: {{barColors[index]}}; height: {{item.score * 1.8}}rpx"></view>
             <text class="metric-score">{{item.score}}</text>
             <text class="metric-name">{{item.name}}</text>
           </view>

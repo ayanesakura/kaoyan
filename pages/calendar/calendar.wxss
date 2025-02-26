@@ -226,8 +226,10 @@ page {
   flex: 1;
   display: flex;
   justify-content: space-between;
-  gap: 24rpx;
+  gap: 32rpx;
   height: 260rpx;
+  padding: 0 20rpx;
+  align-items: flex-end;
 }
 
 .metric-item {
@@ -235,28 +237,34 @@ page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
+  position: relative;
   height: 100%;
 }
 
 .metric-bar {
   width: 16rpx;
   border-radius: 8rpx;
-  margin-bottom: 12rpx;
+  background: #87CEEB;
+  position: absolute;
+  bottom: 85rpx;
   transition: height 0.3s ease;
 }
 
 .metric-score {
-  font-size: 32rpx;
-  color: #333;
-  margin-bottom: 8rpx;
-  font-weight: 500;
+  position: absolute;
+  bottom: 45rpx;
+  font-size: 24rpx;
+  color: #666;
 }
 
 .metric-name {
-  font-size: 26rpx;
+  position: absolute;
+  bottom: 0;
+  font-size: 24rpx;
   color: #666;
   text-align: center;
+  width: 100%;
+  white-space: nowrap;
 }
 
 /* 运势总结 */

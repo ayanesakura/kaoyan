@@ -166,16 +166,30 @@ Page({
 
   // 设置运势数据
   setFortuneData(data) {
-    console.log('设置运势数据:', data);
+    console.log('原始数据:', data);
+    console.log('运势指数:', {
+      复习效率: data.复习效率指数,
+      刷题顺利: data.刷题顺利度,
+      抢座运势: data.抢座运势,
+      意外惊喜: data.意外惊喜指数
+    });
+    
+    // 确保数值转换正确
+    const getScore = (value) => {
+      const score = parseFloat(value);
+      return isNaN(score) ? 0 : score;
+    };
     
     // 转换运势指标数据为图表格式
     const metrics = [
-      { name: '复习效率', score: data.复习效率指数 },
-      { name: '刷题顺利', score: data.刷题顺利度 },
-      { name: '抢座运势', score: data.抢座运势 },
-      { name: '意外惊喜', score: data.意外惊喜指数 }
+      { name: '复习效率', score: getScore(data.复习效率指数) },
+      { name: '刷题顺利', score: getScore(data.刷题顺利度) },
+      { name: '抢座运势', score: getScore(data.抢座运势) },
+      { name: '意外惊喜', score: getScore(data.意外惊喜指数) }
     ];
-
+    
+    console.log('转换后的指标数据:', metrics);
+    
     this.setData({
       fortuneMetrics: metrics,
       luckyColor: { 
@@ -190,7 +204,8 @@ Page({
       todayDont: data.今日忌,
       summary: data.总结
     });
-    console.log('运势数据设置完成');
+    
+    console.log('设置后的fortuneMetrics:', this.data.fortuneMetrics);
   },
 
   // 显示信息填写弹窗
