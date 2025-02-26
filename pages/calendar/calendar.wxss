@@ -8,7 +8,6 @@ page {
 }
 
 .container {
-  min-height: 100vh;
   width: 100%;
   padding: 0;
   margin: 0;
@@ -112,6 +111,8 @@ page {
 .fortune-content {
   padding-top: 88rpx;
   background: #f5f5f5;
+  min-height: calc(100vh - 88rpx);
+  box-sizing: border-box;
 }
 
 /* 日历头部 */
@@ -191,123 +192,88 @@ page {
   padding: 20rpx;
   background: #fff;
   border-radius: 16rpx;
-  margin: 0 24rpx 16rpx;
+  margin: 16rpx 24rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-  height: 400rpx;
 }
 
-.chart-container {
-  height: 100%;
+.metrics-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 10rpx 0;
+  gap: 40rpx;
 }
 
-.chart-bars {
-  width: 100%;
-  height: 100%;
+.total-score {
   display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  padding: 0 30rpx;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx;
 }
 
-.bar-item {
+.score-number {
+  font-size: 80rpx;
+  font-weight: bold;
+  color: #333;
+  line-height: 1;
+  margin-bottom: 8rpx;
+}
+
+.score-label {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.metrics-list {
   flex: 1;
-  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 20rpx;
+  height: 200rpx;
+}
+
+.metric-item {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  margin: 0 2rpx;
-  position: relative;
+  height: 100%;
 }
 
-.bar-value {
-  font-size: 22rpx;
-  color: #666;
+.metric-bar {
+  width: 16rpx;
+  border-radius: 8rpx;
+  margin-bottom: 8rpx;
+  transition: height 0.3s ease;
+}
+
+.metric-score {
+  font-size: 28rpx;
+  color: #333;
   margin-bottom: 4rpx;
 }
 
-.bar-column {
-  width: 25rpx;
-  border-radius: 12rpx 12rpx 4rpx 4rpx;
-  transition: height 0.6s ease;
-}
-
-.bar-name {
-  font-size: 20rpx;
+.metric-name {
+  font-size: 24rpx;
   color: #666;
-  margin-top: 8rpx;
   text-align: center;
-  width: 100rpx;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* 幸运信息 */
-.lucky-info {
-  padding: 0 24rpx 24rpx;
-}
-
-.lucky-item {
-  background: #fff;
-  border-radius: 16rpx;
-  padding: 24rpx;
-  margin-bottom: 16rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-}
-
-.lucky-label {
-  font-size: 28rpx;
-  color: #333;
-  font-weight: 500;
-  margin-bottom: 16rpx;
-  display: block;
-}
-
-.lucky-value {
-  display: flex;
-  align-items: center;
-  margin-bottom: 12rpx;
-}
-
-.color-box {
-  width: 40rpx;
-  height: 40rpx;
-  border-radius: 8rpx;
-  margin-right: 12rpx;
-}
-
-.color-name {
-  font-size: 28rpx;
-  color: #333;
-}
-
-.lucky-value.number {
-  font-size: 32rpx;
-  color: #87CEEB;
-  font-weight: 600;
-}
-
-.lucky-desc {
-  font-size: 26rpx;
-  color: #666;
-  line-height: 1.6;
 }
 
 /* 宜忌提示 */
 .fortune-tips {
-  padding: 0 24rpx 24rpx;
+  padding: 0 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.tips-row {
+  display: flex;
+  gap: 16rpx;
 }
 
 .tips-section {
+  flex: 1;
   background: #fff;
   border-radius: 16rpx;
-  padding: 24rpx;
-  margin-bottom: 16rpx;
+  padding: 20rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
 }
 
@@ -329,20 +295,71 @@ page {
   font-size: 26rpx;
   color: #666;
   line-height: 1.6;
-  padding: 16rpx;
+  padding: 12rpx;
   background: #f8f8f8;
   border-radius: 8rpx;
 }
 
-/* 运势总结 */
-.fortune-summary {
+/* 幸运信息 */
+.lucky-info {
   padding: 0 24rpx 24rpx;
 }
 
-.fortune-summary {
+.lucky-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.lucky-item {
+  flex: 1;
+  min-width: 160rpx;
   background: #fff;
   border-radius: 16rpx;
-  padding: 24rpx;
+  padding: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lucky-label {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 8rpx;
+}
+
+.lucky-value {
+  font-size: 28rpx;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.color-box {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 6rpx;
+}
+
+.color-name {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.lucky-value.number {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #87CEEB;
+}
+
+/* 运势总结 */
+.fortune-summary {
+  margin: 0 24rpx 16rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 20rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
 }
 

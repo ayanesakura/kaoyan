@@ -25,77 +25,19 @@
 
   <!-- 运势内容区域 -->
   <view class="fortune-content" wx:else>
-    <!-- 日历选择器 -->
-    <view class="calendar-header">
-      <view class="calendar-tabs">
-        <view class="tab {{currentView === 'day' ? 'active' : ''}}" bindtap="switchView" data-view="day">日</view>
-        <view class="tab {{currentView === 'week' ? 'active' : ''}}" bindtap="switchView" data-view="week">周</view>
-        <view class="tab {{currentView === 'month' ? 'active' : ''}}" bindtap="switchView" data-view="month">月</view>
-        <view class="tab {{currentView === 'year' ? 'active' : ''}}" bindtap="switchView" data-view="year">年</view>
-      </view>
-      <scroll-view class="date-scroll" scroll-x enable-flex scroll-into-view="date-{{currentDateIndex}}" scroll-with-animation>
-        <view class="date-list">
-          <view id="date-{{index}}" class="date-item {{index === currentDateIndex ? 'active' : ''}}" 
-                wx:for="{{dates}}" wx:key="index" bindtap="selectDate" data-index="{{index}}">
-            <text class="weekday">{{item.weekday}}</text>
-            <text class="date">{{item.date}}</text>
-          </view>
-        </view>
-      </scroll-view>
-    </view>
-
     <!-- 运势指标 -->
     <view class="fortune-metrics">
-      <view class="chart-container">
-        <view class="chart-bars">
-          <view class="bar-item" wx:for="{{fortuneMetrics}}" wx:key="name">
-            <text class="bar-value">{{item.score}}</text>
-            <view class="bar-column" style="height: {{item.score}}%; background: linear-gradient(180deg, {{barColors[index]}} 0%, {{barColors[index]}}33 100%)"></view>
-            <text class="bar-name">{{item.name}}</text>
+      <view class="metrics-header">
+        <view class="total-score">
+          <text class="score-number">{{(fortuneMetrics[0].score + fortuneMetrics[1].score + fortuneMetrics[2].score + fortuneMetrics[3].score) / 4}}</text>
+          <text class="score-label">综合分数</text>
+        </view>
+        <view class="metrics-list">
+          <view class="metric-item" wx:for="{{fortuneMetrics}}" wx:key="name">
+            <view class="metric-bar" style="background: {{barColors[index]}}; height: {{item.score}}%"></view>
+            <text class="metric-score">{{item.score}}</text>
+            <text class="metric-name">{{item.name}}</text>
           </view>
-        </view>
-      </view>
-    </view>
-
-    <!-- 幸运信息 -->
-    <view class="lucky-info">
-      <view class="lucky-item">
-        <text class="lucky-label">今日幸运色</text>
-        <view class="lucky-value">
-          <view class="color-box" style="background: {{luckyColor.colorCode}}"></view>
-          <text class="color-name">{{luckyColor.value}}</text>
-        </view>
-        <text class="lucky-desc">{{luckyColor.description}}</text>
-      </view>
-      <view class="lucky-item">
-        <text class="lucky-label">今日幸运数字</text>
-        <text class="lucky-value number">{{luckyNumber.value}}</text>
-        <text class="lucky-desc">{{luckyNumber.description}}</text>
-      </view>
-      <view class="lucky-item">
-        <text class="lucky-label">今日幸运方向</text>
-        <text class="lucky-value">{{luckyDirection.value}}</text>
-        <text class="lucky-desc">{{luckyDirection.description}}</text>
-      </view>
-      <view class="lucky-item">
-        <text class="lucky-label">今日幸运食物</text>
-        <text class="lucky-value">{{luckyFood.value}}</text>
-        <text class="lucky-desc">{{luckyFood.description}}</text>
-      </view>
-    </view>
-
-    <!-- 宜忌提示 -->
-    <view class="fortune-tips">
-      <view class="tips-section">
-        <text class="tips-title">今日宜</text>
-        <view class="tips-list">
-          <text class="tip-item" wx:for="{{todayDo}}" wx:key="*this">{{item}}</text>
-        </view>
-      </view>
-      <view class="tips-section">
-        <text class="tips-title">今日忌</text>
-        <view class="tips-list">
-          <text class="tip-item" wx:for="{{todayDont}}" wx:key="*this">{{item}}</text>
         </view>
       </view>
     </view>
@@ -103,6 +45,49 @@
     <!-- 运势总结 -->
     <view class="fortune-summary">
       <text class="summary-text">{{summary}}</text>
+    </view>
+
+    <!-- 宜忌提示 -->
+    <view class="fortune-tips">
+      <view class="tips-row">
+        <view class="tips-section">
+          <text class="tips-title">建议</text>
+          <view class="tips-list">
+            <text class="tip-item" wx:for="{{todayDo}}" wx:key="*this">{{item}}</text>
+          </view>
+        </view>
+        <view class="tips-section">
+          <text class="tips-title">避免</text>
+          <view class="tips-list">
+            <text class="tip-item" wx:for="{{todayDont}}" wx:key="*this">{{item}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 幸运信息 -->
+    <view class="lucky-info">
+      <view class="lucky-row">
+        <view class="lucky-item">
+          <text class="lucky-label">幸运数字</text>
+          <text class="lucky-value number">{{luckyNumber.value}}</text>
+        </view>
+        <view class="lucky-item">
+          <text class="lucky-label">幸运食物</text>
+          <text class="lucky-value">{{luckyFood.value}}</text>
+        </view>
+        <view class="lucky-item">
+          <text class="lucky-label">幸运方向</text>
+          <text class="lucky-value">{{luckyDirection.value}}</text>
+        </view>
+        <view class="lucky-item">
+          <text class="lucky-label">幸运色</text>
+          <view class="lucky-value">
+            <view class="color-box" style="background: {{luckyColor.colorCode}}"></view>
+            <text class="color-name">{{luckyColor.value}}</text>
+          </view>
+        </view>
+      </view>
     </view>
   </view>
 
