@@ -51,13 +51,13 @@
     <view class="fortune-tips">
       <view class="tips-row">
         <view class="tips-section">
-          <text class="tips-title">建议</text>
+          <text class="tips-title">宜</text>
           <view class="tips-list">
             <text class="tip-item" wx:for="{{todayDo}}" wx:key="*this">{{item}}</text>
           </view>
         </view>
         <view class="tips-section">
-          <text class="tips-title">避免</text>
+          <text class="tips-title">忌</text>
           <view class="tips-list">
             <text class="tip-item" wx:for="{{todayDont}}" wx:key="*this">{{item}}</text>
           </view>
