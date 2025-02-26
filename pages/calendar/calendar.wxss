@@ -340,6 +340,8 @@ page {
   font-size: 24rpx;
   color: #666;
   margin-bottom: 12rpx;
+  text-align: center;
+  display: block;
 }
 
 .lucky-value {
@@ -348,6 +350,7 @@ page {
   display: flex;
   align-items: center;
   gap: 8rpx;
+  justify-content: center;
 }
 
 .color-box {
