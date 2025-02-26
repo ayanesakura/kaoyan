@@ -19,9 +19,22 @@ Page({
     fortuneMetrics: [], // 考研运势指标
     metricsChartData: null, // 图表数据
     barColors: ['#87CEEB', '#FFB6C1', '#98FB98', '#DDA0DD', '#F0E68C'], // 柱状图颜色
+    colorMap: {
+      '咖啡渍黄': '#D2B48C',
+      '天蓝色': '#87CEEB',
+      '奶茶色': '#C4A484',
+      '荧光绿': '#98FB98',
+      '樱花粉': '#FFB7C5',
+      '淡紫色': '#E6E6FA',
+      '柠檬黄': '#FFF44F',
+      '薄荷绿': '#98FF98',
+      '珊瑚橙': '#FF7F50',
+      '浅灰色': '#D3D3D3'
+    },
     luckyColor: {}, // 今日幸运色
     luckyNumber: {}, // 今日幸运数字
     luckyDirection: {}, // 今日幸运方向
+    luckyFood: {}, // 今日幸运食物
     todayDo: [], // 今日宜
     todayDont: [], // 今日忌
     summary: '', // 总结
@@ -175,11 +188,19 @@ Page({
       { name: '意外惊喜', score: data.意外惊喜指数 }
     ];
 
+    // 获取颜色代码，如果映射中没有就使用默认颜色
+    const colorCode = this.data.colorMap[data.今日幸运色] || '#D2B48C';
+
     this.setData({
       fortuneMetrics: metrics,
-      luckyColor: { value: data.今日幸运色, description: '' },
+      luckyColor: { 
+        value: data.今日幸运色, 
+        description: '',
+        colorCode: colorCode
+      },
       luckyNumber: { value: data.今日幸运数字, description: '' },
       luckyDirection: { value: data.今日幸运方向, description: '' },
+      luckyFood: { value: data.今日幸运食物, description: '' },
       todayDo: data.今日宜,
       todayDont: data.今日忌,
       summary: data.总结

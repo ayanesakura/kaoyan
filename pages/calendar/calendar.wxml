@@ -62,7 +62,7 @@
       <view class="lucky-item">
         <text class="lucky-label">今日幸运色</text>
         <view class="lucky-value">
-          <view class="color-box" style="background: {{luckyColor.value}}"></view>
+          <view class="color-box" style="background: {{luckyColor.colorCode}}"></view>
           <text class="color-name">{{luckyColor.value}}</text>
         </view>
         <text class="lucky-desc">{{luckyColor.description}}</text>
@@ -76,6 +76,11 @@
         <text class="lucky-label">今日幸运方向</text>
         <text class="lucky-value">{{luckyDirection.value}}</text>
         <text class="lucky-desc">{{luckyDirection.description}}</text>
+      </view>
+      <view class="lucky-item">
+        <text class="lucky-label">今日幸运食物</text>
+        <text class="lucky-value">{{luckyFood.value}}</text>
+        <text class="lucky-desc">{{luckyFood.description}}</text>
       </view>
     </view>
 
