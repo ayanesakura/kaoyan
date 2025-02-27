@@ -344,25 +344,21 @@ page {
   align-items: center;
   justify-content: center;
   height: 500rpx;
-  width: 100%;
-  margin: 60rpx 0;
-  background: linear-gradient(135deg, rgba(135, 206, 235, 0.1), rgba(221, 160, 221, 0.1));
-  backdrop-filter: blur(5px);
+  width: 90%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  backdrop-filter: none;
   border-radius: 28rpx;
-  position: relative;
   overflow: hidden;
   box-sizing: border-box;
+  z-index: 999;
 }
 
 .loading-container::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-  animation: shimmer 3s linear infinite;
+  display: none;
 }
 
 .loading-animation {
@@ -370,7 +366,7 @@ page {
   width: 200rpx;
   height: 200rpx;
   margin-bottom: 60rpx;
-  flex-shrink: 0;  /* 防止压缩 */
+  flex-shrink: 0;
 }
 
 .loading-circle {
@@ -385,6 +381,8 @@ page {
   border-right-color: #98FB98;
   border-bottom-color: #DDA0DD;
   animation: spin 1.5s linear infinite;
+  background: linear-gradient(135deg, rgba(135, 206, 235, 0.1), rgba(221, 160, 221, 0.1));
+  backdrop-filter: blur(5px);
 }
 
 .loading-star {
@@ -437,12 +435,12 @@ page {
 .loading-text-container {
   width: 400rpx;
   height: 80rpx;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(5px);
-  border-radius: 20rpx;
+  background: transparent;
+  backdrop-filter: none;
+  border-radius: 0;
   padding: 15rpx 20rpx;
   margin-top: 30rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -452,10 +450,10 @@ page {
 }
 
 .loading-text {
-  color: #fff;
+  color: #333;
   font-size: 28rpx;
   text-align: center;
-  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.3);
+  text-shadow: none;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
