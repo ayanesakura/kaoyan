@@ -4,6 +4,26 @@ Page({
   data: {
     hasRequiredInfo: false,
     showInfoModal: false,
+    isLoading: false,
+    loadingText: '正在获取你的考研运势...',
+    loadingTexts: [
+      '正在翻阅考研秘籍...',
+      '正在为你掐指一算...',
+      '正在查询学霸指数...',
+      '正在获取幸运食物...',
+      '正在计算抢座概率...',
+      '正在连接考研星座...',
+      '正在分析复习指数...',
+      '正在测量学习气场...',
+      '正在探测记忆曲线...',
+      '正在解析刷题情况...',
+      '正在预测单词效率...',
+      '正在定位学习座位...',
+      '正在召唤学习灵感...',
+      '正在计算咖啡因量...',
+      '正在请求考神保佑...'
+    ],
+    loadingTextTimer: null,
     userForm: {
       signature: '',
       birthday: '',
@@ -127,7 +147,9 @@ Page({
 
     try {
       console.log('准备调用运势接口');
-      wx.showLoading({ title: '获取运势中' });
+      // 开始显示加载动画
+      this.setData({ isLoading: true });
+      this.startLoadingTextAnimation();
       
       const requestData = {
         birthday: userInfo.birthday,
@@ -160,8 +182,60 @@ Page({
         icon: 'none'
       });
     } finally {
-      wx.hideLoading();
+      // 停止加载动画
+      this.stopLoadingTextAnimation();
+      this.setData({ isLoading: false });
     }
+  },
+
+  // 开始加载文字动画
+  startLoadingTextAnimation() {
+    // 清除可能存在的计时器
+    this.stopLoadingTextAnimation();
+    
+    // 创建已使用的文案集合，避免短时间内重复
+    const usedTexts = new Set();
+    
+    // 随机显示加载文字
+    const updateLoadingText = () => {
+      const texts = this.data.loadingTexts;
+      let randomIndex;
+      let maxAttempts = 10; // 防止死循环
+      
+      // 尝试获取未使用过的文案
+      do {
+        randomIndex = Math.floor(Math.random() * texts.length);
+        maxAttempts--;
+      } while (usedTexts.has(randomIndex) && maxAttempts > 0 && usedTexts.size < texts.length - 1);
+      
+      // 更新文字并记录已使用
+      this.setData({ loadingText: texts[randomIndex] });
+      usedTexts.add(randomIndex);
+      
+      // 如果所有文案都用过了，清空记录
+      if (usedTexts.size >= texts.length * 0.7) {
+        usedTexts.clear();
+      }
+    };
+    
+    // 初始更新一次
+    updateLoadingText();
+    
+    // 设置定时器，每2秒更新一次文字
+    this.data.loadingTextTimer = setInterval(updateLoadingText, 2500);
+  },
+  
+  // 停止加载文字动画
+  stopLoadingTextAnimation() {
+    if (this.data.loadingTextTimer) {
+      clearInterval(this.data.loadingTextTimer);
+      this.data.loadingTextTimer = null;
+    }
+  },
+
+  onUnload() {
+    // 组件卸载时清除计时器
+    this.stopLoadingTextAnimation();
   },
 
   // 设置运势数据

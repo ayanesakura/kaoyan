@@ -25,8 +25,23 @@
 
   <!-- 运势内容区域 -->
   <view class="fortune-content" wx:else>
-    <!-- 运势指标 -->
-    <view class="fortune-metrics">
+    <!-- 加载动画 -->
+    <view class="loading-container" wx:if="{{isLoading}}">
+      <view class="loading-animation">
+        <view class="loading-circle"></view>
+        <view class="loading-star star1"></view>
+        <view class="loading-star star2"></view>
+        <view class="loading-star star3"></view>
+        <view class="loading-star star4"></view>
+        <view class="loading-star star5"></view>
+      </view>
+      <view class="loading-text-container">
+        <text class="loading-text">{{loadingText}}</text>
+      </view>
+    </view>
+
+    <!-- 运势指标 (只在非加载状态显示) -->
+    <view class="fortune-metrics" wx:if="{{!isLoading}}">
       <view class="metrics-header">
         <view class="total-score">
           <text class="score-number">{{(fortuneMetrics[0].score + fortuneMetrics[1].score + fortuneMetrics[2].score + fortuneMetrics[3].score) / 4}}</text>
@@ -43,12 +58,12 @@
     </view>
 
     <!-- 运势总结 -->
-    <view class="fortune-summary">
+    <view class="fortune-summary" wx:if="{{!isLoading}}">
       <text class="summary-text">{{summary}}</text>
     </view>
 
     <!-- 宜忌提示 -->
-    <view class="fortune-tips">
+    <view class="fortune-tips" wx:if="{{!isLoading}}">
       <view class="tips-row">
         <view class="tips-section">
           <text class="tips-title">宜</text>
@@ -66,7 +81,7 @@
     </view>
 
     <!-- 幸运信息 -->
-    <view class="lucky-info">
+    <view class="lucky-info" wx:if="{{!isLoading}}">
       <view class="lucky-row">
         <view class="lucky-item">
           <text class="lucky-label">幸运数字</text>
