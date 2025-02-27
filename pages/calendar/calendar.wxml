@@ -36,7 +36,7 @@
         <view class="loading-star star5"></view>
       </view>
       <view class="loading-text-container">
-        <text class="loading-text">{{loadingText}}</text>
+        <text class="loading-text" style="{{loadingText === 'deepseek 满血版正在为你预测运势' ? 'width: 100%; text-overflow: clip;' : ''}}">{{loadingText}}</text>
       </view>
     </view>
 

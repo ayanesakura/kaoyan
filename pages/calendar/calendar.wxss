@@ -433,7 +433,7 @@ page {
 }
 
 .loading-text-container {
-  width: 400rpx;
+  width: 500rpx;
   height: 80rpx;
   background: transparent;
   backdrop-filter: none;
@@ -451,7 +451,7 @@ page {
 
 .loading-text {
   color: #333;
-  font-size: 28rpx;
+  font-size: 26rpx;
   text-align: center;
   text-shadow: none;
   white-space: nowrap;

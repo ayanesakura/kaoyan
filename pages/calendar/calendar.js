@@ -5,7 +5,7 @@ Page({
     hasRequiredInfo: false,
     showInfoModal: false,
     isLoading: false,
-    loadingText: '正在获取你的考研运势...',
+    loadingText: 'deepseek 满血版正在为你预测运势',
     loadingTexts: [
       '正在翻阅考研秘籍...',
       '正在为你掐指一算...',
@@ -196,8 +196,20 @@ Page({
     // 创建已使用的文案集合，避免短时间内重复
     const usedTexts = new Set();
     
+    // 设置默认首次显示的文本
+    this.setData({ loadingText: 'deepseek 满血版正在为你预测运势' });
+    
+    // 首次更新延迟3秒，给用户足够时间阅读首条消息
+    let firstUpdate = true;
+    
     // 随机显示加载文字
     const updateLoadingText = () => {
+      // 如果是首次更新，跳过随机选择，改为延迟后再次调用
+      if (firstUpdate) {
+        firstUpdate = false;
+        return;
+      }
+      
       const texts = this.data.loadingTexts;
       let randomIndex;
       let maxAttempts = 10; // 防止死循环
@@ -218,11 +230,11 @@ Page({
       }
     };
     
-    // 初始更新一次
-    updateLoadingText();
-    
-    // 设置定时器，每2秒更新一次文字
-    this.data.loadingTextTimer = setInterval(updateLoadingText, 2500);
+    // 设置定时器，每2.5秒更新一次文字，首次延迟3秒
+    setTimeout(() => {
+      updateLoadingText();
+      this.data.loadingTextTimer = setInterval(updateLoadingText, 2500);
+    }, 3000);
   },
   
   // 停止加载文字动画
